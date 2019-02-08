@@ -1,9 +1,6 @@
 #ifndef PQNET_UTIL_TIMESTAMP_H
 #define PQNET_UTIL_TIMESTAMP_H
 
-#include <cstdio>
-#include <ctime>
-
 #include "types.h"
 
 namespace pqnet

@@ -5,7 +5,7 @@
 #include <string>
 
 #include <sys/stat.h>
-#include <sys/unistd.h>
+#include <unistd.h>
 
 #include "logger.h"
 #include "timestamp.h"

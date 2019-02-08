@@ -1,3 +1,6 @@
+#include <cstdio>
+#include <ctime>
+
 #include "timestamp.h"
 
 namespace pqnet
@@ -20,6 +23,8 @@ const char* TimeStamp::toString(const char *format)
 {
     if (std::strftime(buf, sizeof(buf), format, grp) != 0) {
         return buf;
+    } else {
+        return nullptr;
     }
 }
 
