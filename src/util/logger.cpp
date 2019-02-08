@@ -35,16 +35,44 @@ Logger::~Logger()
     }
 }
 
-void Logger::info(const char *msg)
+void Logger::notset(const char *msg) const
+{
+    if (level <= Logger::NOTSET) {
+        fprintf(lf, "[Notset] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+    }
+}
+
+void Logger::debug(const char *msg) const
+{
+    if (level <= Logger::DEBUG) {
+        fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+    }
+}
+
+void Logger::info(const char *msg) const
 {
     if (level <= Logger::INFO) {
         fprintf(lf, "[Info] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
     }
 }
 
-void Logger::error(const char *msg)
+void Logger::warning(const char *msg) const
+{
+    if (level <= Logger::WARNING) {
+        fprintf(lf, "[Warning] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+    }
+}
+
+void Logger::error(const char *msg) const
 {
     if (level <= Logger::ERROR) {
         fprintf(lf, "[Error] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+    }
+}
+
+void Logger::fatal(const char *msg) const
+{
+    if (level <= Logger::FATAL) {
+        fprintf(lf, "[Fatal] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
     }
 }
