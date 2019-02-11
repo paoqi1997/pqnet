@@ -15,9 +15,9 @@ public:
     ~Thread();
     void run();
     static void *routine(void *arg);
-    void setFunc(pn_thread_func _func);
     pthread_t getId() const { return id; }
     ThreadPool* getPool() const { return poolptr; }
+    void setFunc(pn_thread_func _func) { func = _func; }
 private:
     pthread_t id;
     ThreadPool *poolptr;
