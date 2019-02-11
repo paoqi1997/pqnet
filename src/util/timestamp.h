@@ -1,6 +1,8 @@
 #ifndef PQNET_UTIL_TIMESTAMP_H
 #define PQNET_UTIL_TIMESTAMP_H
 
+#include <ctime>
+
 #include "types.h"
 
 namespace pqnet
@@ -12,8 +14,8 @@ struct TimeStamp
     const char* toDefault();
     const char* toString(const char *format);
     char buf[BUFSIZE];
-    pn_time_sec_t sec;
-    pn_time_grp_ptr grp;
+    std::time_t sec;
+    std::tm *group;
 };
 
 TimeStamp now();

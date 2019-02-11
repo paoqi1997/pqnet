@@ -95,7 +95,7 @@ private:
     const char *sourcefile;
     int line;
     LogLevel level;
-    pn_file_ptr lf;
+    std::FILE *lf;
 };
 
 } // namespace pqnet

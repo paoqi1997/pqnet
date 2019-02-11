@@ -14,8 +14,8 @@ namespace pqnet
 struct Task
 {
     void* run() { return func(arg); }
-    pn_thread_func_t func;
-    pn_thread_arg_t arg;
+    pn_task_func func;
+    pn_task_arg arg;
 };
 
 class Thread;
