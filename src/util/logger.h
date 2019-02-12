@@ -43,32 +43,32 @@ namespace pqnet
 // To Log File
 #define LOG_NOTSET(msg) \
 {                       \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::NOTSET).notset(msg); \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::NOTSET).log(msg); \
 }
 
 #define LOG_DEBUG(msg) \
 {                      \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::DEBUG).debug(msg); \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::DEBUG).log(msg); \
 }
 
 #define LOG_INFO(msg) \
 {                     \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::INFO).info(msg); \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::INFO).log(msg); \
 }
 
 #define LOG_WARNING(msg) \
 {                        \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::WARNING).warning(msg); \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::WARNING).log(msg); \
 }
 
 #define LOG_ERROR(msg) \
 {                      \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::ERROR).error(msg); \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::ERROR).log(msg); \
 }
 
 #define LOG_FATAL(msg) \
 {                      \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::FATAL).fatal(msg); \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::FATAL).log(msg); \
 }
 
 class Logger
@@ -85,12 +85,7 @@ public:
     };
     Logger(const char *_sourcefile, int _line, LogLevel _level);
     ~Logger();
-    void notset(const char *msg) const;
-    void debug(const char *msg) const;
-    void info(const char *msg) const;
-    void warning(const char *msg) const;
-    void error(const char *msg) const;
-    void fatal(const char * msg) const;
+    void log(const char *msg) const;
 private:
     const char *sourcefile;
     int line;
