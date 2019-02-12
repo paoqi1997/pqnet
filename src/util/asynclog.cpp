@@ -68,7 +68,7 @@ LogMsg AsyncLog::take()
 void AsyncLog::consume(LogMsg lmsg)
 {
     const char *date = now().toDate();
-    if (strcmp(currdate.c_str(), date) != 0) {
+    if (std::strcmp(currdate.c_str(), date) != 0) {
         this->reset(date);
     }
     switch (lmsg.level) {
