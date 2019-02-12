@@ -31,7 +31,7 @@ public:
     void addTask(Task task);
     Task take();
     bool isRunning() const { return running; }
-    bool isEmpty() const { return taskqueue.empty(); }
+    bool isIdle() const { return taskqueue.empty(); }
 public:
     AsyncLog al;
     Condition cond;

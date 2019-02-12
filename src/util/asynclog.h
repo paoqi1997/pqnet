@@ -47,14 +47,14 @@ namespace pqnet
 #define TS_ERROR(ts, msg) \
 {                         \
     ts.cond.lock();       \
-    fprintf(stdout, "[Error] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
+    fprintf(stderr, "[Error] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
     ts.cond.unlock();     \
 }
 
 #define TS_FATAL(ts, msg) \
 {                         \
     ts.cond.lock();       \
-    fprintf(stdout, "[Fatal] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
+    fprintf(stderr, "[Fatal] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
     ts.cond.unlock();     \
 }
 
@@ -109,7 +109,7 @@ public:
     LogMsg take();
     void consume(LogMsg lmsg);
     void reset(const char *date);
-    bool isEmpty() const { return msgqueue.empty(); }
+    bool isIdle() const { return msgqueue.empty(); }
     pthread_t getId() const { return id; }
     ThreadPool* getPool() const { return poolptr; }
     void pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *msg);

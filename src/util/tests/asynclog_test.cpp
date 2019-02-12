@@ -25,7 +25,7 @@ int main()
     sig.addSignal(SIGTERM);
     sig.waitSig();
     for ( ; ; ) {
-        if (done && pool.isEmpty()) {
+        if (done && pool.isIdle()) {
             pool.stop();
             break;
         }

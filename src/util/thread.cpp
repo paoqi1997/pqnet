@@ -40,7 +40,7 @@ void* Thread::routine(void *arg)
     auto pool = self->getPool();
     for ( ; ; ) {
         pool->cond.lock();
-        while (pool->isRunning() && pool->isEmpty()) {
+        while (pool->isRunning() && pool->isIdle()) {
             pool->cond.wait();
         }
         if (!pool->isRunning()) {

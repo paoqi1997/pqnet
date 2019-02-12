@@ -44,7 +44,7 @@ void* AsyncLog::routine(void *arg)
     auto pool = self->getPool();
     for ( ; ; ) {
         self->cond.lock();
-        while (pool->isRunning() && self->isEmpty()) {
+        while (pool->isRunning() && self->isIdle()) {
             self->cond.wait();
         }
         if (!pool->isRunning()) {
