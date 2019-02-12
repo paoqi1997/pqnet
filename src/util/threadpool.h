@@ -5,7 +5,9 @@
 #include <queue>
 #include <vector>
 
+#include "asynclog.h"
 #include "condition.h"
+#include "thread.h"
 #include "types.h"
 
 namespace pqnet
@@ -18,12 +20,11 @@ struct Task
     pn_task_arg arg;
 };
 
-class Thread;
-
 class ThreadPool
 {
 public:
     ThreadPool(std::size_t threadNumber);
+    ThreadPool(std::size_t threadNumber, pn_thread_func func);
     ~ThreadPool();
     void start();
     void stop();
@@ -32,6 +33,7 @@ public:
     bool isRunning() const { return running; }
     bool isEmpty() const { return taskqueue.empty(); }
 public:
+    AsyncLog al;
     Condition cond;
 private:
     bool running;

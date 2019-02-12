@@ -1,11 +1,14 @@
 #ifndef PQNET_UTIL_THREAD_H
 #define PQNET_UTIL_THREAD_H
 
-#include "threadpool.h"
+#include <pthread.h>
+
 #include "types.h"
 
 namespace pqnet
 {
+
+class ThreadPool;
 
 class Thread
 {

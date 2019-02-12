@@ -5,6 +5,7 @@
 
 #include "logger.h"
 #include "thread.h"
+#include "threadpool.h"
 
 namespace pqnet
 {
