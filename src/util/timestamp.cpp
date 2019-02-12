@@ -3,8 +3,7 @@
 
 #include "timestamp.h"
 
-namespace pqnet
-{
+using namespace pqnet;
 
 const char* TimeStamp::toDate()
 {
@@ -28,7 +27,7 @@ const char* TimeStamp::toString(const char *format)
     }
 }
 
-TimeStamp now()
+TimeStamp pqnet::now()
 {
     struct TimeStamp ts;
     ts.sec = std::time(nullptr);
@@ -37,5 +36,3 @@ TimeStamp now()
     ts.group->tm_mon += 1;
     return ts;
 }
-
-} // namespace pqnet

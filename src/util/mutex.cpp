@@ -4,8 +4,7 @@
 #include "logger.h"
 #include "mutex.h"
 
-namespace pqnet
-{
+using namespace pqnet;
 
 Mutex::Mutex()
 {
@@ -34,5 +33,3 @@ void Mutex::unlock()
         ERROR(std::strerror(errno));
     }
 }
-
-} // namespace pqnet

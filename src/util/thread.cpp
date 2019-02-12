@@ -7,8 +7,7 @@
 #include "thread.h"
 #include "threadpool.h"
 
-namespace pqnet
-{
+using namespace pqnet;
 
 Thread::Thread(ThreadPool *_poolptr) : poolptr(_poolptr), func(nullptr)
 {
@@ -54,5 +53,3 @@ void* Thread::routine(void *arg)
     }
     return nullptr;
 }
-
-} // namespace pqnet

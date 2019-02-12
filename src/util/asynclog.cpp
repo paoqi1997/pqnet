@@ -9,8 +9,7 @@
 #include "logger.h"
 #include "threadpool.h"
 
-namespace pqnet
-{
+using namespace pqnet;
 
 AsyncLog::AsyncLog(ThreadPool *_poolptr) : poolptr(_poolptr), dir("./log/"), currdate(now().toDate())
 {
@@ -116,5 +115,3 @@ void AsyncLog::pushMsg(const char *sourcefile, int line, Logger::LogLevel level,
     cond.unlock();
     cond.notify();
 }
-
-} // namespace pqnet

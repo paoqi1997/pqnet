@@ -4,8 +4,7 @@
 #include "logger.h"
 #include "signal.h"
 
-namespace pqnet
-{
+using namespace pqnet;
 
 Signal::Signal() : func(nullptr)
 {
@@ -46,5 +45,3 @@ void Signal::delSignal(int signum)
         sigset.erase(signum);
     }
 }
-
-} // namespace pqnet

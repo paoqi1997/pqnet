@@ -6,8 +6,7 @@
 #include "logger.h"
 #include "threadpool.h"
 
-namespace pqnet
-{
+using namespace pqnet;
 
 ThreadPool::ThreadPool(std::size_t threadNumber) : al(this), running(false), tn(threadNumber)
 {
@@ -71,5 +70,3 @@ Task ThreadPool::take()
     taskqueue.pop();
     return task;
 }
-
-} // namespace pqnet

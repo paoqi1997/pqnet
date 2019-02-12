@@ -4,8 +4,7 @@
 #include "condition.h"
 #include "logger.h"
 
-namespace pqnet
-{
+using namespace pqnet;
 
 Condition::Condition()
 {
@@ -41,5 +40,3 @@ void Condition::notifyAll()
         ERROR(std::strerror(errno));
     }
 }
-
-} // namespace pqnet
