@@ -80,8 +80,7 @@ public:
         INFO,
         WARNING,
         ERROR,
-        FATAL,
-        NUMS_LOG_LEVEL
+        FATAL
     };
     Logger(const char *_sourcefile, int _line, LogLevel _level);
     ~Logger();
