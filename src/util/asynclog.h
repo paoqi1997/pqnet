@@ -15,6 +15,7 @@
 namespace pqnet
 {
 
+// Thread Safe
 #define TS_NOTSET(ts, msg) \
 {                          \
     ts.cond.lock();        \
@@ -57,6 +58,7 @@ namespace pqnet
     ts.cond.unlock();     \
 }
 
+// Async Log
 #define ALOG_NOTSET(al, msg) \
 {                            \
     al.pushMsg(__FILE__, __LINE__, pqnet::Logger::NOTSET, msg); \
