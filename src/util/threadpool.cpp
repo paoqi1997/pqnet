@@ -10,7 +10,7 @@
 namespace pqnet
 {
 
-ThreadPool::ThreadPool(std::size_t threadNumber) : tn(threadNumber), running(false)
+ThreadPool::ThreadPool(std::size_t threadNumber) : running(false), tn(threadNumber)
 {
     for (std::size_t i = 0; i < tn; ++i) {
         pool.emplace_back(new Thread(this));
