@@ -22,14 +22,14 @@ public:
     std::size_t idleBytes() const { return readerIndex; }
     std::size_t readableBytes() const { return writerIndex - readerIndex; }
     std::size_t writableBytes() const { return buf.size() - writerIndex; }
-    // Buffer -> Host/Net
+    // Buffer -> Host/Network
     ssize_t writeTo(int fd, std::size_t len);
     std::string get(std::size_t len);
     std::int8_t getInt8();
     std::int16_t getInt16();
     std::int32_t getInt32();
     std::int64_t getInt64();
-    // Host/Net -> Buffer
+    // Host/Network -> Buffer
     ssize_t readFrom(int fd, std::size_t len);
     void append(const char *data, std::size_t len);
     void appendInt8(std::int8_t x);
