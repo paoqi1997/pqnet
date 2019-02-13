@@ -22,7 +22,7 @@ int main()
     output(buffer);
 
     auto f = std::fopen("/proc/version", "r");
-    buffer.readFrom(fileno(f), 256);
+    buffer.readFrom(fileno(f), 192);
     output(buffer);
 
     auto str = buffer.get(std::strlen(data));
@@ -33,7 +33,7 @@ int main()
     std::cout << x << std::endl;
     output(buffer);
 
-    buffer.writeTo(fileno(stdout), 256);
+    buffer.writeTo(fileno(stdout), 192);
     output(buffer);
 
     return 0;
