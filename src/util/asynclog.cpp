@@ -1,4 +1,5 @@
 #include <cerrno>
+#include <cstdarg>
 #include <cstdio>
 #include <cstring>
 
@@ -107,9 +108,15 @@ void AsyncLog::reset(const char *date)
     lf = std::fopen(lfname.c_str(), "a");
 }
 
-void AsyncLog::pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *msg)
+void AsyncLog::pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *fmt, ...)
 {
-    LogMsg lmsg{ sourcefile, line, level, msg };
+    std::va_list args;
+    va_start(args, fmt);
+    int size = std::vsnprintf(nullptr, 0, fmt, args);
+    std::vector<char> buf(size + 1);
+    std::vsprintf(buf.data(), fmt, args);
+    va_end(args);
+    LogMsg lmsg{ sourcefile, line, level, buf.data() };
     cond.lock();
     msgqueue.push(lmsg);
     cond.unlock();
