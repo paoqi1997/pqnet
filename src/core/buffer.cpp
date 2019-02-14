@@ -46,7 +46,7 @@ bool Buffer::isWritable(std::size_t len) const
     }
 }
 
-// Buffer -> Host/Network
+// Buffer -> Host/Net
 ssize_t Buffer::writeTo(int fd, std::size_t len)
 {
     ssize_t num;
@@ -115,7 +115,7 @@ std::int64_t Buffer::getInt64()
     return result;
 }
 
-// Host/Network -> Buffer
+// Host/Net -> Buffer
 ssize_t Buffer::readFrom(int fd, std::size_t len)
 {
     if (!isWritable(len)) {
