@@ -72,8 +72,8 @@ void AsyncLog::consume(LogMsg lmsg)
         this->reset(date);
     }
     switch (lmsg.level) {
-    case Logger::NOTSET:
-        fprintf(lf, "[Notset] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+    case Logger::TRACE:
+        fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
         break;
     case Logger::DEBUG:
         fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);

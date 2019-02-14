@@ -16,77 +16,77 @@ namespace pqnet
 {
 
 // Thread Safe
-#define TS_NOTSET(ts, msg) \
-{                          \
-    ts.cond.lock();        \
-    fprintf(stdout, "[Notset] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
-    ts.cond.unlock();      \
+#define TS_TRACE(ts, msg)                                                                           \
+{                                                                                                   \
+    ts.cond.lock();                                                                                 \
+    fprintf(stdout, "[Trace] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);   \
+    ts.cond.unlock();                                                                               \
 }
 
-#define TS_DEBUG(ts, msg) \
-{                         \
-    ts.cond.lock();       \
-    fprintf(stdout, "[Debug] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
-    ts.cond.unlock();     \
+#define TS_DEBUG(ts, msg)                                                                           \
+{                                                                                                   \
+    ts.cond.lock();                                                                                 \
+    fprintf(stdout, "[Debug] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);   \
+    ts.cond.unlock();                                                                               \
 }
 
-#define TS_INFO(ts, msg) \
-{                        \
-    ts.cond.lock();      \
-    fprintf(stdout, "[Info] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
-    ts.cond.unlock();    \
+#define TS_INFO(ts, msg)                                                                            \
+{                                                                                                   \
+    ts.cond.lock();                                                                                 \
+    fprintf(stdout, "[Info] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);    \
+    ts.cond.unlock();                                                                               \
 }
 
-#define TS_WARNING(ts, msg) \
-{                           \
-    ts.cond.lock();         \
+#define TS_WARNING(ts, msg)                                                                         \
+{                                                                                                   \
+    ts.cond.lock();                                                                                 \
     fprintf(stdout, "[Warning] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
-    ts.cond.unlock();       \
+    ts.cond.unlock();                                                                               \
 }
 
-#define TS_ERROR(ts, msg) \
-{                         \
-    ts.cond.lock();       \
-    fprintf(stderr, "[Error] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
-    ts.cond.unlock();     \
+#define TS_ERROR(ts, msg)                                                                           \
+{                                                                                                   \
+    ts.cond.lock();                                                                                 \
+    fprintf(stderr, "[Error] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);   \
+    ts.cond.unlock();                                                                               \
 }
 
-#define TS_FATAL(ts, msg) \
-{                         \
-    ts.cond.lock();       \
-    fprintf(stderr, "[Fatal] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
-    ts.cond.unlock();     \
+#define TS_FATAL(ts, msg)                                                                           \
+{                                                                                                   \
+    ts.cond.lock();                                                                                 \
+    fprintf(stderr, "[Fatal] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);   \
+    ts.cond.unlock();                                                                               \
 }
 
 // Async Log
-#define ALOG_NOTSET(al, msg) \
-{                            \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::NOTSET, msg); \
+#define ALOG_TRACE(al, msg)                                      \
+{                                                                \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::TRACE, msg);   \
 }
 
-#define ALOG_DEBUG(al, msg) \
-{                           \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::DEBUG, msg); \
+#define ALOG_DEBUG(al, msg)                                      \
+{                                                                \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::DEBUG, msg);   \
 }
 
-#define ALOG_INFO(al, msg) \
-{                          \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::INFO, msg); \
+#define ALOG_INFO(al, msg)                                       \
+{                                                                \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::INFO, msg);    \
 }
 
-#define ALOG_WARNING(al, msg) \
-{                             \
+#define ALOG_WARNING(al, msg)                                    \
+{                                                                \
     al.pushMsg(__FILE__, __LINE__, pqnet::Logger::WARNING, msg); \
 }
 
-#define ALOG_ERROR(al, msg) \
-{                           \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::ERROR, msg); \
+#define ALOG_ERROR(al, msg)                                      \
+{                                                                \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::ERROR, msg);   \
 }
 
-#define ALOG_FATAL(al, msg) \
-{                           \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::FATAL, msg); \
+#define ALOG_FATAL(al, msg)                                      \
+{                                                                \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::FATAL, msg);   \
 }
 
 struct LogMsg
