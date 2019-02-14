@@ -1,5 +1,4 @@
 #include <cerrno>
-#include <cstdarg>
 #include <cstdio>
 #include <cstring>
 
@@ -74,22 +73,22 @@ void AsyncLog::consume(LogMsg lmsg)
     }
     switch (lmsg.level) {
     case Logger::TRACE:
-        fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
         break;
     case Logger::DEBUG:
-        fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
         break;
     case Logger::INFO:
-        fprintf(lf, "[Info] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Info] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
         break;
     case Logger::WARNING:
-        fprintf(lf, "[Warning] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Warning] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
         break;
     case Logger::ERROR:
-        fprintf(lf, "[Error] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Error] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
         break;
     case Logger::FATAL:
-        fprintf(lf, "[Fatal] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Fatal] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
         break;
     default:
         break;
