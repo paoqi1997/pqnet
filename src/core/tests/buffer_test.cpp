@@ -36,5 +36,8 @@ int main()
     buffer.writeTo(fileno(stdout), 192);
     output(buffer);
 
+    buffer.makeSpace(128);
+    output(buffer);
+
     return 0;
 }

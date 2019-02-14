@@ -37,8 +37,8 @@ public:
     void appendInt32(std::int32_t x);
     void appendInt64(std::int64_t x);
 private:
-    char* begin() { return &*buf.begin(); }
-    const char* begin() const { return &*buf.begin(); }
+    char* begin() { return buf.data(); }
+    const char* begin() const { return buf.data(); }
     char* beginRead() { return begin() + readerIndex; }
     const char* beginRead() const { return begin() + readerIndex; }
     char* beginWrite() { return begin() + writerIndex; }
