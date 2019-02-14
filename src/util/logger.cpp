@@ -39,12 +39,14 @@ Logger::~Logger()
 
 void Logger::log(const char *fmt, ...) const
 {
-    std::va_list args;
-    va_start(args, fmt);
-    int size = std::vsnprintf(nullptr, 0, fmt, args);
+    std::va_list args1, args2;
+    va_start(args1, fmt);
+    va_copy(args2, args1);
+    int size = std::vsnprintf(nullptr, 0, fmt, args1);
+    va_end(args1);
     std::vector<char> buf(size + 1);
-    std::vsprintf(buf.data(), fmt, args);
-    va_end(args);
+    std::vsprintf(buf.data(), fmt, args2);
+    va_end(args2);
     switch (level) {
     case Logger::TRACE:
         fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, buf.data());
@@ -71,12 +73,14 @@ void Logger::log(const char *fmt, ...) const
 
 void Logger::fastLog(const char *_sourcefile, int _line, LogLevel _level, const char *fmt, ...)
 {
-    std::va_list args;
-    va_start(args, fmt);
-    int size = std::vsnprintf(nullptr, 0, fmt, args);
+    std::va_list args1, args2;
+    va_start(args1, fmt);
+    va_copy(args2, args1);
+    int size = std::vsnprintf(nullptr, 0, fmt, args1);
+    va_end(args1);
     std::vector<char> buf(size + 1);
-    std::vsprintf(buf.data(), fmt, args);
-    va_end(args);
+    std::vsprintf(buf.data(), fmt, args2);
+    va_end(args2);
     switch (_level) {
     case Logger::TRACE:
         fprintf(stdout, "[Trace] %s %s:%d: %s\n", now().toDefault(), _sourcefile, _line, buf.data());
