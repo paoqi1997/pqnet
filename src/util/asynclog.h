@@ -10,7 +10,6 @@
 
 #include "condition.h"
 #include "logger.h"
-#include "timestamp.h"
 
 namespace pqnet
 {
@@ -59,34 +58,34 @@ namespace pqnet
 }
 
 // Async Log
-#define ALOG_TRACE(al, msg)                                      \
-{                                                                \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::TRACE, msg);   \
+#define ALOG_TRACE(al, fmt, ...)                                                \
+{                                                                               \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::TRACE, fmt, ##__VA_ARGS__);   \
 }
 
-#define ALOG_DEBUG(al, msg)                                      \
-{                                                                \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::DEBUG, msg);   \
+#define ALOG_DEBUG(al, fmt, ...)                                                \
+{                                                                               \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::DEBUG, fmt, ##__VA_ARGS__);   \
 }
 
-#define ALOG_INFO(al, msg)                                       \
-{                                                                \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::INFO, msg);    \
+#define ALOG_INFO(al, fmt, ...)                                                 \
+{                                                                               \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::INFO, fmt, ##__VA_ARGS__);    \
 }
 
-#define ALOG_WARNING(al, msg)                                    \
-{                                                                \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::WARNING, msg); \
+#define ALOG_WARNING(al, fmt, ...)                                              \
+{                                                                               \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::WARNING, fmt, ##__VA_ARGS__); \
 }
 
-#define ALOG_ERROR(al, msg)                                      \
-{                                                                \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::ERROR, msg);   \
+#define ALOG_ERROR(al, fmt, ...)                                                \
+{                                                                               \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::ERROR, fmt, ##__VA_ARGS__);   \
 }
 
-#define ALOG_FATAL(al, msg)                                      \
-{                                                                \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::FATAL, msg);   \
+#define ALOG_FATAL(al, fmt, ...)                                                \
+{                                                                               \
+    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::FATAL, fmt, ##__VA_ARGS__);   \
 }
 
 struct LogMsg
@@ -94,7 +93,7 @@ struct LogMsg
     const char *sourcefile;
     int line;
     Logger::LogLevel level;
-    const char *msg;
+    std::string msg;
 };
 
 class ThreadPool;
@@ -112,7 +111,7 @@ public:
     bool isIdle() const { return msgqueue.empty(); }
     pthread_t getId() const { return id; }
     ThreadPool* getPool() const { return poolptr; }
-    void pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *msg);
+    void pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *fmt, ...);
 public:
     Condition cond;
 private:

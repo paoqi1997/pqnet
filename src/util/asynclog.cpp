@@ -1,12 +1,14 @@
 #include <cerrno>
+#include <cstdarg>
 #include <cstdio>
 #include <cstring>
+
+#include <vector>
 
 #include <sys/stat.h>
 #include <unistd.h>
 
 #include "asynclog.h"
-#include "logger.h"
 #include "threadpool.h"
 
 using namespace pqnet;
@@ -71,24 +73,25 @@ void AsyncLog::consume(LogMsg lmsg)
     if (std::strcmp(currdate.c_str(), date) != 0) {
         this->reset(date);
     }
+    const char *msg = lmsg.msg.c_str();
     switch (lmsg.level) {
     case Logger::TRACE:
-        std::fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
         break;
     case Logger::DEBUG:
-        std::fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
         break;
     case Logger::INFO:
-        std::fprintf(lf, "[Info] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Info] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
         break;
     case Logger::WARNING:
-        std::fprintf(lf, "[Warning] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Warning] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
         break;
     case Logger::ERROR:
-        std::fprintf(lf, "[Error] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Error] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
         break;
     case Logger::FATAL:
-        std::fprintf(lf, "[Fatal] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, lmsg.msg);
+        std::fprintf(lf, "[Fatal] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
         break;
     default:
         break;
@@ -107,9 +110,17 @@ void AsyncLog::reset(const char *date)
     lf = std::fopen(lfname.c_str(), "a");
 }
 
-void AsyncLog::pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *msg)
+void AsyncLog::pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *fmt, ...)
 {
-    LogMsg lmsg{ sourcefile, line, level, msg };
+    std::va_list args1, args2;
+    va_start(args1, fmt);
+    va_copy(args2, args1);
+    int size = std::vsnprintf(nullptr, 0, fmt, args1);
+    va_end(args1);
+    std::vector<char> buf(size + 1);
+    std::vsprintf(buf.data(), fmt, args2);
+    va_end(args2);
+    LogMsg lmsg{ sourcefile, line, level, std::string(buf.data()) };
     cond.lock();
     msgqueue.push(lmsg);
     cond.unlock();

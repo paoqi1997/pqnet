@@ -15,7 +15,7 @@ void* func(void *arg) {
     auto pool = self->getPool();
     const char *name = "pqnet";
     TS_INFO(pool->al, "Hello %s!", name);
-    ALOG_INFO(pool->al, "Hello pqnet!");
+    ALOG_INFO(pool->al, "Hello %s!", name);
 }
 
 int main()
