@@ -38,8 +38,8 @@ Logger::~Logger()
 void Logger::log(const char *msg) const
 {
     switch (level) {
-    case Logger::NOTSET:
-        fprintf(lf, "[Notset] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+    case Logger::TRACE:
+        fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
         break;
     case Logger::DEBUG:
         fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
