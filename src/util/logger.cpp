@@ -1,8 +1,9 @@
 #include <cerrno>
-#include <cstdio>
+#include <cstdarg>
 #include <cstring>
 
 #include <string>
+#include <vector>
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -35,26 +36,32 @@ Logger::~Logger()
     }
 }
 
-void Logger::log(const char *msg) const
+void Logger::log(const char *fmt, ...) const
 {
+    std::va_list args;
+    va_start(args, fmt);
+    int size = std::vsnprintf(nullptr, 0, fmt, args);
+    std::vector<char> buf(size + 1);
+    std::vsprintf(buf.data(), fmt, args);
+    va_end(args);
     switch (level) {
     case Logger::TRACE:
-        fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+        fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, buf.data());
         break;
     case Logger::DEBUG:
-        fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+        fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, buf.data());
         break;
     case Logger::INFO:
-        fprintf(lf, "[Info] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+        fprintf(lf, "[Info] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, buf.data());
         break;
     case Logger::WARNING:
-        fprintf(lf, "[Warning] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+        fprintf(lf, "[Warning] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, buf.data());
         break;
     case Logger::ERROR:
-        fprintf(lf, "[Error] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+        fprintf(lf, "[Error] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, buf.data());
         break;
     case Logger::FATAL:
-        fprintf(lf, "[Fatal] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, msg);
+        fprintf(lf, "[Fatal] %s %s:%d: %s\n", now().toDefault(), sourcefile, line, buf.data());
         break;
     default:
         break;

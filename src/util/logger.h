@@ -41,34 +41,34 @@ namespace pqnet
 }
 
 // To Log File
-#define LOG_TRACE(msg)                                                  \
-{                                                                       \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::TRACE).log(msg);   \
+#define LOG_TRACE(fmt, ...)                                                          \
+{                                                                                    \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::TRACE).log(fmt, __VA_ARGS__);   \
 }
 
-#define LOG_DEBUG(msg)                                                  \
-{                                                                       \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::DEBUG).log(msg);   \
+#define LOG_DEBUG(fmt, ...)                                                          \
+{                                                                                    \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::DEBUG).log(fmt, __VA_ARGS__);   \
 }
 
-#define LOG_INFO(msg)                                                   \
-{                                                                       \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::INFO).log(msg);    \
+#define LOG_INFO(fmt, ...)                                                           \
+{                                                                                    \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::INFO).log(fmt, __VA_ARGS__);    \
 }
 
-#define LOG_WARNING(msg)                                                \
-{                                                                       \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::WARNING).log(msg); \
+#define LOG_WARNING(fmt, ...)                                                        \
+{                                                                                    \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::WARNING).log(fmt, __VA_ARGS__); \
 }
 
-#define LOG_ERROR(msg)                                                  \
-{                                                                       \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::ERROR).log(msg);   \
+#define LOG_ERROR(fmt, ...)                                                          \
+{                                                                                    \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::ERROR).log(fmt, __VA_ARGS__);   \
 }
 
-#define LOG_FATAL(msg)                                                  \
-{                                                                       \
-    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::FATAL).log(msg);   \
+#define LOG_FATAL(fmt, ...)                                                          \
+{                                                                                    \
+    pqnet::Logger(__FILE__, __LINE__, pqnet::Logger::FATAL).log(fmt, __VA_ARGS__);   \
 }
 
 class Logger
@@ -84,7 +84,7 @@ public:
     };
     Logger(const char *_sourcefile, int _line, LogLevel _level);
     ~Logger();
-    void log(const char *msg) const;
+    void log(const char *fmt, ...) const;
 private:
     const char *sourcefile;
     int line;
