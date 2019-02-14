@@ -13,6 +13,8 @@ void sighandler(int signo) {
 void* func(void *arg) {
     auto self = static_cast<pqnet::Thread*>(arg);
     auto pool = self->getPool();
+    const char *name = "pqnet";
+    TS_INFO(pool->al, "Hello %s!", name);
     ALOG_INFO(pool->al, "Hello pqnet!");
 }
 
