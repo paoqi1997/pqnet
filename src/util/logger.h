@@ -1,8 +1,6 @@
 #ifndef PQNET_UTIL_LOGGER_H
 #define PQNET_UTIL_LOGGER_H
 
-#include <cstdio>
-
 #include "timestamp.h"
 #include "types.h"
 
@@ -10,34 +8,34 @@ namespace pqnet
 {
 
 // To Terminal
-#define TRACE(msg)                                                                                  \
-{                                                                                                   \
-    fprintf(stdout, "[Trace] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);   \
+#define TRACE(fmt, ...)                                                                   \
+{                                                                                         \
+    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::TRACE, fmt, __VA_ARGS__);   \
 }
 
-#define DEBUG(msg)                                                                                  \
-{                                                                                                   \
-    fprintf(stdout, "[Debug] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);   \
+#define DEBUG(fmt, ...)                                                                   \
+{                                                                                         \
+    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::DEBUG, fmt, __VA_ARGS__);   \
 }
 
-#define INFO(msg)                                                                                   \
-{                                                                                                   \
-    fprintf(stdout, "[Info] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);    \
+#define INFO(fmt, ...)                                                                    \
+{                                                                                         \
+    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::INFO, fmt, __VA_ARGS__);    \
 }
 
-#define WARNING(msg)                                                                                \
-{                                                                                                   \
-    fprintf(stdout, "[Warning] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg); \
+#define WARNING(fmt, ...)                                                                 \
+{                                                                                         \
+    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::WARNING, fmt, __VA_ARGS__); \
 }
 
-#define ERROR(msg)                                                                                  \
-{                                                                                                   \
-    fprintf(stderr, "[Error] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);   \
+#define ERROR(fmt, ...)                                                                   \
+{                                                                                         \
+    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::ERROR, fmt, __VA_ARGS__);   \
 }
 
-#define FATAL(msg)                                                                                  \
-{                                                                                                   \
-    fprintf(stderr, "[Fatal] %s %s:%d: %s\n", pqnet::now().toDefault(), __FILE__, __LINE__, msg);   \
+#define FATAL(fmt, ...)                                                                   \
+{                                                                                         \
+    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::FATAL, fmt, __VA_ARGS__);   \
 }
 
 // To Log File
@@ -85,6 +83,7 @@ public:
     Logger(const char *_sourcefile, int _line, LogLevel _level);
     ~Logger();
     void log(const char *fmt, ...) const;
+    static void fastLog(const char *_sourcefile, int _line, LogLevel _level, const char *fmt, ...);
 private:
     const char *sourcefile;
     int line;
