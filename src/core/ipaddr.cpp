@@ -55,5 +55,5 @@ std::uint32_t Ip4Addr::ipInt() const
 
 std::string Ip4Addr::toString() const
 {
-    return std::string(this->ip() + ":" + std::to_string(this->port()));
+    return this->ip() + ':' + std::to_string(this->port());
 }
