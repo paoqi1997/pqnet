@@ -137,7 +137,7 @@ void Buffer::append(const char *data, std::size_t len)
 
 void Buffer::appendInt8(std::int8_t x)
 {
-    auto s = static_cast<const char*>(static_cast<const void*>(&x));
+    auto s = reinterpret_cast<const char*>(&x);
     std::size_t len = sizeof(std::int8_t);
     if (!isWritable(len)) {
         this->makeSpace(len);
@@ -148,7 +148,7 @@ void Buffer::appendInt8(std::int8_t x)
 
 void Buffer::appendInt16(std::int16_t x)
 {
-    auto s = static_cast<const char*>(static_cast<const void*>(&x));
+    auto s = reinterpret_cast<const char*>(&x);
     std::size_t len = sizeof(std::int16_t);
     if (!isWritable(len)) {
         this->makeSpace(len);
@@ -159,7 +159,7 @@ void Buffer::appendInt16(std::int16_t x)
 
 void Buffer::appendInt32(std::int32_t x)
 {
-    auto s = static_cast<const char*>(static_cast<const void*>(&x));
+    auto s = reinterpret_cast<const char*>(&x);
     std::size_t len = sizeof(std::int32_t);
     if (!isWritable(len)) {
         this->makeSpace(len);
@@ -170,7 +170,7 @@ void Buffer::appendInt32(std::int32_t x)
 
 void Buffer::appendInt64(std::int64_t x)
 {
-    auto s = static_cast<const char*>(static_cast<const void*>(&x));
+    auto s = reinterpret_cast<const char*>(&x);
     std::size_t len = sizeof(std::int64_t);
     if (!isWritable(len)) {
         this->makeSpace(len);
