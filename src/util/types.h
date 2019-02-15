@@ -4,7 +4,9 @@
 namespace pqnet
 {
 
-#define BUFSIZE 32
+#define BACKLOG   16
+#define BUFSIZE   32
+#define MAXEVENTS 2048
 
 using pn_thread_func = void*(*)(void*);
 
