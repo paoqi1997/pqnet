@@ -20,7 +20,7 @@ public:
     std::uint16_t port() const;
     std::uint32_t ipInt() const;
     std::string toString() const;
-    struct sockaddr_in* getAddrPtr() const { return addr; }
+    struct sockaddr_in* getAddrPtr() { return addr; }
 private:
     struct sockaddr_in addr;
 };
