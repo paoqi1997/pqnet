@@ -21,14 +21,14 @@ void* func(void *arg) {
 int main()
 {
     pqnet::ThreadPool pool(2, func);
-    pool.start();
+    pool.run();
     pqnet::Signal sig(sighandler);
     sig.addSignal(SIGINT);
     sig.addSignal(SIGTERM);
     sig.waitSig();
     for ( ; ; ) {
         if (done && pool.isIdle()) {
-            pool.stop();
+            pool.shutdown();
             break;
         }
     }

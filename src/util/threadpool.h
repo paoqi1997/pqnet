@@ -15,7 +15,7 @@ namespace pqnet
 
 struct Task
 {
-    void* run() { return func(arg); }
+    void run() { func(arg); }
     pn_task_func func;
     pn_task_arg arg;
 };
@@ -26,8 +26,8 @@ public:
     ThreadPool(std::size_t threadNumber);
     ThreadPool(std::size_t threadNumber, pn_thread_func func);
     ~ThreadPool();
-    void start();
-    void stop();
+    void run();
+    void shutdown();
     void addTask(Task task);
     Task take();
     bool isRunning() const { return running; }

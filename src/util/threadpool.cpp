@@ -28,7 +28,7 @@ ThreadPool::~ThreadPool()
 
 }
 
-void ThreadPool::start()
+void ThreadPool::run()
 {
     al.run();
     for (auto &t : pool) {
@@ -37,7 +37,7 @@ void ThreadPool::start()
     running = true;
 }
 
-void ThreadPool::stop()
+void ThreadPool::shutdown()
 {
     running = false;
     al.cond.notify();

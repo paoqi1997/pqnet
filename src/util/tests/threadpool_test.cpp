@@ -9,14 +9,14 @@ void sighandler(int signo) {
     done = !done;
 }
 
-void* func(void *arg) {
+void func(void *arg) {
     std::cout << static_cast<char*>(arg) << std::endl;
 }
 
 int main()
 {
     pqnet::ThreadPool pool(2);
-    pool.start();
+    pool.run();
     for (int i = 0; i < 10; ++i) {
         pool.addTask(pqnet::Task{ func, const_cast<char*>("Hello pqnet!") });
     }
@@ -26,7 +26,7 @@ int main()
     sig.waitSig();
     for ( ; ; ) {
         if (done && pool.isIdle()) {
-            pool.stop();
+            pool.shutdown();
             break;
         }
     }
