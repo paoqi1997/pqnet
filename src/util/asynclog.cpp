@@ -12,7 +12,7 @@
 
 using namespace pqnet;
 
-AsyncLog::AsyncLog(ThreadPool *_poolptr) : poolptr(_poolptr), dir("./log/"), currdate(now().toDate())
+AsyncLog::AsyncLog() : dir("./log/"), currdate(now().toDate())
 {
     if (access(dir.c_str(), F_OK) != 0) {
         if (mkdir(dir.c_str(), 0777) != 0) {
@@ -30,33 +30,6 @@ AsyncLog::~AsyncLog()
     if (std::fclose(lf) != 0) {
         ERROR(std::strerror(errno));
     }
-}
-
-void AsyncLog::run()
-{
-    if (pthread_create(&id, nullptr, routine, this) != 0) {
-        ERROR(std::strerror(errno));
-    }
-}
-
-void* AsyncLog::routine(void *arg)
-{
-    auto self = static_cast<AsyncLog*>(arg);
-    auto pool = self->getPool();
-    for ( ; ; ) {
-        self->cond.lock();
-        while (pool->isRunning() && self->isIdle()) {
-            self->cond.wait();
-        }
-        if (!pool->isRunning()) {
-            self->cond.unlock();
-            break;
-        }
-        auto lmsg = self->take();
-        self->cond.unlock();
-        self->consume(lmsg);
-    }
-    return nullptr;
 }
 
 LogMsg AsyncLog::take()
@@ -120,8 +93,7 @@ void AsyncLog::pushMsg(const char *sourcefile, int line, Logger::LogLevel level,
     std::vsprintf(buf.data(), fmt, args2);
     va_end(args2);
     LogMsg lmsg{ sourcefile, line, level, std::string(buf.data()) };
-    cond.lock();
+    mtx.lock();
     msgqueue.push(lmsg);
-    cond.unlock();
-    cond.notify();
+    mtx.unlock();
 }

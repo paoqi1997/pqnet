@@ -30,6 +30,7 @@ public:
     void shutdown();
     void addTask(Task task);
     Task take();
+    void flush();
     bool isRunning() const { return running; }
     bool isIdle() const { return taskqueue.empty(); }
 public:

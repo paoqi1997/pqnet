@@ -8,53 +8,53 @@
 
 #include <pthread.h>
 
-#include "condition.h"
 #include "logger.h"
+#include "mutex.h"
 
 namespace pqnet
 {
 
 // Thread Safe
-#define TS_TRACE(ts, fmt, ...)                                                              \
+#define TS_TRACE(mtx, fmt, ...)                                                             \
 {                                                                                           \
-    ts.cond.lock();                                                                         \
+    mtx.lock();                                                                             \
     pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::TRACE, fmt, ##__VA_ARGS__);   \
-    ts.cond.unlock();                                                                       \
+    mtx.unlock();                                                                           \
 }
 
-#define TS_DEBUG(ts, fmt, ...)                                                              \
+#define TS_DEBUG(mtx, fmt, ...)                                                             \
 {                                                                                           \
-    ts.cond.lock();                                                                         \
+    mtx.lock();                                                                             \
     pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::DEBUG, fmt, ##__VA_ARGS__);   \
-    ts.cond.unlock();                                                                       \
+    mtx.unlock();                                                                           \
 }
 
-#define TS_INFO(ts, fmt, ...)                                                               \
+#define TS_INFO(mtx, fmt, ...)                                                              \
 {                                                                                           \
-    ts.cond.lock();                                                                         \
+    mtx.lock();                                                                             \
     pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::INFO, fmt, ##__VA_ARGS__);    \
-    ts.cond.unlock();                                                                       \
+    mtx.unlock();                                                                           \
 }
 
-#define TS_WARNING(ts, fmt, ...)                                                            \
+#define TS_WARNING(mtx, fmt, ...)                                                           \
 {                                                                                           \
-    ts.cond.lock();                                                                         \
+    mtx.lock();                                                                             \
     pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::WARNING, fmt, ##__VA_ARGS__); \
-    ts.cond.unlock();                                                                       \
+    mtx.unlock();                                                                           \
 }
 
-#define TS_ERROR(ts, fmt, ...)                                                              \
+#define TS_ERROR(mtx, fmt, ...)                                                             \
 {                                                                                           \
-    ts.cond.lock();                                                                         \
+    mtx.lock();                                                                             \
     pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::ERROR, fmt, ##__VA_ARGS__);   \
-    ts.cond.unlock();                                                                       \
+    mtx.unlock();                                                                           \
 }
 
-#define TS_FATAL(ts, fmt, ...)                                                              \
+#define TS_FATAL(mtx, fmt, ...)                                                             \
 {                                                                                           \
-    ts.cond.lock();                                                                         \
+    mtx.lock();                                                                             \
     pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::FATAL, fmt, ##__VA_ARGS__);   \
-    ts.cond.unlock();                                                                       \
+    mtx.unlock();                                                                           \
 }
 
 // Async Log
@@ -101,10 +101,8 @@ class ThreadPool;
 class AsyncLog
 {
 public:
-    AsyncLog(ThreadPool *_poolptr);
+    AsyncLog();
     ~AsyncLog();
-    void run();
-    static void* routine(void *arg);
     LogMsg take();
     void consume(LogMsg lmsg);
     void reset(const char *date);
@@ -113,7 +111,7 @@ public:
     ThreadPool* getPool() const { return poolptr; }
     void pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *fmt, ...);
 public:
-    Condition cond;
+    Mutex mtx;
 private:
     pthread_t id;
     ThreadPool *poolptr;
