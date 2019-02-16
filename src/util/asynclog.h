@@ -6,8 +6,6 @@
 #include <queue>
 #include <string>
 
-#include <pthread.h>
-
 #include "logger.h"
 #include "mutex.h"
 
@@ -96,8 +94,6 @@ struct LogMsg
     std::string msg;
 };
 
-class ThreadPool;
-
 class AsyncLog
 {
 public:
@@ -107,14 +103,10 @@ public:
     void consume(LogMsg lmsg);
     void reset(const char *date);
     bool isIdle() const { return msgqueue.empty(); }
-    pthread_t getId() const { return id; }
-    ThreadPool* getPool() const { return poolptr; }
     void pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *fmt, ...);
 public:
     Mutex mtx;
 private:
-    pthread_t id;
-    ThreadPool *poolptr;
     std::FILE *lf;
     std::string dir;
     std::string currdate;

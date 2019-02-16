@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "asynclog.h"
-#include "threadpool.h"
 
 using namespace pqnet;
 
