@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <ctime>
 
 #include "timestamp.h"
 
@@ -13,8 +12,8 @@ const char* TimeStamp::toDate()
 
 const char* TimeStamp::toDefault()
 {
-    std::snprintf(buf, sizeof(buf), "%d-%02d-%02d %02d:%02d:%02d",
-        group->tm_year, group->tm_mon, group->tm_mday, group->tm_hour, group->tm_min, group->tm_sec);
+    std::snprintf(buf, sizeof(buf), "%d-%02d-%02d %02d:%02d:%02d:%ld",
+        group->tm_year, group->tm_mon, group->tm_mday, group->tm_hour, group->tm_min, group->tm_sec, tv.tv_usec);
     return buf;
 }
 
@@ -30,8 +29,8 @@ const char* TimeStamp::toString(const char *format)
 TimeStamp pqnet::now()
 {
     struct TimeStamp ts;
-    ts.sec = std::time(nullptr);
-    ts.group = std::localtime(&ts.sec);
+    gettimeofday(&ts.tv, nullptr);
+    ts.group = std::localtime(&ts.tv.tv_sec);
     ts.group->tm_year += 1900;
     ts.group->tm_mon += 1;
     return ts;

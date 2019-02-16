@@ -3,6 +3,8 @@
 
 #include <ctime>
 
+#include <sys/time.h>
+
 #include "types.h"
 
 namespace pqnet
@@ -14,7 +16,7 @@ struct TimeStamp
     const char* toDefault();
     const char* toString(const char *format);
     char buf[BUFSIZE];
-    std::time_t sec;
+    struct timeval tv;
     std::tm *group;
 };
 
