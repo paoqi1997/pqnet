@@ -12,7 +12,7 @@ const char* TimeStamp::toDate()
 
 const char* TimeStamp::toDefault()
 {
-    std::snprintf(buf, sizeof(buf), "%d-%02d-%02d %02d:%02d:%02d:%ld",
+    std::snprintf(buf, sizeof(buf), "%d-%02d-%02d %02d:%02d:%02d:%06ld",
         group->tm_year, group->tm_mon, group->tm_mday, group->tm_hour, group->tm_min, group->tm_sec, tv.tv_usec);
     return buf;
 }
