@@ -1,23 +1,30 @@
 CXX = g++
 CXXFLAGS = -g -Wall
+LIBS = -pthread
 
 COM_SRCS = ${shell find .. -path ../tests -prune -o -name '*.cpp' -print}
 COM_OBJS = ${COM_SRCS:.cpp=.o}
 
-BINS = buffer_test endian_test ipaddr_test
+CORES = ../buffer.o ../endian.o ../ipaddr.o
+UTILS = ../../util/logger.o ../../util/timestamp.o
+
+BINS = buffer_test endian_test ipaddr_test server_test
 
 .PHONY: build_all
 
 build_all: ${BINS}
 
-buffer_test: buffer_test.o ${COM_OBJS}
+buffer_test: buffer_test.o ${CORES}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
-endian_test: endian_test.o ${COM_OBJS}
+endian_test: endian_test.o ${CORES}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
-ipaddr_test: ipaddr_test.o ${COM_OBJS}
+ipaddr_test: ipaddr_test.o ${CORES}
 	${CXX} ${CXXFLAGS} $^ -o $@
+
+server_test: server_test.o ${COM_OBJS} ${UTILS}
+	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
 .PHONY: clean
 

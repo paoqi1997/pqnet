@@ -8,6 +8,8 @@
 #include <sys/epoll.h>
 
 #include "../util/types.h"
+#include "callback.h"
+#include "looperpool.h"
 
 namespace pqnet
 {
@@ -15,20 +17,30 @@ namespace pqnet
 class TcpServer
 {
 public:
-    TcpServer(std::uint16_t port);
-    TcpServer(const char *servname, std::uint16_t port);
+    TcpServer(std::uint16_t port, bool _done);
+    TcpServer(const char *servname, std::uint16_t port, bool _done);
     ~TcpServer();
-    void listen();
-    void run(bool& done);
+    void run();
     void shutdown();
-    void setConnectCallBack(connectCallBack cb) { conncb = cb; }
-    static void onConn(TcpServer *servptr, int connfd);
-    void onConnect(TcpServer *servptr, int connfd) { conncb(servptr, connfd); }
+    void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
+    void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
+    void setReadCallBack(const readCallBack& cb) { readcb = cb; }
+    void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }
 private:
-    bool listening;
-    bool running;
-    int listenfd;
+    void checkCallBack();
+    void onConnect(int connfd);
+    std::size_t getNextLoopIndex();
+private:
     connectCallBack conncb;
+    closeCallBack closecb;
+    readCallBack readcb;
+    messageCallBack msgcb;
+    bool listening;
+    bool &done;
+    int listenfd;
+    std::size_t ln;
+    LooperPool pool;
+    std::size_t index;
     int epfd;
     struct epoll_event poi;
     struct epoll_event evpool[MAXEVENTS];

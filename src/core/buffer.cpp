@@ -53,10 +53,14 @@ ssize_t Buffer::writeTo(int fd, std::size_t len)
     std::size_t rbs = this->readableBytes();
     if (len <= rbs) {
         num = write(fd, this->beginRead(), len);
-        readerIndex += len;
+        if (num > 0) {
+            readerIndex += num;
+        }
     } else {
         num = write(fd, this->beginRead(), rbs);
-        readerIndex += rbs;
+        if (num > 0) {
+            readerIndex += num;
+        }
     }
     return num;
 }
@@ -122,7 +126,9 @@ ssize_t Buffer::readFrom(int fd, std::size_t len)
         this->makeSpace(len);
     }
     ssize_t num = read(fd, this->beginWrite(), len);
-    writerIndex += len;
+    if (num > 0) {
+        writerIndex += num;
+    }
     return num;
 }
 

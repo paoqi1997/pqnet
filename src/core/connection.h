@@ -9,13 +9,12 @@ namespace pqnet
 class TcpConnection
 {
 public:
-    TcpConnection();
+    TcpConnection(int _connfd);
     ~TcpConnection();
-    void onRead();
-    void onWrite();
-    void onClose();
+    void recv();
+    void send();
+    void send(const char *msg);
 private:
-    bool connected;
     int connfd;
     Buffer buffer;
 };
