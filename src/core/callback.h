@@ -16,6 +16,6 @@ using   closeCallBack = std::function<void(const TcpConnPtr&)>;
 using    readCallBack = std::function<void(const TcpConnPtr&)>;
 using messageCallBack = std::function<void(const TcpConnPtr&)>;
 
-}
+} // namespace pqnet
 
 #endif // PQNET_CORE_CALLBACK_H

@@ -8,7 +8,7 @@ COM_OBJS = ${COM_SRCS:.cpp=.o}
 CORES = ../buffer.o ../endian.o ../ipaddr.o
 UTILS = ../../util/logger.o ../../util/timestamp.o
 
-BINS = buffer_test endian_test ipaddr_test server_test
+BINS = buffer_test endian_test ipaddr_test echoserver_test echoclient_test
 
 .PHONY: build_all
 
@@ -23,7 +23,10 @@ endian_test: endian_test.o ${CORES}
 ipaddr_test: ipaddr_test.o ${CORES}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
-server_test: server_test.o ${COM_OBJS} ${UTILS}
+echoserver_test: echoserver_test.o ${COM_OBJS} ${UTILS}
+	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
+
+echoclient_test: echoclient_test.o ${COM_OBJS} ${UTILS}
 	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
 .PHONY: clean
