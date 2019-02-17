@@ -10,7 +10,6 @@
 #include "../util/types.h"
 #include "buffer.h"
 #include "ipaddr.h"
-#include "socket.h"
 
 namespace pqnet
 {

@@ -10,6 +10,7 @@
 
 #include "../util/logger.h"
 #include "client.h"
+#include "socket.h"
 
 using namespace pqnet;
 
@@ -64,7 +65,6 @@ void TcpEchoClient::run()
                     msg = buffer.get(buffer.readableBytes());
                     std::cout << msg;
                     if (msg == endmsg) {
-                        std::cout << "Liu le!" << std::endl;
                         break;
                     }
                 }
@@ -84,10 +84,10 @@ void TcpEchoClient::run()
 
 void TcpEchoClient::shutdown()
 {
-    if (close(sockfd) == -1) {
+    if (close(epfd) == -1) {
         ERROR(std::strerror(errno));
     }
-    if (close(epfd) == -1) {
+    if (close(sockfd) == -1) {
         ERROR(std::strerror(errno));
     }
 }
