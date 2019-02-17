@@ -12,8 +12,7 @@
 
 using namespace pqnet;
 
-TcpServer::TcpServer(std::uint16_t port)
-    : listening(false), index(0), ln(4), pool(ln)
+TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln)
 {
     // socket
     listenfd = new_socket();
@@ -34,8 +33,7 @@ TcpServer::TcpServer(std::uint16_t port)
     }
 }
 
-TcpServer::TcpServer(const char *servname, std::uint16_t port)
-    : listening(false), index(0), ln(4), pool(ln)
+TcpServer::TcpServer(const char *servname, std::uint16_t port) : index(0), ln(4), pool(ln)
 {
     // socket
     listenfd = new_socket();
@@ -81,7 +79,7 @@ void TcpServer::run()
         int cnt = epoll_wait(epfd, evpool, SERV_EVS, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
-                std::printf("SIGINT: Server\n");
+                INFO("Signal coming: epoll_wait exits.");
                 break;
             } else {
                 ERROR(std::strerror(errno));

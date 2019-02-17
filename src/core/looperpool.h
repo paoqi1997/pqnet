@@ -18,7 +18,6 @@ public:
     ~LooperPool();
     void run();
     void shutdown();
-    bool isRunning() const { return running; }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setReadCallBack(const readCallBack& cb) { readcb = cb; }
@@ -28,7 +27,6 @@ private:
     closeCallBack closecb;
     readCallBack readcb;
     messageCallBack msgcb;
-    bool running;
     std::size_t ln;
 public:
     std::vector<std::unique_ptr<Looper>> pool;

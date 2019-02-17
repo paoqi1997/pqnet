@@ -8,15 +8,14 @@
 
 using namespace pqnet;
 
-LooperPool::LooperPool(std::size_t looperNumber) : running(false), ln(looperNumber)
+LooperPool::LooperPool(std::size_t looperNumber) : ln(looperNumber)
 {
     for (std::size_t i = 0; i < ln; ++i) {
         pool.emplace_back(new Looper(this));
     }
 }
 
-LooperPool::LooperPool(std::size_t looperNumber, pn_thread_func func)
-    : running(false), ln(looperNumber)
+LooperPool::LooperPool(std::size_t looperNumber, pn_thread_func func) : ln(looperNumber)
 {
     for (std::size_t i = 0; i < ln; ++i) {
         pool.emplace_back(new Looper(this, func));
@@ -25,7 +24,7 @@ LooperPool::LooperPool(std::size_t looperNumber, pn_thread_func func)
 
 LooperPool::~LooperPool()
 {
-    
+
 }
 
 void LooperPool::run()
@@ -57,12 +56,10 @@ void LooperPool::run()
         t->setMessageCallBack(msgcb);
         t->run();
     }
-    running = true;
 }
 
 void LooperPool::shutdown()
 {
-    running = false;
     for (auto &t : pool) {
         if (pthread_join(t->getId(), nullptr) != 0) {
             ERROR(std::strerror(errno));

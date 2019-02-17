@@ -35,7 +35,6 @@ private:
     closeCallBack closecb;
     readCallBack readcb;
     messageCallBack msgcb;
-    bool listening;
     int listenfd;
     std::size_t index;
     std::size_t ln;

@@ -45,7 +45,7 @@ Looper::Looper(LooperPool *_poolptr, pn_thread_func _func) : poolptr(_poolptr), 
 
 Looper::~Looper()
 {
-    
+
 }
 
 void Looper::run()
