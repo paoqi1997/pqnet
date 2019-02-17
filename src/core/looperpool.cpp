@@ -29,26 +29,6 @@ LooperPool::~LooperPool()
 
 void LooperPool::run()
 {
-    auto cb = [](const TcpConnPtr&){};
-    if (conncb == nullptr) {
-        std::printf("LoopNoConn!\n");
-        conncb = cb;
-    }
-    if (closecb == nullptr) {
-        std::printf("LoopNoClose!\n");
-        closecb = cb;
-    }
-    if (readcb == nullptr) {
-        std::printf("LoopNoRead!\n");
-        readcb = cb;
-    }
-    if (msgcb == nullptr) {
-        std::printf("LoopNoMsg!\n");
-        msgcb = cb;
-    }
-    /*
-    auto ptr = std::make_shared<TcpConnection>(233);
-    conncb(ptr); */
     for (auto &t : pool) {
         t->setConnectCallBack(conncb);
         t->setCloseCallBack(closecb);

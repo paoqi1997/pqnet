@@ -9,7 +9,7 @@
 
 using namespace pqnet;
 
-Looper::Looper(LooperPool *_poolptr) : poolptr(_poolptr), func(nullptr)
+Looper::Looper(LooperPool *_poolptr) : msg(0), poolptr(_poolptr), func(nullptr)
 {
     evfd = eventfd(0, EFD_NONBLOCK);
     if (evfd == -1) {
@@ -26,7 +26,7 @@ Looper::Looper(LooperPool *_poolptr) : poolptr(_poolptr), func(nullptr)
     }
 }
 
-Looper::Looper(LooperPool *_poolptr, pn_thread_func _func) : poolptr(_poolptr), func(_func)
+Looper::Looper(LooperPool *_poolptr, pn_thread_func _func) : msg(0), poolptr(_poolptr), func(_func)
 {
     evfd = eventfd(0, EFD_NONBLOCK);
     if (evfd == -1) {
@@ -61,21 +61,6 @@ void Looper::run()
 void* Looper::routine(void *arg)
 {
     auto self = static_cast<Looper*>(arg);
-    //auto pool = self->getPool();
-    std::printf("RUN!\n");
-    std::printf("%d\n", self->evfd);
-    if (self->conncb == nullptr) {
-        std::printf("ThreadNoConn!\n");
-    }
-    if (self->closecb == nullptr) {
-        std::printf("ThreadLoopNoClose!\n");
-    }
-    if (self->readcb == nullptr) {
-        std::printf("ThreadLoopNoRead!\n");
-    }
-    if (self->msgcb == nullptr) {
-        std::printf("ThreadLoopNoMsg!\n");
-    }
     for ( ; ; ) {
         int cnt = epoll_wait(self->epfd, self->evpool, SERV_EVS, -1);
         if (cnt == -1) {
@@ -86,7 +71,7 @@ void* Looper::routine(void *arg)
         for (int i = 0; i < cnt; ++i) {
             if (self->evpool[i].data.fd == self->evfd) {
                 read(self->evfd, &msg, sizeof(std::uint64_t));
-                if (msg == 2) {
+                if (msg == EV_EXIT) {
                     break;
                 }
                 int connfd = self->waitconns.front();
@@ -131,8 +116,8 @@ void* Looper::routine(void *arg)
                 std::printf("%d Message!\n", connfd);
             }
         }
-        if (msg == 2) {
-            std::printf("SIGINT: Looper\n");
+        if (msg == EV_EXIT) {
+            INFO("Signal coming: epoll_wait exits.");
             break;
         }
     }

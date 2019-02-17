@@ -1,6 +1,8 @@
 #ifndef PQNET_CORE_LOOPER_H
 #define PQNET_CORE_LOOPER_H
 
+#include <cstdint>
+
 #include <map>
 #include <queue>
 
@@ -42,6 +44,7 @@ public:
     readCallBack readcb;
     messageCallBack msgcb;
     int evfd;
+    std::uint64_t msg;
     std::queue<int> waitconns;
     std::map<int, TcpConnPtr> connpool;
     int epfd;

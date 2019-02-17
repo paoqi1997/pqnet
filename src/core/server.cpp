@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cerrno>
 #include <cstring>
 
@@ -73,7 +74,7 @@ void TcpServer::run()
         ERROR(std::strerror(errno));
     }
     struct sockaddr_in cliaddr;
-    socklen_t clilen = sizeof(cliaddr);
+    socklen_t clilen = sizeof(struct sockaddr);
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
     for ( ; ; ) {
         int cnt = epoll_wait(epfd, evpool, SERV_EVS, -1);
@@ -114,27 +115,10 @@ void TcpServer::shutdown()
 
 void TcpServer::checkCallBack()
 {
-    /*
-    auto ptr = std::make_shared<TcpConnection>(listenfd);
-    conncb(ptr);
-    */
-    auto cb = [](const TcpConnPtr&){};
-    if (conncb == nullptr) {
-        std::printf("NoConn!\n");
-        conncb = cb;
-    }
-    if (closecb == nullptr) {
-        std::printf("NoClose!\n");
-        closecb = cb;
-    }
-    if (readcb == nullptr) {
-        std::printf("NoRead!\n");
-        readcb = cb;
-    }
-    if (msgcb == nullptr) {
-        std::printf("NoMsg!\n");
-        msgcb = cb;
-    }
+    assert(conncb != nullptr);
+    assert(closecb != nullptr);
+    assert(readcb != nullptr);
+    assert(msgcb != nullptr);
     pool.setConnectCallBack(conncb);
     pool.setCloseCallBack(closecb);
     pool.setReadCallBack(readcb);
@@ -146,7 +130,7 @@ void TcpServer::onConnect(int connfd)
     setNonBlock(connfd, true);
     std::size_t loopindex = getNextLoopIndex();
     int evfd = pool.pool[loopindex]->evfd;
-    std::uint64_t msg = 1;
+    std::uint64_t msg = EV_CONN;
     pool.pool[loopindex]->waitconns.push(connfd);
     if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
         ERROR(std::strerror(errno));
