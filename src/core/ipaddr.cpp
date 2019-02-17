@@ -40,7 +40,7 @@ std::string Ip4Addr::ip() const
 {
     std::vector<char> buf(INET_ADDRSTRLEN);
     auto addrptr = static_cast<const void*>(&addr.sin_addr);
-    return std::string(inet_ntop(AF_INET, addrptr, buf.data(), buf.size()));
+    return inet_ntop(AF_INET, addrptr, buf.data(), buf.size());
 }
 
 std::uint16_t Ip4Addr::port() const

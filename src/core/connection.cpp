@@ -1,7 +1,5 @@
 #include <cstring>
 
-#include <unistd.h>
-
 #include "connection.h"
 
 using namespace pqnet;
@@ -13,20 +11,20 @@ TcpConnection::TcpConnection(int _connfd) : connfd(_connfd)
 
 TcpConnection::~TcpConnection()
 {
-    
+
 }
 
-void TcpConnection::recv()
+ssize_t TcpConnection::recv()
 {
-    buffer.readFrom(connfd, buffer.writableBytes());
+    return buffer.readFrom(connfd, buffer.writableBytes());
 }
 
-void TcpConnection::send()
+ssize_t TcpConnection::send()
 {
-    buffer.writeTo(connfd, buffer.readableBytes());
+    return buffer.writeTo(connfd, buffer.readableBytes());
 }
 
-void TcpConnection::send(const char *msg)
+ssize_t TcpConnection::send(const char *msg)
 {
-    write(connfd, msg, std::strlen(msg));
+    return write(connfd, msg, std::strlen(msg));
 }

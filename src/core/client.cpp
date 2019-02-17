@@ -21,7 +21,7 @@ TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, std::stri
     if (sockfd == -1) {
         ERROR(std::strerror(errno));
     }
-    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getAddrPtr());
+    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getAddr());
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }

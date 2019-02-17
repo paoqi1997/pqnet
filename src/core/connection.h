@@ -1,6 +1,8 @@
 #ifndef PQNET_CORE_CONNECTION_H
 #define PQNET_CORE_CONNECTION_H
 
+#include <unistd.h>
+
 #include "buffer.h"
 
 namespace pqnet
@@ -11,9 +13,9 @@ class TcpConnection
 public:
     TcpConnection(int _connfd);
     ~TcpConnection();
-    void recv();
-    void send();
-    void send(const char *msg);
+    ssize_t recv();
+    ssize_t send();
+    ssize_t send(const char *msg);
 private:
     int connfd;
     Buffer buffer;

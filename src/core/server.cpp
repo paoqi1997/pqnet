@@ -25,7 +25,7 @@ TcpServer::TcpServer(std::uint16_t port)
     setReusePort(listenfd, true);
     // bind
     Ip4Addr ipaddr(port);
-    auto addrptr = reinterpret_cast<struct sockaddr*>(ipaddr.getAddrPtr());
+    auto addrptr = reinterpret_cast<struct sockaddr*>(ipaddr.getAddr());
     if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -47,7 +47,7 @@ TcpServer::TcpServer(const char *servname, std::uint16_t port)
     setReusePort(listenfd, true);
     // bind
     Ip4Addr ipaddr(servname, port);
-    auto addrptr = reinterpret_cast<struct sockaddr*>(ipaddr.getAddrPtr());
+    auto addrptr = reinterpret_cast<struct sockaddr*>(ipaddr.getAddr());
     if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
