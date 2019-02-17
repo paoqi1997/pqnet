@@ -82,10 +82,13 @@ void* Looper::routine(void *arg)
             ERROR(std::strerror(errno));
             break;
         }
+        std::uint64_t msg = 0;
         for (int i = 0; i < cnt; ++i) {
             if (self->evpool[i].data.fd == self->evfd) {
-                std::uint64_t msg;
                 read(self->evfd, &msg, sizeof(std::uint64_t));
+                if (msg == 2) {
+                    break;
+                }
                 int connfd = self->waitconns.front();
                 self->waitconns.pop();
                 self->poi.data.fd = connfd;
@@ -97,16 +100,15 @@ void* Looper::routine(void *arg)
                     std::pair<int, TcpConnPtr>(connfd, std::make_shared<TcpConnection>(connfd))
                 );
                 self->onConnect(self->connpool[connfd]);
-                std::printf("%d %d Connect!\n", connfd, pthread_self());
+                std::printf("%d %lu Connect!\n", connfd, pthread_self());
             }
             else if (self->evpool[i].events & EPOLLRDHUP) {
                 int connfd = self->evpool[i].data.fd;
                 if (epoll_ctl(self->epfd, EPOLL_CTL_DEL, connfd, nullptr) == -1) {
                     ERROR(std::strerror(errno));
                 }
-                self->onClose(self->connpool[connfd]);
                 self->connpool.erase(connfd);
-                std::printf("%d %d Bye!\n", connfd, pthread_self());
+                std::printf("%d %lu Bye!\n", connfd, pthread_self());
             }
             else if (self->evpool[i].events & EPOLLIN) {
                 int connfd = self->evpool[i].data.fd;
@@ -128,7 +130,11 @@ void* Looper::routine(void *arg)
                 }
                 std::printf("%d Message!\n", connfd);
             }
-        } 
+        }
+        if (msg == 2) {
+            std::printf("SIGINT: Looper\n");
+            break;
+        }
     }
     self->shutdown();
 }
@@ -137,5 +143,8 @@ void Looper::shutdown()
 {
     for (auto conn : connpool) {
         this->onClose(conn.second);
+        if (close(conn.first) == -1) {
+            ERROR(std::strerror(errno));
+        }
     }
 }

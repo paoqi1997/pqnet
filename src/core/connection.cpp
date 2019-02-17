@@ -28,5 +28,5 @@ void TcpConnection::send()
 
 void TcpConnection::send(const char *msg)
 {
-    write(connfd, msg, std::strlen(msg) + 1);
+    write(connfd, msg, std::strlen(msg));
 }

@@ -4,6 +4,9 @@
 namespace pqnet
 {
 
+#define  EV_CONN    1
+#define  EV_EXIT    2
+
 #define  BACKLOG   16
 #define  BUFSIZE   32
 #define  CLI_EVS    8

@@ -4,7 +4,10 @@
 #include "../client.h"
 
 void sighandler(int signo) {
-    std::cout << "\nExit echo client." << std::endl;
+    if (signo == SIGINT) {
+        std::cout << std::endl;
+    }
+    std::cout << "Exit echo client." << std::endl;
 }
 
 int main()

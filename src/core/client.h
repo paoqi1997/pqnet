@@ -7,6 +7,7 @@
 
 #include <sys/epoll.h>
 
+#include "../util/types.h"
 #include "buffer.h"
 #include "ipaddr.h"
 #include "socket.h"
@@ -17,7 +18,7 @@ namespace pqnet
 class TcpEchoClient
 {
 public:
-    TcpEchoClient(const char *servname, std::uint16_t port);
+    TcpEchoClient(const char *servname, std::uint16_t port, std::string _endmsg = "Bye!\n");
     ~TcpEchoClient();
     void run();
     void shutdown();
@@ -26,9 +27,10 @@ private:
     Ip4Addr addr;
     Buffer buffer;
     std::string msg;
+    std::string endmsg;
     int epfd;
     struct epoll_event poi;
-    struct epoll_event evpool[8];
+    struct epoll_event evpool[CLI_EVS];
 };
 
 } // namespace pqnet

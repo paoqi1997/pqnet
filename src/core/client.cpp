@@ -13,7 +13,8 @@
 
 using namespace pqnet;
 
-TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port) : addr(servname, port)
+TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, std::string _endmsg)
+    : addr(servname, port), endmsg(_endmsg)
 {
     sockfd = new_socket();
     if (sockfd == -1) {
@@ -23,7 +24,7 @@ TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port) : addr(se
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
-    epfd = epoll_create(8);
+    epfd = epoll_create(CLI_EVS);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
@@ -47,7 +48,7 @@ TcpEchoClient::~TcpEchoClient()
 void TcpEchoClient::run()
 {
     for ( ; ; ) {
-        int cnt = epoll_wait(epfd, evpool, 8, -1);
+        int cnt = epoll_wait(epfd, evpool, CLI_EVS, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
                 break;
@@ -60,15 +61,22 @@ void TcpEchoClient::run()
             for (int i = 0; i < cnt; ++i) {
                 if (evpool[i].data.fd == sockfd) {
                     buffer.readFrom(sockfd, buffer.writableBytes());
-                    buffer.writeTo(fileno(stdout), buffer.readableBytes());
+                    msg = buffer.get(buffer.readableBytes());
+                    std::cout << msg;
+                    if (msg == endmsg) {
+                        std::cout << "Liu le!" << std::endl;
+                        break;
+                    }
                 }
                 if (evpool[i].data.fd == fileno(stdin)) {
-                    std::cin >> msg;
+                    std::cin >> msg; msg += '\n';
                     buffer.append(msg.c_str(), msg.size());
-                    buffer.appendInt8('\n');
                     buffer.writeTo(sockfd, buffer.readableBytes());
                 }
             }
+        }
+        if (msg == endmsg) {
+            break;
         }
     }
     this->shutdown();

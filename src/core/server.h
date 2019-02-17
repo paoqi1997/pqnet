@@ -17,8 +17,8 @@ namespace pqnet
 class TcpServer
 {
 public:
-    TcpServer(std::uint16_t port, bool _done);
-    TcpServer(const char *servname, std::uint16_t port, bool _done);
+    TcpServer(std::uint16_t port);
+    TcpServer(const char *servname, std::uint16_t port);
     ~TcpServer();
     void run();
     void shutdown();
@@ -36,11 +36,10 @@ private:
     readCallBack readcb;
     messageCallBack msgcb;
     bool listening;
-    bool &done;
     int listenfd;
+    std::size_t index;
     std::size_t ln;
     LooperPool pool;
-    std::size_t index;
     int epfd;
     struct epoll_event poi;
     struct epoll_event evpool[SERV_EVS];
