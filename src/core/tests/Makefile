@@ -6,7 +6,7 @@ COM_SRCS = ${shell find .. -path ../tests -prune -o -name '*.cpp' -print}
 COM_OBJS = ${COM_SRCS:.cpp=.o}
 
 CORES = ../buffer.o ../endian.o ../ipaddr.o
-UTILS = ../../util/logger.o ../../util/timestamp.o
+UTILS = ../../util/logger.o ../../util/signal.o ../../util/timestamp.o
 
 BINS = buffer_test endian_test ipaddr_test echoserver_test echoclient_test
 

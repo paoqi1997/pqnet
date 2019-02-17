@@ -6,14 +6,14 @@
 
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include "../util/logger.h"
 #include "client.h"
 
 using namespace pqnet;
 
-TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, bool _done)
-    : done(_done), addr(servname, port)
+TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port) : addr(servname, port)
 {
     sockfd = new_socket();
     if (sockfd == -1) {
@@ -27,11 +27,13 @@ TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, bool _don
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
-    poi.events = EPOLLIN; poi.data.fd = sockfd;
+    poi.events = EPOLLIN;
+    poi.data.fd = sockfd;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, sockfd, &poi) == -1) {
         ERROR(std::strerror(errno));
     }
-    poi.events = EPOLLIN; poi.data.fd = fileno(stdin);
+    poi.events = EPOLLIN;
+    poi.data.fd = fileno(stdin);
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, fileno(stdin), &poi) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -45,13 +47,14 @@ TcpEchoClient::~TcpEchoClient()
 void TcpEchoClient::run()
 {
     for ( ; ; ) {
-        if (done) {
-            break;
-        }
         int cnt = epoll_wait(epfd, evpool, 8, -1);
         if (cnt == -1) {
-            ERROR(std::strerror(errno));
-            break;
+            if (errno == EINTR) {
+                break;
+            } else {
+                ERROR(std::strerror(errno));
+                continue;
+            }
         }
         if (cnt > 0) {
             for (int i = 0; i < cnt; ++i) {
@@ -73,5 +76,10 @@ void TcpEchoClient::run()
 
 void TcpEchoClient::shutdown()
 {
-
+    if (close(sockfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+    if (close(epfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
 }

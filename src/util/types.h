@@ -4,9 +4,10 @@
 namespace pqnet
 {
 
-#define BACKLOG   16
-#define BUFSIZE   32
-#define MAXEVENTS 2048
+#define  BACKLOG   16
+#define  BUFSIZE   32
+#define  CLI_EVS    8
+#define SERV_EVS 2048
 
 using pn_thread_func = void*(*)(void*);
 

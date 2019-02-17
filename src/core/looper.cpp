@@ -15,7 +15,7 @@ Looper::Looper(LooperPool *_poolptr) : poolptr(_poolptr), func(nullptr)
     if (evfd == -1) {
         ERROR(std::strerror(errno));
     }
-    epfd = epoll_create(MAXEVENTS);
+    epfd = epoll_create(SERV_EVS);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
@@ -32,7 +32,7 @@ Looper::Looper(LooperPool *_poolptr, pn_thread_func _func) : poolptr(_poolptr), 
     if (evfd == -1) {
         ERROR(std::strerror(errno));
     }
-    epfd = epoll_create(MAXEVENTS);
+    epfd = epoll_create(SERV_EVS);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
@@ -61,7 +61,7 @@ void Looper::run()
 void* Looper::routine(void *arg)
 {
     auto self = static_cast<Looper*>(arg);
-    auto pool = self->getPool();
+    //auto pool = self->getPool();
     std::printf("RUN!\n");
     std::printf("%d\n", self->evfd);
     if (self->conncb == nullptr) {
@@ -77,7 +77,7 @@ void* Looper::routine(void *arg)
         std::printf("ThreadLoopNoMsg!\n");
     }
     for ( ; ; ) {
-        int cnt = epoll_wait(self->epfd, self->evpool, MAXEVENTS, -1);
+        int cnt = epoll_wait(self->epfd, self->evpool, SERV_EVS, -1);
         if (cnt == -1) {
             ERROR(std::strerror(errno));
             break;
@@ -97,7 +97,7 @@ void* Looper::routine(void *arg)
                     std::pair<int, TcpConnPtr>(connfd, std::make_shared<TcpConnection>(connfd))
                 );
                 self->onConnect(self->connpool[connfd]);
-                std::printf("%ld %d Connect!\n", connfd, pthread_self());
+                std::printf("%d %d Connect!\n", connfd, pthread_self());
             }
             else if (self->evpool[i].events & EPOLLRDHUP) {
                 int connfd = self->evpool[i].data.fd;
@@ -106,7 +106,7 @@ void* Looper::routine(void *arg)
                 }
                 self->onClose(self->connpool[connfd]);
                 self->connpool.erase(connfd);
-                std::printf("%ld %d Bye!\n", connfd, pthread_self());
+                std::printf("%d %d Bye!\n", connfd, pthread_self());
             }
             else if (self->evpool[i].events & EPOLLIN) {
                 int connfd = self->evpool[i].data.fd;

@@ -43,7 +43,7 @@ private:
     std::size_t index;
     int epfd;
     struct epoll_event poi;
-    struct epoll_event evpool[MAXEVENTS];
+    struct epoll_event evpool[SERV_EVS];
 };
 
 } // namespace pqnet

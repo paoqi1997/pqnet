@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include <string>
+
 #include <sys/epoll.h>
 
 #include "buffer.h"
@@ -15,15 +17,15 @@ namespace pqnet
 class TcpEchoClient
 {
 public:
-    TcpEchoClient(const char *servname, std::uint16_t port, bool _done);
+    TcpEchoClient(const char *servname, std::uint16_t port);
     ~TcpEchoClient();
     void run();
     void shutdown();
 private:
-    bool &done;
     int sockfd;
     Ip4Addr addr;
     Buffer buffer;
+    std::string msg;
     int epfd;
     struct epoll_event poi;
     struct epoll_event evpool[8];

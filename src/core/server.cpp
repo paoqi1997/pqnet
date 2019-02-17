@@ -65,7 +65,7 @@ void TcpServer::run()
 {
     this->checkCallBack();
     pool.run();
-    epfd = epoll_create(MAXEVENTS);
+    epfd = epoll_create(SERV_EVS);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
@@ -81,7 +81,7 @@ void TcpServer::run()
         if (done) {
             break;
         }
-        int cnt = epoll_wait(epfd, evpool, MAXEVENTS, -1);
+        int cnt = epoll_wait(epfd, evpool, SERV_EVS, -1);
         if (cnt == -1) {
             ERROR(std::strerror(errno));
             break;
