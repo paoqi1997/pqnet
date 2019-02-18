@@ -1,8 +1,6 @@
-#include <functional>
 #include <iostream>
 
 #include "../../util/signal.h"
-#include "../callback.h"
 #include "../server.h"
 
 using namespace std::placeholders;
