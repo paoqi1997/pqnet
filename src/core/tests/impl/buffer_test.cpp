@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "../buffer.h"
+#include "../../buffer.h"
 
 void output(const pqnet::Buffer& buffer) {
     std::cout << buffer.readableBytes() << ' ' << buffer.writableBytes() << std::endl;

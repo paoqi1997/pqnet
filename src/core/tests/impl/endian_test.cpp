@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "../endian.h"
+#include "../../endian.h"
 
 int main()
 {
@@ -11,7 +11,7 @@ int main()
 
     std::uint16_t n16val = pqnet::h2n16(h16val);
     std::uint32_t n32val = pqnet::h2n32(h32val);
-    
+
     std::uint16_t _h16val = pqnet::n2h16(n16val);
     std::uint32_t _h32val = pqnet::n2h32(n32val);
 
