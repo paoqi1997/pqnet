@@ -67,11 +67,10 @@ void* Looper::routine(void *arg)
             ERROR(std::strerror(errno));
             break;
         }
-        std::uint64_t msg = 0;
         for (int i = 0; i < cnt; ++i) {
             if (self->evpool[i].data.fd == self->evfd) {
-                read(self->evfd, &msg, sizeof(std::uint64_t));
-                if (msg == EV_EXIT) {
+                read(self->evfd, &self->msg, sizeof(std::uint64_t));
+                if (self->msg == EV_EXIT) {
                     break;
                 }
                 int connfd = self->waitconns.front();
@@ -85,7 +84,7 @@ void* Looper::routine(void *arg)
                     std::pair<int, TcpConnPtr>(connfd, std::make_shared<TcpConnection>(connfd))
                 );
                 self->onConnect(self->connpool[connfd]);
-                std::printf("%d %lu Connect!\n", connfd, pthread_self());
+                TRACE("%d connect.", connfd);
             }
             else if (self->evpool[i].events & EPOLLRDHUP) {
                 int connfd = self->evpool[i].data.fd;
@@ -93,7 +92,7 @@ void* Looper::routine(void *arg)
                     ERROR(std::strerror(errno));
                 }
                 self->connpool.erase(connfd);
-                std::printf("%d %lu Bye!\n", connfd, pthread_self());
+                TRACE("%d close.", connfd);
             }
             else if (self->evpool[i].events & EPOLLIN) {
                 int connfd = self->evpool[i].data.fd;
@@ -103,7 +102,7 @@ void* Looper::routine(void *arg)
                 if (epoll_ctl(self->epfd, EPOLL_CTL_MOD, connfd, &self->poi) == -1) {
                     ERROR(std::strerror(errno));
                 }
-                std::printf("%d Read!\n", connfd);
+                TRACE("%d read.", connfd);
             }
             else if (self->evpool[i].events & EPOLLOUT) {
                 int connfd = self->evpool[i].data.fd;
@@ -113,19 +112,25 @@ void* Looper::routine(void *arg)
                 if (epoll_ctl(self->epfd, EPOLL_CTL_MOD, connfd, &self->poi) == -1) {
                     ERROR(std::strerror(errno));
                 }
-                std::printf("%d Message!\n", connfd);
+                TRACE("%d message.", connfd);
             }
         }
-        if (msg == EV_EXIT) {
+        if (self->msg == EV_EXIT) {
             INFO("Signal coming: epoll_wait exits.");
             break;
         }
     }
-    self->shutdown();
+    self->shutdown(); return nullptr;
 }
 
 void Looper::shutdown()
 {
+    if (close(epfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+    if (close(evfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
     for (auto conn : connpool) {
         this->onClose(conn.second);
         if (close(conn.first) == -1) {

@@ -50,7 +50,6 @@ public:
 private:
     pthread_t id;
     pn_thread_func func;
-
 };
 
 } // namespace pqnet

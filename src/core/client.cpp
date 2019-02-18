@@ -58,21 +58,19 @@ void TcpEchoClient::run()
                 continue;
             }
         }
-        if (cnt > 0) {
-            for (int i = 0; i < cnt; ++i) {
-                if (evpool[i].data.fd == sockfd) {
-                    buffer.readFrom(sockfd, buffer.writableBytes());
-                    msg = buffer.get(buffer.readableBytes());
-                    std::cout << msg;
-                    if (msg == endmsg) {
-                        break;
-                    }
+        for (int i = 0; i < cnt; ++i) {
+            if (evpool[i].data.fd == sockfd) {
+                buffer.readFrom(sockfd, buffer.writableBytes());
+                msg = buffer.get(buffer.readableBytes());
+                std::cout << msg;
+                if (msg == endmsg) {
+                    break;
                 }
-                if (evpool[i].data.fd == fileno(stdin)) {
-                    std::cin >> msg; msg += '\n';
-                    buffer.append(msg.c_str(), msg.size());
-                    buffer.writeTo(sockfd, buffer.readableBytes());
-                }
+            }
+            if (evpool[i].data.fd == fileno(stdin)) {
+                std::cin >> msg; msg += '\n';
+                buffer.append(msg.c_str(), msg.size());
+                buffer.writeTo(sockfd, buffer.readableBytes());
             }
         }
         if (msg == endmsg) {
