@@ -19,6 +19,7 @@ void* func(void *arg) {
     const char *name = "pqnet";
     TS_INFO(mutex, "Hello %s!", name);
     ALOG_INFO(pool->al, "Hello %s!", name);
+    return nullptr;
 }
 
 int main()

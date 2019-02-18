@@ -22,4 +22,4 @@ echoserver_test: echoserver_test.o ${CORE_OBJS} ${UTIL_OBJS}
 .PHONY: clean
 
 clean:
-	rm ${BINS} ${CORE_OBJS} ${UTIL_OBJS}
+	rm ${BINS} *.o ${CORE_OBJS} ${UTIL_OBJS}
