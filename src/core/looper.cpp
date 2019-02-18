@@ -9,7 +9,7 @@
 
 using namespace pqnet;
 
-Looper::Looper(LooperPool *_poolptr) : msg(0), poolptr(_poolptr), func(nullptr)
+Looper::Looper() : msg(0), func(nullptr)
 {
     evfd = eventfd(0, EFD_NONBLOCK);
     if (evfd == -1) {
@@ -26,7 +26,7 @@ Looper::Looper(LooperPool *_poolptr) : msg(0), poolptr(_poolptr), func(nullptr)
     }
 }
 
-Looper::Looper(LooperPool *_poolptr, pn_thread_func _func) : msg(0), poolptr(_poolptr), func(_func)
+Looper::Looper(pn_thread_func _func) : msg(0), func(_func)
 {
     evfd = eventfd(0, EFD_NONBLOCK);
     if (evfd == -1) {

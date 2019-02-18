@@ -11,14 +11,14 @@ using namespace pqnet;
 LooperPool::LooperPool(std::size_t looperNumber) : ln(looperNumber)
 {
     for (std::size_t i = 0; i < ln; ++i) {
-        pool.emplace_back(new Looper(this));
+        loopers.emplace_back(new Looper());
     }
 }
 
 LooperPool::LooperPool(std::size_t looperNumber, pn_thread_func func) : ln(looperNumber)
 {
     for (std::size_t i = 0; i < ln; ++i) {
-        pool.emplace_back(new Looper(this, func));
+        loopers.emplace_back(new Looper(func));
     }
 }
 
@@ -29,19 +29,19 @@ LooperPool::~LooperPool()
 
 void LooperPool::run()
 {
-    for (auto &t : pool) {
-        t->setConnectCallBack(conncb);
-        t->setCloseCallBack(closecb);
-        t->setReadCallBack(readcb);
-        t->setMessageCallBack(msgcb);
-        t->run();
+    for (auto &lp : loopers) {
+        lp->setConnectCallBack(conncb);
+        lp->setCloseCallBack(closecb);
+        lp->setReadCallBack(readcb);
+        lp->setMessageCallBack(msgcb);
+        lp->run();
     }
 }
 
 void LooperPool::shutdown()
 {
-    for (auto &t : pool) {
-        if (pthread_join(t->getId(), nullptr) != 0) {
+    for (auto &lp : loopers) {
+        if (pthread_join(lp->getId(), nullptr) != 0) {
             ERROR(std::strerror(errno));
         }
     }

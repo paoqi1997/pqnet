@@ -9,6 +9,7 @@
 
 #include "../util/types.h"
 #include "callback.h"
+#include "ipaddr.h"
 #include "looperpool.h"
 
 namespace pqnet
@@ -35,10 +36,12 @@ private:
     closeCallBack closecb;
     readCallBack readcb;
     messageCallBack msgcb;
-    int listenfd;
     std::size_t index;
     std::size_t ln;
     LooperPool pool;
+    int listenfd;
+    Ip4Addr addr;
+    std::uint64_t msg;
     int epfd;
     struct epoll_event poi;
     struct epoll_event evpool[SERV_EVS];

@@ -13,7 +13,7 @@
 
 using namespace pqnet;
 
-TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln)
+TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port), msg(0)
 {
     // socket
     listenfd = new_socket();
@@ -24,17 +24,18 @@ TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln)
     setReuseAddr(listenfd, true);
     setReusePort(listenfd, true);
     // bind
-    Ip4Addr ipaddr(port);
-    auto addrptr = reinterpret_cast<struct sockaddr*>(ipaddr.getAddr());
+    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getAddr());
     if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
+    // listen
     if (listen(listenfd, BACKLOG) == -1) {
         ERROR(std::strerror(errno));
     }
 }
 
-TcpServer::TcpServer(const char *servname, std::uint16_t port) : index(0), ln(4), pool(ln)
+TcpServer::TcpServer(const char *servname, std::uint16_t port)
+    : index(0), ln(4), pool(ln), addr(servname, port), msg(0)
 {
     // socket
     listenfd = new_socket();
@@ -45,11 +46,11 @@ TcpServer::TcpServer(const char *servname, std::uint16_t port) : index(0), ln(4)
     setReuseAddr(listenfd, true);
     setReusePort(listenfd, true);
     // bind
-    Ip4Addr ipaddr(servname, port);
-    auto addrptr = reinterpret_cast<struct sockaddr*>(ipaddr.getAddr());
+    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getAddr());
     if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
+    // listen
     if (listen(listenfd, BACKLOG) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -68,8 +69,8 @@ void TcpServer::run()
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
+    poi.events = EPOLLET | EPOLLIN;
     poi.data.fd = listenfd;
-    poi.events = EPOLLIN | EPOLLET;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, listenfd, &poi) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -103,9 +104,15 @@ void TcpServer::run()
 
 void TcpServer::shutdown()
 {
+    if (close(epfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+    if (close(listenfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
     for (std::size_t i = 0; i < ln; ++i) {
-        int evfd = pool.pool[i]->evfd;
-        std::uint64_t msg = 2;
+        int evfd = pool.loopers[i]->evfd;
+        msg = EV_EXIT;
         if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
             ERROR(std::strerror(errno));
         }
@@ -128,14 +135,13 @@ void TcpServer::checkCallBack()
 void TcpServer::onConnect(int connfd)
 {
     setNonBlock(connfd, true);
-    std::size_t loopindex = getNextLoopIndex();
-    int evfd = pool.pool[loopindex]->evfd;
-    std::uint64_t msg = EV_CONN;
-    pool.pool[loopindex]->waitconns.push(connfd);
+    std::size_t li = this->getNextLoopIndex();
+    int evfd = pool.loopers[li]->evfd;
+    msg = EV_CONN;
+    pool.loopers[li]->waitconns.push(connfd);
     if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
         ERROR(std::strerror(errno));
     }
-    std::printf("CONNECT!\n");
 }
 
 std::size_t TcpServer::getNextLoopIndex()

@@ -29,7 +29,7 @@ private:
     messageCallBack msgcb;
     std::size_t ln;
 public:
-    std::vector<std::unique_ptr<Looper>> pool;
+    std::vector<std::unique_ptr<Looper>> loopers;
 };
 
 } // namespace pqnet

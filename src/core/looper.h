@@ -16,19 +16,16 @@
 namespace pqnet
 {
 
-class LooperPool;
-
 class Looper
 {
 public:
-    Looper(LooperPool *_poolptr);
-    Looper(LooperPool *_poolptr, pn_thread_func _func);
+    Looper();
+    Looper(pn_thread_func _func);
     ~Looper();
     void run();
     void shutdown();
     static void* routine(void *arg);
     pthread_t getId() const { return id; }
-    LooperPool* getPool() const { return poolptr; }
     void setFunc(pn_thread_func _func) { func = _func; }
     void onConnect(const TcpConnPtr& conn) { conncb(conn); }
     void onClose(const TcpConnPtr& conn) { closecb(conn); }
@@ -52,7 +49,6 @@ public:
     struct epoll_event evpool[SERV_EVS];
 private:
     pthread_t id;
-    LooperPool *poolptr;
     pn_thread_func func;
 
 };
