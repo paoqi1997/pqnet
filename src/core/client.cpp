@@ -17,10 +17,12 @@ using namespace pqnet;
 TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, std::string _endmsg)
     : addr(servname, port), endmsg(_endmsg)
 {
+    // socket
     sockfd = new_socket();
     if (sockfd == -1) {
         ERROR(std::strerror(errno));
     }
+    // connect
     auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getAddr());
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));

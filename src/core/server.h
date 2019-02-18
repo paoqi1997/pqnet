@@ -3,8 +3,6 @@
 
 #include <cstdint>
 
-#include <functional>
-
 #include <sys/epoll.h>
 
 #include "../util/types.h"

@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #include "../util/logger.h"
-#include "ipaddr.h"
 #include "server.h"
 #include "socket.h"
 
