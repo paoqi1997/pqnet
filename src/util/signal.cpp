@@ -18,11 +18,9 @@ Signal::~Signal()
 
 void Signal::waitSig()
 {
-    if (func != nullptr) {
-        for (auto sig : sigset) {
-            if (signal(sig.first, sig.second) == SIG_ERR) {
-                ERROR(std::strerror(errno));
-            }
+    for (auto sig : sigset) {
+        if (signal(sig.first, sig.second) == SIG_ERR) {
+            ERROR(std::strerror(errno));
         }
     }
 }
