@@ -54,9 +54,9 @@ private:
 int main()
 {
     TcpEchoServer echoserv(12488);
-    pqnet::Signal sig(sighandler);
-    sig.addSignal(SIGINT);
-    sig.addSignal(SIGTERM);
+    pqnet::Signal sig;
+    sig.addSignal(SIGINT, sighandler);
+    sig.addSignal(SIGTERM, sighandler);
     sig.waitSig();
     echoserv.run();
     return 0;

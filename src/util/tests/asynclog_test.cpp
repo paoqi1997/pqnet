@@ -26,9 +26,9 @@ int main()
 {
     pqnet::ThreadPool pool(2, func);
     pool.run();
-    pqnet::Signal sig(sighandler);
-    sig.addSignal(SIGINT);
-    sig.addSignal(SIGTERM);
+    pqnet::Signal sig;
+    sig.addSignal(SIGINT, sighandler);
+    sig.addSignal(SIGTERM, sighandler);
     sig.waitSig();
     for ( ; ; ) {
         pool.flush();

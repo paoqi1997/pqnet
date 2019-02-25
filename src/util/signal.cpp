@@ -6,12 +6,7 @@
 
 using namespace pqnet;
 
-Signal::Signal() : func(nullptr)
-{
-
-}
-
-Signal::Signal(pn_signal_func _func) : func(_func)
+Signal::Signal()
 {
 
 }
@@ -25,18 +20,16 @@ void Signal::waitSig()
 {
     if (func != nullptr) {
         for (auto sig : sigset) {
-            if (signal(sig, func) == SIG_ERR) {
+            if (signal(sig.first, sig.second) == SIG_ERR) {
                 ERROR(std::strerror(errno));
             }
         }
     }
 }
 
-void Signal::addSignal(int signum)
+void Signal::addSignal(int signum, pn_signal_func func)
 {
-    if (sigset.find(signum) == sigset.end()) {
-        sigset.insert(signum);
-    }
+    sigset[signum] = func;
 }
 
 void Signal::delSignal(int signum)

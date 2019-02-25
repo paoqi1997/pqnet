@@ -20,9 +20,9 @@ int main()
     for (int i = 0; i < 10; ++i) {
         pool.addTask(pqnet::Task{ func, const_cast<char*>("Hello pqnet!") });
     }
-    pqnet::Signal sig(sighandler);
-    sig.addSignal(SIGINT);
-    sig.addSignal(SIGTERM);
+    pqnet::Signal sig;
+    sig.addSignal(SIGINT, sighandler);
+    sig.addSignal(SIGTERM, sighandler);
     sig.waitSig();
     for ( ; ; ) {
         if (done && pool.isIdle()) {

@@ -78,9 +78,7 @@ void* Looper::routine(void *arg)
                     if (epoll_ctl(self->epfd, EPOLL_CTL_ADD, connfd, &self->poi) == -1) {
                         ERROR(std::strerror(errno));
                     }
-                    self->connpool.insert(
-                        std::pair<int, TcpConnPtr>(connfd, std::make_shared<TcpConnection>(connfd))
-                    );
+                    self->connpool[connfd] = std::make_shared<TcpConnection>(connfd);
                     self->onConnect(self->connpool[connfd]);
                 }
             }

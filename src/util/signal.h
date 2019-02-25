@@ -1,7 +1,7 @@
 #ifndef PQNET_UTIL_SIGNAL_H
 #define PQNET_UTIL_SIGNAL_H
 
-#include <set>
+#include <map>
 
 #include <signal.h>
 
@@ -14,15 +14,14 @@ class Signal
 {
 public:
     Signal();
-    Signal(pn_signal_func _func);
     ~Signal();
     void waitSig();
-    void addSignal(int signum);
+    // Add or Update signal(s)
+    void addSignal(int signum, pn_signal_func func);
+    // Delete signal(s)
     void delSignal(int signum);
-    void setHandler(pn_signal_func _func) { func = _func; }
 private:
-    pn_signal_func func;
-    std::set<int> sigset;
+    std::map<int, pn_signal_func> sigset;
 };
 
 } // namespace pqnet
