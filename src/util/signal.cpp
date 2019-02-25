@@ -3,22 +3,20 @@
 
 #include <map>
 
-#include <signal.h>
-
 #include "logger.h"
 #include "signal.h"
 
 using namespace pqnet;
 
-std::map<int, pn_signal_func> pqnet::sigset;
+std::map<int, pn_signal_func> pqnet::sigbox;
 
 void pqnet::sighandler(int signum) {
-    sigset[signum]();
+    sigbox[signum]();
 }
 
 void pqnet::waitSig()
 {
-    for (auto sig : sigset) {
+    for (auto sig : sigbox) {
         if (signal(sig.first, sighandler) == SIG_ERR) {
             ERROR(std::strerror(errno));
         }
@@ -27,12 +25,12 @@ void pqnet::waitSig()
 
 void pqnet::addSignal(int signum, pn_signal_func func)
 {
-    sigset[signum] = func;
+    sigbox[signum] = func;
 }
 
 void pqnet::delSignal(int signum)
 {
-    if (sigset.find(signum) != sigset.end()) {
-        sigset.erase(signum);
+    if (sigbox.find(signum) != sigbox.end()) {
+        sigbox.erase(signum);
     }
 }

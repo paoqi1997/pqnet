@@ -1,6 +1,8 @@
 #ifndef PQNET_UTIL_SIGNAL_H
 #define PQNET_UTIL_SIGNAL_H
 
+#include <signal.h>
+
 #include "types.h"
 
 namespace pqnet
