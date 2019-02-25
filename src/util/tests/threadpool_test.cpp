@@ -3,12 +3,6 @@
 #include "../signal.h"
 #include "../threadpool.h"
 
-static bool done = false;
-
-void sighandler(int signo) {
-    done = !done;
-}
-
 void func(void *arg) {
     std::cout << static_cast<char*>(arg) << std::endl;
 }
@@ -20,10 +14,10 @@ int main()
     for (int i = 0; i < 10; ++i) {
         pool.addTask(pqnet::Task{ func, const_cast<char*>("Hello pqnet!") });
     }
-    pqnet::Signal sig;
-    sig.addSignal(SIGINT, sighandler);
-    sig.addSignal(SIGTERM, sighandler);
-    sig.waitSig();
+    bool done = false;
+    pqnet::addSignal(SIGINT, [&](){ done = !done; });
+    pqnet::addSignal(SIGTERM, [&](){ done = !done; });
+    pqnet::waitSig();
     for ( ; ; ) {
         if (done && pool.isIdle()) {
             pool.shutdown();

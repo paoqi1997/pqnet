@@ -5,13 +5,7 @@
 #include "../thread.h"
 #include "../threadpool.h"
 
-static bool done = false;
-
 static pqnet::Mutex mutex;
-
-void sighandler(int signo) {
-    done = !done;
-}
 
 void* func(void *arg) {
     auto self = static_cast<pqnet::Thread*>(arg);
@@ -26,10 +20,10 @@ int main()
 {
     pqnet::ThreadPool pool(2, func);
     pool.run();
-    pqnet::Signal sig;
-    sig.addSignal(SIGINT, sighandler);
-    sig.addSignal(SIGTERM, sighandler);
-    sig.waitSig();
+    bool done = false;
+    pqnet::addSignal(SIGINT, [&](){ done = !done; });
+    pqnet::addSignal(SIGTERM, [&](){ done = !done; });
+    pqnet::waitSig();
     for ( ; ; ) {
         pool.flush();
         if (done && pool.isIdle()) {
