@@ -12,7 +12,7 @@
 
 using namespace pqnet;
 
-TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port), msg(0)
+TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port), running(false), msg(0)
 {
     // socket
     listenfd = new_socket();
@@ -34,7 +34,7 @@ TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port)
 }
 
 TcpServer::TcpServer(const char *servname, std::uint16_t port)
-    : index(0), ln(4), pool(ln), addr(servname, port), msg(0)
+    : index(0), ln(4), pool(ln), addr(servname, port), running(false), msg(0)
 {
     // socket
     listenfd = new_socket();
@@ -73,18 +73,18 @@ void TcpServer::run()
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, listenfd, &poi) == -1) {
         ERROR(std::strerror(errno));
     }
+    running = true;
     struct sockaddr_in cliaddr;
     socklen_t clilen = sizeof(struct sockaddr);
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
-    for ( ; ; ) {
+    while (running) {
         int cnt = epoll_wait(epfd, evpool, SERV_EVS, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
                 INFO("Signal coming: epoll_wait exits.");
-                break;
             } else {
                 ERROR(std::strerror(errno));
-                continue;
+                break;
             }
         }
         for (int i = 0; i < cnt; ++i) {

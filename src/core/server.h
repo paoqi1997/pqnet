@@ -20,12 +20,13 @@ public:
     TcpServer(const char *servname, std::uint16_t port);
     ~TcpServer();
     void run();
-    void shutdown();
+    void preShutdown() { running = false; }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setReadCallBack(const readCallBack& cb) { readcb = cb; }
     void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }
 private:
+    void shutdown();
     void checkCallBack();
     void onConnect(int connfd);
     std::size_t getNextLoopIndex();
@@ -39,6 +40,7 @@ private:
     LooperPool pool;
     int listenfd;
     Ip4Addr addr;
+    bool running;
     std::uint64_t msg;
     int epfd;
     struct epoll_event poi;

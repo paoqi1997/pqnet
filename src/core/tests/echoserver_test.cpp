@@ -6,15 +6,6 @@
 
 using namespace std::placeholders;
 
-auto SIGINT_HANDLER = [](){
-    std::cout << std::endl;
-    std::cout << "Exit echo server." << std::endl;
-};
-
-auto SIGTERM_HANDLER = [](){
-    std::cout << "Exit echo server." << std::endl;
-};
-
 class TcpEchoServer
 {
 public:
@@ -33,6 +24,9 @@ public:
             std::bind(&TcpEchoServer::onMessage, this, _1)
         );
         serv.run();
+    }
+    void preShutdown() {
+        serv.preShutdown();
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
         conn->send("Hello!\n");
@@ -57,6 +51,15 @@ private:
 int main()
 {
     TcpEchoServer echoserv(12488);
+    auto SIGINT_HANDLER = [&](){
+        echoserv.preShutdown();
+        std::cout << std::endl;
+        std::cout << "Exit echo server." << std::endl;
+    };
+    auto SIGTERM_HANDLER = [&](){
+        echoserv.preShutdown();
+        std::cout << "Exit echo server." << std::endl;
+    };
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();

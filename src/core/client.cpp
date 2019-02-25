@@ -54,8 +54,11 @@ void TcpEchoClient::run()
     while (running) {
         int cnt = epoll_wait(epfd, evpool, CLI_EVS, -1);
         if (cnt == -1) {
-            if (errno != EINTR) {
+            if (errno == EINTR) {
+                INFO("Signal coming: epoll_wait exits.");
+            } else {
                 ERROR(std::strerror(errno));
+                break;
             }
         }
         for (int i = 0; i < cnt; ++i) {
