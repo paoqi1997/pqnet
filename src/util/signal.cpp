@@ -8,11 +8,15 @@
 
 using namespace pqnet;
 
-std::map<int, pn_signal_func> pqnet::sigbox;
+namespace {
 
-void pqnet::sighandler(int signum) {
+std::map<int, pn_signal_func> sigbox;
+
+void sighandler(int signum) {
     sigbox[signum]();
 }
+
+} // anonymous namespace
 
 void pqnet::waitSig()
 {
