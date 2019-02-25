@@ -5,12 +5,14 @@
 
 using namespace std::placeholders;
 
-void sighandler(int signo) {
-    if (signo == SIGINT) {
-        std::cout << std::endl;
-    }
+auto SIGINT_HANDLER = [](){
+    std::cout << std::endl;
     std::cout << "Exit echo server." << std::endl;
-}
+};
+
+auto SIGTERM_HANDLER = [](){
+    std::cout << "Exit echo server." << std::endl;
+};
 
 class TcpEchoServer
 {
@@ -54,10 +56,9 @@ private:
 int main()
 {
     TcpEchoServer echoserv(12488);
-    pqnet::Signal sig;
-    sig.addSignal(SIGINT, sighandler);
-    sig.addSignal(SIGTERM, sighandler);
-    sig.waitSig();
+    pqnet::addSignal(SIGINT, SIGINT_HANDLER);
+    pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
+    pqnet::waitSig();
     echoserv.run();
     return 0;
 }

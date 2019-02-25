@@ -3,20 +3,21 @@
 #include "../../util/signal.h"
 #include "../client.h"
 
-void sighandler(int signo) {
-    if (signo == SIGINT) {
-        std::cout << std::endl;
-    }
+auto SIGINT_HANDLER = [](){
+    std::cout << std::endl;
     std::cout << "Exit echo client." << std::endl;
-}
+};
+
+auto SIGTERM_HANDLER = [](){
+    std::cout << "Exit echo client." << std::endl;
+};
 
 int main()
 {
     pqnet::TcpEchoClient echocli("127.0.0.1", 12488);
-    pqnet::Signal sig;
-    sig.addSignal(SIGINT, sighandler);
-    sig.addSignal(SIGTERM, sighandler);
-    sig.waitSig();
+    pqnet::addSignal(SIGINT, SIGINT_HANDLER);
+    pqnet::addSignal(SIGTERM， SIGTERM_HANDLER);
+    pqnet::waitSig();
     echocli.run();
     return 0;
 }

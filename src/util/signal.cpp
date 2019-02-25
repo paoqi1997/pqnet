@@ -16,7 +16,7 @@ void sighandler(int signum) {
     sigbox[signum]();
 }
 
-} // anonymous namespace
+} // unnamed namespace
 
 void pqnet::waitSig()
 {
