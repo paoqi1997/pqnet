@@ -10,20 +10,21 @@ void func(void *arg) {
 int main()
 {
     pqnet::ThreadPool pool(2);
-    pool.run();
     for (int i = 0; i < 10; ++i) {
         pool.addTask(pqnet::Task{ func, const_cast<char*>("Hello pqnet!") });
     }
-    bool done = false;
-    pqnet::addSignal(SIGINT, [&](){ done = !done; });
-    pqnet::addSignal(SIGTERM, [&](){ done = !done; });
+    auto SIGINT_HANDLER = [&](){
+        pool.shutdown();
+        std::cout << std::endl;
+        std::cout << "Exit thread pool." << std::endl;
+    };
+    auto SIGTERM_HANDLER = [&](){
+        pool.shutdown();
+        std::cout << "Exit thread pool." << std::endl;
+    };
+    pqnet::addSignal(SIGINT, SIGINT_HANDLER);
+    pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();
-    for ( ; ; ) {
-        if (done && pool.isIdle()) {
-            pool.shutdown();
-            break;
-        }
-    }
-    std::cout << "Bye!" << std::endl;
+    pool.run();
     return 0;
 }

@@ -25,7 +25,12 @@ ThreadPool::ThreadPool(std::size_t threadNumber, pn_thread_func func)
 
 ThreadPool::~ThreadPool()
 {
-
+    cond.notifyAll();
+    for (auto &t : pool) {
+        if (pthread_join(t->getId(), nullptr) != 0) {
+            ERROR(std::strerror(errno));
+        }
+    }
 }
 
 void ThreadPool::run()
@@ -34,15 +39,10 @@ void ThreadPool::run()
         t->run();
     }
     running = true;
-}
-
-void ThreadPool::shutdown()
-{
-    running = false;
-    cond.notifyAll();
-    for (auto &t : pool) {
-        if (pthread_join(t->getId(), nullptr) != 0) {
-            ERROR(std::strerror(errno));
+    for ( ; ; ) {
+        this->flush();
+        if (!running && this->isIdle()) {
+            break;
         }
     }
 }

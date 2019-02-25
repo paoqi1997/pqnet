@@ -19,18 +19,18 @@ void* func(void *arg) {
 int main()
 {
     pqnet::ThreadPool pool(2, func);
-    pool.run();
-    bool done = false;
-    pqnet::addSignal(SIGINT, [&](){ done = !done; });
-    pqnet::addSignal(SIGTERM, [&](){ done = !done; });
+    auto SIGINT_HANDLER = [&](){
+        pool.shutdown();
+        std::cout << std::endl;
+        std::cout << "Exit thread pool." << std::endl;
+    };
+    auto SIGTERM_HANDLER = [&](){
+        pool.shutdown();
+        std::cout << "Exit thread pool." << std::endl;
+    };
+    pqnet::addSignal(SIGINT, SIGINT_HANDLER);
+    pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();
-    for ( ; ; ) {
-        pool.flush();
-        if (done && pool.isIdle()) {
-            pool.shutdown();
-            break;
-        }
-    }
-    std::cout << "Bye!" << std::endl;
+    pool.run();
     return 0;
 }

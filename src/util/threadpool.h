@@ -27,7 +27,7 @@ public:
     ThreadPool(std::size_t threadNumber, pn_thread_func func);
     ~ThreadPool();
     void run();
-    void shutdown();
+    void shutdown() { running = false; }
     void addTask(Task task);
     Task take();
     void flush();
