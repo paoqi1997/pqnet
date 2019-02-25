@@ -15,7 +15,7 @@
 using namespace pqnet;
 
 TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, std::string _endmsg)
-    : addr(servname, port), endmsg(_endmsg)
+    : addr(servname, port), running(false), endmsg(_endmsg)
 {
     // socket
     sockfd = new_socket();
@@ -50,14 +50,12 @@ TcpEchoClient::~TcpEchoClient()
 
 void TcpEchoClient::run()
 {
-    for ( ; ; ) {
+    running = true;
+    while (running) {
         int cnt = epoll_wait(epfd, evpool, CLI_EVS, -1);
         if (cnt == -1) {
-            if (errno == EINTR) {
-                break;
-            } else {
+            if (errno != EINTR) {
                 ERROR(std::strerror(errno));
-                break;
             }
         }
         for (int i = 0; i < cnt; ++i) {
@@ -65,15 +63,15 @@ void TcpEchoClient::run()
                 buffer.readFrom(sockfd, buffer.writableBytes());
                 msg = buffer.get(buffer.readableBytes());
                 std::cout << msg;
+                if (msg == endmsg) {
+                    this->preShutdown();
+                }
             }
             if (evpool[i].data.fd == fileno(stdin)) {
                 std::cin >> msg; msg += '\n';
                 buffer.append(msg.c_str(), msg.size());
                 buffer.writeTo(sockfd, buffer.readableBytes());
             }
-        }
-        if (msg == endmsg) {
-            break;
         }
     }
     this->shutdown();

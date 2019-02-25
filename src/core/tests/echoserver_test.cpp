@@ -39,7 +39,7 @@ public:
         TRACE("%d connect.", conn->getFd());
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
-        conn->send("Bye!\n");
+        conn->send("quit\n");
         TRACE("%d close.", conn->getFd());
     }
     void onRead(const pqnet::TcpConnPtr& conn) {

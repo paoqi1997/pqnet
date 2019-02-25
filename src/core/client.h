@@ -17,14 +17,17 @@ namespace pqnet
 class TcpEchoClient
 {
 public:
-    TcpEchoClient(const char *servname, std::uint16_t port, std::string _endmsg = "Bye!\n");
+    TcpEchoClient(const char *servname, std::uint16_t port, std::string _endmsg = "quit\n");
     ~TcpEchoClient();
     void run();
+    void preShutdown() { running = false; }
+private:
     void shutdown();
 private:
     int sockfd;
     Ip4Addr addr;
     Buffer buffer;
+    bool running;
     std::string msg;
     std::string endmsg;
     int epfd;
