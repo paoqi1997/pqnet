@@ -28,18 +28,21 @@ public:
     pthread_t getId() const { return id; }
     void setFunc(pn_thread_func _func) { func = _func; }
     void onConnect(const TcpConnPtr& conn) { conncb(conn); }
-    void onClose(const TcpConnPtr& conn) { closecb(conn); }
     void onRead(const TcpConnPtr& conn) { readcb(conn); }
     void onMessage(const TcpConnPtr& conn) { msgcb(conn); }
+    void onCloseByPeer(const TcpConnPtr& conn) { cpcb(conn); }
+    void onCloseBySock(const TcpConnPtr& conn) { cscb(conn); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
-    void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setReadCallBack(const readCallBack& cb) { readcb = cb; }
     void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }
+    void setCloseByPeerCallBack(const closeByPeerCallBack& cb) { cpcb = cb; }
+    void setCloseBySockCallBack(const closeBySockCallBack& cb) { cscb = cb; }
 public:
     connectCallBack conncb;
-    closeCallBack closecb;
     readCallBack readcb;
     messageCallBack msgcb;
+    closeByPeerCallBack cpcb;
+    closeBySockCallBack cscb;
     int evfd;
     std::uint64_t msg;
     std::queue<int> waitconns;

@@ -14,14 +14,17 @@ public:
         serv.setConnectCallBack(
             std::bind(&TcpEchoServer::onConnect, this, _1)
         );
-        serv.setCloseCallBack(
-            std::bind(&TcpEchoServer::onClose, this, _1)
-        );
         serv.setReadCallBack(
             std::bind(&TcpEchoServer::onRead, this, _1)
         );
         serv.setMessageCallBack(
             std::bind(&TcpEchoServer::onMessage, this, _1)
+        );
+        serv.setCloseByPeerCallBack(
+            std::bind(&TcpEchoServer::onCloseByPeer, this, _1)
+        );
+        serv.setCloseBySockCallBack(
+            std::bind(&TcpEchoServer::onCloseBySock, this, _1)
         );
         serv.run();
     }
@@ -32,10 +35,6 @@ public:
         conn->send("Hello!\n");
         TRACE("%d connect.", conn->getFd());
     }
-    void onClose(const pqnet::TcpConnPtr& conn) {
-        conn->send("quit\n");
-        TRACE("%d close.", conn->getFd());
-    }
     void onRead(const pqnet::TcpConnPtr& conn) {
         conn->recv();
         TRACE("%d read.", conn->getFd());
@@ -43,6 +42,13 @@ public:
     void onMessage(const pqnet::TcpConnPtr& conn) {
         conn->send();
         TRACE("%d message.", conn->getFd());
+    }
+    void onCloseByPeer(const pqnet::TcpConnPtr& conn) {
+        TRACE("%d closed by itself.", conn->getFd());
+    }
+    void onCloseBySock(const pqnet::TcpConnPtr& conn) {
+        conn->send("quit\n");
+        TRACE("%d closed by server.", conn->getFd());
     }
 private:
     pqnet::TcpServer serv;

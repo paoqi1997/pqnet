@@ -31,9 +31,10 @@ void LooperPool::run()
 {
     for (auto &lp : loopers) {
         lp->setConnectCallBack(conncb);
-        lp->setCloseCallBack(closecb);
         lp->setReadCallBack(readcb);
         lp->setMessageCallBack(msgcb);
+        lp->setCloseByPeerCallBack(cpcb);
+        lp->setCloseBySockCallBack(cscb);
         lp->run();
     }
 }

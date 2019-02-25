@@ -65,9 +65,10 @@ void TcpEchoClient::run()
             if (evpool[i].data.fd == sockfd) {
                 buffer.readFrom(sockfd, buffer.writableBytes());
                 msg = buffer.get(buffer.readableBytes());
-                std::cout << msg;
                 if (msg == endmsg) {
                     this->preShutdown();
+                } else {
+                    std::cout << msg;
                 }
             }
             if (evpool[i].data.fd == fileno(stdin)) {

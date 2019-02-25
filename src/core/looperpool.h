@@ -19,14 +19,16 @@ public:
     void run();
     void shutdown();
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
-    void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setReadCallBack(const readCallBack& cb) { readcb = cb; }
     void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }
+    void setCloseByPeerCallBack(const closeByPeerCallBack& cb) { cpcb = cb; }
+    void setCloseBySockCallBack(const closeBySockCallBack& cb) { cscb = cb; }
 private:
     connectCallBack conncb;
-    closeCallBack closecb;
     readCallBack readcb;
     messageCallBack msgcb;
+    closeByPeerCallBack cpcb;
+    closeBySockCallBack cscb;
     std::size_t ln;
 public:
     std::vector<std::unique_ptr<Looper>> loopers;

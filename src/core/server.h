@@ -22,9 +22,10 @@ public:
     void run();
     void preShutdown() { running = false; }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
-    void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setReadCallBack(const readCallBack& cb) { readcb = cb; }
     void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }
+    void setCloseByPeerCallBack(const closeByPeerCallBack& cb) { cpcb = cb; }
+    void setCloseBySockCallBack(const closeBySockCallBack& cb) { cscb = cb; }
 private:
     void shutdown();
     void checkCallBack();
@@ -32,16 +33,16 @@ private:
     std::size_t getNextLoopIndex();
 private:
     connectCallBack conncb;
-    closeCallBack closecb;
     readCallBack readcb;
     messageCallBack msgcb;
+    closeByPeerCallBack cpcb;
+    closeBySockCallBack cscb;
     std::size_t index;
     std::size_t ln;
     LooperPool pool;
     int listenfd;
     Ip4Addr addr;
     bool running;
-    std::uint64_t msg;
     int epfd;
     struct epoll_event poi;
     struct epoll_event evpool[SERV_EVS];

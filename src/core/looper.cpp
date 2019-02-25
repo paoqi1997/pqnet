@@ -84,6 +84,7 @@ void* Looper::routine(void *arg)
             }
             else if (self->evpool[i].events & EPOLLRDHUP) {
                 int connfd = self->evpool[i].data.fd;
+                self->onCloseByPeer(self->connpool[connfd]);
                 if (epoll_ctl(self->epfd, EPOLL_CTL_DEL, connfd, nullptr) == -1) {
                     ERROR(std::strerror(errno));
                 }
@@ -125,7 +126,7 @@ void Looper::shutdown()
         ERROR(std::strerror(errno));
     }
     for (auto conn : connpool) {
-        this->onClose(conn.second);
+        this->onCloseBySock(conn.second);
         if (close(conn.first) == -1) {
             ERROR(std::strerror(errno));
         }

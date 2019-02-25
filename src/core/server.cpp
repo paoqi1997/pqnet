@@ -12,7 +12,7 @@
 
 using namespace pqnet;
 
-TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port), running(false), msg(0)
+TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port), running(false)
 {
     // socket
     listenfd = new_socket();
@@ -34,7 +34,7 @@ TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port)
 }
 
 TcpServer::TcpServer(const char *servname, std::uint16_t port)
-    : index(0), ln(4), pool(ln), addr(servname, port), running(false), msg(0)
+    : index(0), ln(4), pool(ln), addr(servname, port), running(false)
 {
     // socket
     listenfd = new_socket();
@@ -111,7 +111,7 @@ void TcpServer::shutdown()
     }
     for (std::size_t i = 0; i < ln; ++i) {
         int evfd = pool.loopers[i]->evfd;
-        msg = EV_EXIT;
+        std::uint64_t msg = EV_EXIT;
         if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
             ERROR(std::strerror(errno));
         }
@@ -122,13 +122,15 @@ void TcpServer::shutdown()
 void TcpServer::checkCallBack()
 {
     assert(conncb != nullptr);
-    assert(closecb != nullptr);
     assert(readcb != nullptr);
     assert(msgcb != nullptr);
+    assert(cpcb != nullptr);
+    assert(cscb != nullptr);
     pool.setConnectCallBack(conncb);
-    pool.setCloseCallBack(closecb);
     pool.setReadCallBack(readcb);
     pool.setMessageCallBack(msgcb);
+    pool.setCloseByPeerCallBack(cpcb);
+    pool.setCloseBySockCallBack(cscb);
 }
 
 void TcpServer::onConnect(int connfd)
@@ -136,7 +138,7 @@ void TcpServer::onConnect(int connfd)
     setNonBlock(connfd, true);
     std::size_t li = this->getNextLoopIndex();
     int evfd = pool.loopers[li]->evfd;
-    msg = EV_CONN;
+    std::uint64_t msg = EV_CONN;
     pool.loopers[li]->waitconns.push(connfd);
     if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
         ERROR(std::strerror(errno));
