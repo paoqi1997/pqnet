@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "../../util/logger.h"
 #include "../../util/signal.h"
 #include "../server.h"
 

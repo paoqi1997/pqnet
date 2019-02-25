@@ -16,7 +16,7 @@ int main()
 {
     pqnet::TcpEchoClient echocli("127.0.0.1", 12488);
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);
-    pqnet::addSignal(SIGTERM， SIGTERM_HANDLER);
+    pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();
     echocli.run();
     return 0;
