@@ -23,7 +23,6 @@ public:
     Looper(pn_thread_func _func);
     ~Looper();
     void run();
-    void shutdown();
     static void* routine(void *arg);
     pthread_t getId() const { return id; }
     void setFunc(pn_thread_func _func) { func = _func; }

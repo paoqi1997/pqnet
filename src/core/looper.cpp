@@ -45,7 +45,18 @@ Looper::Looper(pn_thread_func _func) : msg(0), func(_func)
 
 Looper::~Looper()
 {
-
+    if (close(epfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+    if (close(evfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+    for (auto conn : connpool) {
+        this->onCloseBySock(conn.second);
+        if (close(conn.first) == -1) {
+            ERROR(std::strerror(errno));
+        }
+    }
 }
 
 void Looper::run()
@@ -114,21 +125,5 @@ void* Looper::routine(void *arg)
             break;
         }
     }
-    self->shutdown(); return nullptr;
-}
-
-void Looper::shutdown()
-{
-    if (close(epfd) == -1) {
-        ERROR(std::strerror(errno));
-    }
-    if (close(evfd) == -1) {
-        ERROR(std::strerror(errno));
-    }
-    for (auto conn : connpool) {
-        this->onCloseBySock(conn.second);
-        if (close(conn.first) == -1) {
-            ERROR(std::strerror(errno));
-        }
-    }
+    return nullptr;
 }

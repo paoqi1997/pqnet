@@ -45,7 +45,12 @@ TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, std::stri
 
 TcpEchoClient::~TcpEchoClient()
 {
-
+    if (close(epfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+    if (close(sockfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
 }
 
 void TcpEchoClient::run()
@@ -66,7 +71,7 @@ void TcpEchoClient::run()
                 buffer.readFrom(sockfd, buffer.writableBytes());
                 msg = buffer.get(buffer.readableBytes());
                 if (msg == endmsg) {
-                    this->preShutdown();
+                    this->shutdown();
                 } else {
                     std::cout << msg;
                 }
@@ -77,16 +82,5 @@ void TcpEchoClient::run()
                 buffer.writeTo(sockfd, buffer.readableBytes());
             }
         }
-    }
-    this->shutdown();
-}
-
-void TcpEchoClient::shutdown()
-{
-    if (close(epfd) == -1) {
-        ERROR(std::strerror(errno));
-    }
-    if (close(sockfd) == -1) {
-        ERROR(std::strerror(errno));
     }
 }

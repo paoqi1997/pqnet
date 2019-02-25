@@ -28,8 +28,8 @@ public:
         );
         serv.run();
     }
-    void preShutdown() {
-        serv.preShutdown();
+    void shutdown() {
+        serv.shutdown();
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
         conn->send("Hello!\n");
@@ -58,12 +58,12 @@ int main()
 {
     TcpEchoServer echoserv(12488);
     auto SIGINT_HANDLER = [&](){
-        echoserv.preShutdown();
+        echoserv.shutdown();
         std::cout << std::endl;
         std::cout << "Exit echo server." << std::endl;
     };
     auto SIGTERM_HANDLER = [&](){
-        echoserv.preShutdown();
+        echoserv.shutdown();
         std::cout << "Exit echo server." << std::endl;
     };
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);

@@ -20,14 +20,13 @@ public:
     TcpServer(const char *servname, std::uint16_t port);
     ~TcpServer();
     void run();
-    void preShutdown() { running = false; }
+    void shutdown() { running = false; }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setReadCallBack(const readCallBack& cb) { readcb = cb; }
     void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }
     void setCloseByPeerCallBack(const closeByPeerCallBack& cb) { cpcb = cb; }
     void setCloseBySockCallBack(const closeBySockCallBack& cb) { cscb = cb; }
 private:
-    void shutdown();
     void checkCallBack();
     void onConnect(int connfd);
     std::size_t getNextLoopIndex();

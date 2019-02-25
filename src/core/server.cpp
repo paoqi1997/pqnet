@@ -12,7 +12,7 @@
 
 using namespace pqnet;
 
-TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port), running(false)
+TcpServer::TcpServer(std::uint16_t port) : index(0), ln(2), pool(ln), addr(port), running(false)
 {
     // socket
     listenfd = new_socket();
@@ -34,7 +34,7 @@ TcpServer::TcpServer(std::uint16_t port) : index(0), ln(4), pool(ln), addr(port)
 }
 
 TcpServer::TcpServer(const char *servname, std::uint16_t port)
-    : index(0), ln(4), pool(ln), addr(servname, port), running(false)
+    : index(0), ln(2), pool(ln), addr(servname, port), running(false)
 {
     // socket
     listenfd = new_socket();
@@ -57,7 +57,19 @@ TcpServer::TcpServer(const char *servname, std::uint16_t port)
 
 TcpServer::~TcpServer()
 {
-
+    if (close(epfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+    if (close(listenfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+    for (std::size_t i = 0; i < ln; ++i) {
+        int evfd = pool.loopers[i]->evfd;
+        std::uint64_t msg = EV_EXIT;
+        if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
+            ERROR(std::strerror(errno));
+        }
+    }
 }
 
 void TcpServer::run()
@@ -98,25 +110,6 @@ void TcpServer::run()
             }
         }
     }
-    this->shutdown();
-}
-
-void TcpServer::shutdown()
-{
-    if (close(epfd) == -1) {
-        ERROR(std::strerror(errno));
-    }
-    if (close(listenfd) == -1) {
-        ERROR(std::strerror(errno));
-    }
-    for (std::size_t i = 0; i < ln; ++i) {
-        int evfd = pool.loopers[i]->evfd;
-        std::uint64_t msg = EV_EXIT;
-        if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
-            ERROR(std::strerror(errno));
-        }
-    }
-    pool.shutdown();
 }
 
 void TcpServer::checkCallBack()

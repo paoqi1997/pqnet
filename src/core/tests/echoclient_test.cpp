@@ -7,12 +7,12 @@ int main()
 {
     pqnet::TcpEchoClient echocli("127.0.0.1", 12488);
     auto SIGINT_HANDLER = [&](){
-        echocli.preShutdown();
+        echocli.shutdown();
         std::cout << std::endl;
         std::cout << "Exit echo client." << std::endl;
     };
     auto SIGTERM_HANDLER = [&](){
-        echocli.preShutdown();
+        echocli.shutdown();
         std::cout << "Exit echo client." << std::endl;
     };
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);

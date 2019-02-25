@@ -24,7 +24,11 @@ LooperPool::LooperPool(std::size_t looperNumber, pn_thread_func func) : ln(loope
 
 LooperPool::~LooperPool()
 {
-
+    for (auto &lp : loopers) {
+        if (pthread_join(lp->getId(), nullptr) != 0) {
+            ERROR(std::strerror(errno));
+        }
+    }
 }
 
 void LooperPool::run()
@@ -36,14 +40,5 @@ void LooperPool::run()
         lp->setCloseByPeerCallBack(cpcb);
         lp->setCloseBySockCallBack(cscb);
         lp->run();
-    }
-}
-
-void LooperPool::shutdown()
-{
-    for (auto &lp : loopers) {
-        if (pthread_join(lp->getId(), nullptr) != 0) {
-            ERROR(std::strerror(errno));
-        }
     }
 }

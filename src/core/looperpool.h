@@ -17,7 +17,6 @@ public:
     LooperPool(std::size_t looperNumber, pn_thread_func func);
     ~LooperPool();
     void run();
-    void shutdown();
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setReadCallBack(const readCallBack& cb) { readcb = cb; }
     void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }

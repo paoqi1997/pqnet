@@ -20,9 +20,7 @@ public:
     TcpEchoClient(const char *servname, std::uint16_t port, std::string _endmsg = "quit\n");
     ~TcpEchoClient();
     void run();
-    void preShutdown() { running = false; }
-private:
-    void shutdown();
+    void shutdown() { running = false; }
 private:
     int sockfd;
     Ip4Addr addr;
