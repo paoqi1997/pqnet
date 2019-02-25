@@ -57,7 +57,7 @@ void TcpEchoClient::run()
                 break;
             } else {
                 ERROR(std::strerror(errno));
-                continue;
+                break;
             }
         }
         for (int i = 0; i < cnt; ++i) {
@@ -65,9 +65,6 @@ void TcpEchoClient::run()
                 buffer.readFrom(sockfd, buffer.writableBytes());
                 msg = buffer.get(buffer.readableBytes());
                 std::cout << msg;
-                if (msg == endmsg) {
-                    break;
-                }
             }
             if (evpool[i].data.fd == fileno(stdin)) {
                 std::cin >> msg; msg += '\n';

@@ -33,15 +33,19 @@ public:
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
         conn->send("Hello!\n");
+        TRACE("%d connect.", conn->getFd());
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
         conn->send("Bye!\n");
+        TRACE("%d close.", conn->getFd());
     }
     void onRead(const pqnet::TcpConnPtr& conn) {
         conn->recv();
+        TRACE("%d read.", conn->getFd());
     }
     void onMessage(const pqnet::TcpConnPtr& conn) {
         conn->send();
+        TRACE("%d message.", conn->getFd());
     }
 private:
     pqnet::TcpServer serv;

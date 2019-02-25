@@ -16,6 +16,7 @@ public:
     ssize_t recv();
     ssize_t send();
     ssize_t send(const char *msg);
+    int getFd() const { return connfd; }
 private:
     int connfd;
     Buffer buffer;
