@@ -13,9 +13,9 @@ void sighandler(int signo) {
 int main()
 {
     pqnet::TcpEchoClient echocli("127.0.0.1", 12488);
-    pqnet::Signal sig(sighandler);
-    sig.addSignal(SIGINT);
-    sig.addSignal(SIGTERM);
+    pqnet::Signal sig;
+    sig.addSignal(SIGINT, sighandler);
+    sig.addSignal(SIGTERM, sighandler);
     sig.waitSig();
     echocli.run();
     return 0;
