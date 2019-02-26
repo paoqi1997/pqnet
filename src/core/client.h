@@ -8,7 +8,8 @@
 #include <sys/epoll.h>
 
 #include "../util/types.h"
-#include "buffer.h"
+#include "callback.h"
+#include "connection.h"
 #include "ipaddr.h"
 
 namespace pqnet
@@ -24,7 +25,7 @@ public:
 private:
     int sockfd;
     Ip4Addr addr;
-    Buffer buffer;
+    TcpConnPtr connptr;
     bool running;
     std::string msg;
     std::string endmsg;

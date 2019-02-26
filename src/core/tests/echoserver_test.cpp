@@ -32,7 +32,8 @@ public:
         serv.shutdown();
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
-        conn->send("Hello!\n");
+        conn->append("Hello!\n");
+        conn->send();
         TRACE("%d connect.", conn->getFd());
     }
     void onRead(const pqnet::TcpConnPtr& conn) {

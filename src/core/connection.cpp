@@ -24,7 +24,12 @@ ssize_t TcpConnection::send()
     return buffer.writeTo(connfd, buffer.readableBytes());
 }
 
-ssize_t TcpConnection::send(const char *msg)
+void TcpConnection::append(const char *msg)
 {
-    return write(connfd, msg, std::strlen(msg));
+    buffer.append(msg, std::strlen(msg));
+}
+
+std::string TcpConnection::get()
+{
+    return buffer.get(buffer.readableBytes());
 }
