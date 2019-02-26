@@ -47,7 +47,6 @@ public:
         TRACE("%d closed by itself.", conn->getFd());
     }
     void onCloseBySock(const pqnet::TcpConnPtr& conn) {
-        conn->send("quit\n");
         TRACE("%d closed by server.", conn->getFd());
     }
 private:

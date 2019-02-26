@@ -52,10 +52,10 @@ Looper::~Looper()
         ERROR(std::strerror(errno));
     }
     for (auto conn : connpool) {
-        this->onCloseBySock(conn.second);
         if (close(conn.first) == -1) {
             ERROR(std::strerror(errno));
         }
+        this->onCloseBySock(conn.second);
     }
 }
 
