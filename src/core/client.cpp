@@ -27,7 +27,7 @@ TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, std::stri
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
-    connptr = std::make_shared<TcpConnection>(sockfd);
+    connptr = std::make_shared<TcpClientConnection>(sockfd, this);
     epfd = epoll_create(CLI_EVS);
     if (epfd == -1) {
         ERROR(std::strerror(errno));

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 
+#include <map>
 #include <string>
 
 #include <sys/epoll.h>
@@ -25,10 +26,11 @@ public:
 private:
     int sockfd;
     Ip4Addr addr;
-    TcpConnPtr connptr;
+    TcpCliConnPtr connptr;
     bool running;
     std::string msg;
     std::string endmsg;
+    std::map<int, TcpCliConnPtr> connpool;
     int epfd;
     struct epoll_event poi;
     struct epoll_event evpool[CLI_EVS];
