@@ -15,7 +15,6 @@ class Thread
 public:
     Thread(ThreadPool *_poolptr);
     Thread(ThreadPool *_poolptr, pn_thread_func _func);
-    ~Thread();
     void run();
     static void* routine(void *arg);
     pthread_t getId() const { return id; }

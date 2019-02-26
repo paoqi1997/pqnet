@@ -9,11 +9,6 @@ TcpConnection::TcpConnection(int _connfd) : connfd(_connfd)
 
 }
 
-TcpConnection::~TcpConnection()
-{
-
-}
-
 ssize_t TcpConnection::recv()
 {
     return buffer.readFrom(connfd, buffer.writableBytes());

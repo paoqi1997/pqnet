@@ -14,7 +14,6 @@ class TcpConnection
 {
 public:
     TcpConnection(int _connfd);
-    ~TcpConnection();
     // Remote -> Buffer
     ssize_t recv();
     // Buffer -> Remote

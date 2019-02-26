@@ -11,11 +11,6 @@ Buffer::Buffer(std::size_t size) : buf(size), readerIndex(0), writerIndex(0)
 
 }
 
-Buffer::~Buffer()
-{
-
-}
-
 void Buffer::makeSpace(std::size_t len)
 {
     if (len > writableBytes() + idleBytes()) {

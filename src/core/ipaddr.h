@@ -15,7 +15,6 @@ class Ip4Addr
 public:
     Ip4Addr(std::uint16_t port);
     Ip4Addr(const char *hostname, std::uint16_t port);
-    ~Ip4Addr();
     std::string ip() const;
     std::uint16_t port() const;
     std::uint32_t ipInt() const;

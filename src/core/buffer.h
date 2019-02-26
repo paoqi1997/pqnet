@@ -15,7 +15,6 @@ class Buffer
 {
 public:
     Buffer(std::size_t size = 1024);
-    ~Buffer();
     void makeSpace(std::size_t len);
     bool isReadable(std::size_t len) const;
     bool isWritable(std::size_t len) const;

@@ -19,11 +19,6 @@ Thread::Thread(ThreadPool *_poolptr, pn_thread_func _func) : poolptr(_poolptr), 
 
 }
 
-Thread::~Thread()
-{
-
-}
-
 void Thread::run()
 {
     if (func == nullptr) {
