@@ -27,6 +27,7 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port, std::string _endm
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
+    connptr = std::make_shared<TcpConnection>(sockfd);
     epfd = epoll_create(CLI_EVS);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
@@ -81,11 +82,11 @@ void TcpClient::run()
             else if (evpool[i].events & EPOLLIN) {
                 if (evpool[i].data.fd == fileno(stdin)) {
                     std::cin >> msg; msg += '\n';
-                    this->append(msg.c_str());
-                    this->send();
+                    connptr->append(msg.c_str());
+                    connptr->send();
                 }
                 if (evpool[i].data.fd == sockfd) {
-                    this->recv();
+                    connptr->recv();
                     poi.data.fd = sockfd;
                     poi.events = EPOLLRDHUP | EPOLLOUT;
                     if (epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &poi) == -1) {
@@ -102,7 +103,7 @@ void TcpClient::run()
                     }
                 }
                 if (evpool[i].data.fd == sockfd) {
-                    msg = this->get();
+                    msg = connptr->get();
                     poi.data.fd = sockfd;
                     poi.events = EPOLLRDHUP | EPOLLOUT;
                     if (epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &poi) == -1) {
