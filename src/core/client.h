@@ -2,9 +2,6 @@
 #define PQNET_CORE_CLIENT_H
 
 #include <cstdint>
-#include <cstring>
-
-#include <string>
 
 #include <sys/epoll.h>
 

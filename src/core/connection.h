@@ -5,8 +5,6 @@
 
 #include <string>
 
-#include <unistd.h>
-
 #include "buffer.h"
 
 namespace pqnet
