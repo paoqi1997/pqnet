@@ -14,8 +14,8 @@
 
 using namespace pqnet;
 
-TcpClient::TcpClient(const char *servname, std::uint16_t port, std::string _endmsg)
-    : addr(servname, port), running(false), endmsg(_endmsg)
+TcpClient::TcpClient(const char *servname, std::uint16_t port)
+    : addr(servname, port), running(false)
 {
     // socket
     sockfd = new_socket();
@@ -42,11 +42,6 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port, std::string _endm
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, fileno(stdin), &poi) == -1) {
         ERROR(std::strerror(errno));
     }
-    poi.events = EPOLLOUT;
-    poi.data.fd = fileno(stdout);
-    if (epoll_ctl(epfd, EPOLL_CTL_ADD, fileno(stdout), &poi) == -1) {
-        ERROR(std::strerror(errno));
-    }
 }
 
 // close(Client) -> EPOLLRDHUP(Looper)
@@ -63,11 +58,14 @@ TcpClient::~TcpClient()
 
 void TcpClient::run()
 {
+    this->onConnect(connptr);
     running = true;
     while (running) {
         int cnt = epoll_wait(epfd, evpool, CLI_EVS, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
+                // Has shutdown by signal
+                this->onCloseBySock(connptr);
                 INFO("Signal coming: epoll_wait exits.");
             } else {
                 ERROR(std::strerror(errno));
@@ -78,34 +76,27 @@ void TcpClient::run()
             // 服务端关闭连接
             if (evpool[i].events & EPOLLRDHUP) {
                 this->shutdown();
+                this->onCloseByPeer(connptr);
             }
-            else if (evpool[i].events & EPOLLIN) {
-                if (evpool[i].data.fd == fileno(stdin)) {
-                    std::cin >> msg; msg += '\n';
-                    connptr->append(msg.c_str());
-                    connptr->send();
-                }
-                if (evpool[i].data.fd == sockfd) {
-                    connptr->recv();
+            else if (evpool[i].data.fd == fileno(stdin)) {
+                std::cout << "STDIN!\n";
+                this->handleIn(connptr);
+            }
+            else {
+                if (evpool[i].events & EPOLLIN) {
+                    std::cout << "EPOLLIN!\n";
+                    this->onRead(connptr);
                     poi.data.fd = sockfd;
                     poi.events = EPOLLRDHUP | EPOLLOUT;
                     if (epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &poi) == -1) {
                         ERROR(std::strerror(errno));
                     }
                 }
-            }
-            else if (evpool[i].events & EPOLLOUT) {
-                if (evpool[i].data.fd == fileno(stdout)) {
-                    if (msg == endmsg) {
-                        this->shutdown();
-                    } else {
-                        std::cout << msg;
-                    }
-                }
-                if (evpool[i].data.fd == sockfd) {
-                    msg = connptr->get();
+                else if (evpool[i].events & EPOLLOUT) {
+                    std::cout << "EPOLLOUT!\n";
+                    this->onMessage(connptr);
                     poi.data.fd = sockfd;
-                    poi.events = EPOLLRDHUP | EPOLLOUT;
+                    poi.events = EPOLLRDHUP | EPOLLIN;
                     if (epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &poi) == -1) {
                         ERROR(std::strerror(errno));
                     }

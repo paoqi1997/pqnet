@@ -11,6 +11,7 @@ class TcpConnection;
 
 using TcpConnPtr = std::shared_ptr<TcpConnection>;
 
+using          inCallBack = std::function<void(const TcpConnPtr&)>;
 using     connectCallBack = std::function<void(const TcpConnPtr&)>;
 using        readCallBack = std::function<void(const TcpConnPtr&)>;
 using     messageCallBack = std::function<void(const TcpConnPtr&)>;
