@@ -21,7 +21,7 @@ void sighandler(int signum) {
 void pqnet::waitSig()
 {
     for (auto sig : sigbox) {
-        if (signal(sig.first, sighandler) == SIG_ERR) {
+        if (std::signal(sig.first, sighandler) == SIG_ERR) {
             ERROR(std::strerror(errno));
         }
     }
