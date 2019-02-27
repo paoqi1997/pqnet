@@ -1,6 +1,8 @@
 #ifndef PQNET_CORE_CONNECTION_H
 #define PQNET_CORE_CONNECTION_H
 
+#include <cstring>
+
 #include <string>
 
 #include <unistd.h>
@@ -13,40 +15,19 @@ namespace pqnet
 class TcpConnection
 {
 public:
-    TcpConnection(int _connfd);
-    // Remote -> Buffer
-    ssize_t recv();
-    // Buffer -> Remote
-    ssize_t send();
-    // Local -> Buffer
-    void append(const char *msg);
-    // Buffer -> Local
-    std::string get();
+    TcpConnection(int _connfd) : connfd(_connfd) {}
     int getFd() const { return connfd; }
+    // Remote -> Buffer
+    ssize_t recv() { return buffer.readFrom(connfd, buffer.writableBytes()); }
+    // Buffer -> Remote
+    ssize_t send() { return buffer.writeTo(connfd, buffer.readableBytes()); }
+    // Local -> Buffer
+    void append(const char *msg) { buffer.append(msg, std::strlen(msg)); }
+    // Buffer -> Local
+    std::string get() { return buffer.get(buffer.readableBytes()); }
 private:
     int connfd;
     Buffer buffer;
-};
-
-class TcpEchoClient;
-
-class TcpClientConnection
-{
-public:
-    TcpClientConnection(int _connfd, TcpEchoClient *_cliptr);
-    // Remote -> Buffer
-    ssize_t recv();
-    // Buffer -> Remote
-    ssize_t send();
-    // Local -> Buffer
-    void append(const char *msg);
-    // Buffer -> Local
-    std::string get();
-    int getFd() const { return connfd; }
-private:
-    int connfd;
-    Buffer buffer;
-    TcpEchoClient *cliptr;
 };
 
 } // namespace pqnet
