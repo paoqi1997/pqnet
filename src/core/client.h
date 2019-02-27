@@ -16,11 +16,11 @@
 namespace pqnet
 {
 
-class TcpEchoClient
+class TcpClient
 {
 public:
-    TcpEchoClient(const char *servname, std::uint16_t port, std::string _endmsg = "quit\n");
-    ~TcpEchoClient();
+    TcpClient(const char *servname, std::uint16_t port, std::string _endmsg = "quit\n");
+    ~TcpClient();
     void run();
     void shutdown() { running = false; }
     // Remote -> Buffer

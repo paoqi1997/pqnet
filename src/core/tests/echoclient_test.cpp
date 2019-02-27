@@ -5,7 +5,7 @@
 
 int main()
 {
-    pqnet::TcpEchoClient echocli("127.0.0.1", 12488);
+    pqnet::TcpClient echocli("127.0.0.1", 12488);
     auto SIGINT_HANDLER = [&](){
         echocli.shutdown();
         std::cout << std::endl;
