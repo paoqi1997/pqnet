@@ -45,7 +45,7 @@ public:
         TRACE("%d message.", conn->getFd());
     }
     void onCloseByPeer(const pqnet::TcpConnPtr& conn) {
-        TRACE("%d closed by itself.", conn->getFd());
+        TRACE("%d closed by client.", conn->getFd());
     }
     void onCloseBySock(const pqnet::TcpConnPtr& conn) {
         TRACE("%d closed by server.", conn->getFd());

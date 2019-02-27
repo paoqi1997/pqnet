@@ -20,7 +20,7 @@ Looper::Looper() : msg(0), func(nullptr)
         ERROR(std::strerror(errno));
     }
     poi.data.fd = evfd;
-    poi.events = EPOLLIN | EPOLLET;
+    poi.events = EPOLLET | EPOLLIN;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, evfd, &poi) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -37,7 +37,7 @@ Looper::Looper(pn_thread_func _func) : msg(0), func(_func)
         ERROR(std::strerror(errno));
     }
     poi.data.fd = evfd;
-    poi.events = EPOLLIN | EPOLLET;
+    poi.events = EPOLLET | EPOLLIN;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, evfd, &poi) == -1) {
         ERROR(std::strerror(errno));
     }

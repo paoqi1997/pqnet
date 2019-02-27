@@ -41,7 +41,7 @@ public:
         conn->send();
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
-        // None
+        TRACE("%d connect.", conn->getFd());
     }
     void onRead(const pqnet::TcpConnPtr& conn) {
         conn->recv();
@@ -56,10 +56,10 @@ public:
         }
     }
     void onCloseByPeer(const pqnet::TcpConnPtr& conn) {
-        // None
+        TRACE("%d closed by server.", conn->getFd());
     }
     void onCloseBySock(const pqnet::TcpConnPtr& conn) {
-        // None
+        TRACE("%d closed by client.", conn->getFd());
     }
 private:
     std::string msg;
