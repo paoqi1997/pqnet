@@ -81,7 +81,16 @@ void* Looper::routine(void *arg)
             break;
         }
         for (int i = 0; i < cnt; ++i) {
-            if (self->evpool[i].data.fd == self->evfd) {
+            // 客户端关闭连接
+            if (self->evpool[i].events & EPOLLRDHUP) {
+                int connfd = self->evpool[i].data.fd;
+                self->onCloseByPeer(self->connpool[connfd]);
+                if (epoll_ctl(self->epfd, EPOLL_CTL_DEL, connfd, nullptr) == -1) {
+                    ERROR(std::strerror(errno));
+                }
+                self->connpool.erase(connfd);
+            }
+            else if (self->evpool[i].data.fd == self->evfd) {
                 read(self->evfd, &self->msg, sizeof(std::uint64_t));
                 if (self->msg == EV_CONN) {
                     int connfd = self->waitconns.front();
@@ -94,32 +103,24 @@ void* Looper::routine(void *arg)
                     self->connpool[connfd] = std::make_shared<TcpConnection>(connfd);
                     self->onConnect(self->connpool[connfd]);
                 }
-            }
-            // 客户端关闭连接
-            else if (self->evpool[i].events & EPOLLRDHUP) {
-                int connfd = self->evpool[i].data.fd;
-                self->onCloseByPeer(self->connpool[connfd]);
-                if (epoll_ctl(self->epfd, EPOLL_CTL_DEL, connfd, nullptr) == -1) {
-                    ERROR(std::strerror(errno));
+            } else {
+                if (self->evpool[i].events & EPOLLIN) {
+                    int connfd = self->evpool[i].data.fd;
+                    self->onRead(self->connpool[connfd]);
+                    self->poi.data.fd = connfd;
+                    self->poi.events = EPOLLET | EPOLLRDHUP | EPOLLOUT;
+                    if (epoll_ctl(self->epfd, EPOLL_CTL_MOD, connfd, &self->poi) == -1) {
+                        ERROR(std::strerror(errno));
+                    }
                 }
-                self->connpool.erase(connfd);
-            }
-            else if (self->evpool[i].events & EPOLLIN) {
-                int connfd = self->evpool[i].data.fd;
-                self->onRead(self->connpool[connfd]);
-                self->poi.data.fd = connfd;
-                self->poi.events = EPOLLET | EPOLLRDHUP | EPOLLOUT;
-                if (epoll_ctl(self->epfd, EPOLL_CTL_MOD, connfd, &self->poi) == -1) {
-                    ERROR(std::strerror(errno));
-                }
-            }
-            else if (self->evpool[i].events & EPOLLOUT) {
-                int connfd = self->evpool[i].data.fd;
-                self->onMessage(self->connpool[connfd]);
-                self->poi.data.fd = connfd;
-                self->poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
-                if (epoll_ctl(self->epfd, EPOLL_CTL_MOD, connfd, &self->poi) == -1) {
-                    ERROR(std::strerror(errno));
+                if (self->evpool[i].events & EPOLLOUT) {
+                    int connfd = self->evpool[i].data.fd;
+                    self->onMessage(self->connpool[connfd]);
+                    self->poi.data.fd = connfd;
+                    self->poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
+                    if (epoll_ctl(self->epfd, EPOLL_CTL_MOD, connfd, &self->poi) == -1) {
+                        ERROR(std::strerror(errno));
+                    }
                 }
             }
         }

@@ -92,7 +92,7 @@ void TcpClient::run()
                         ERROR(std::strerror(errno));
                     }
                 }
-                else if (evpool[i].events & EPOLLOUT) {
+                if (evpool[i].events & EPOLLOUT) {
                     std::cout << "EPOLLOUT!\n";
                     this->onMessage(connptr);
                     poi.data.fd = sockfd;
