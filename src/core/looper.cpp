@@ -43,6 +43,7 @@ Looper::Looper(pn_thread_func _func) : msg(0), func(_func)
     }
 }
 
+// close(Looper) -> EPOLLRDHUP(Client) -> close(Client)
 Looper::~Looper()
 {
     if (close(epfd) == -1) {
@@ -52,6 +53,7 @@ Looper::~Looper()
         ERROR(std::strerror(errno));
     }
     for (auto conn : connpool) {
+        // 关闭连接并告知客户端
         if (close(conn.first) == -1) {
             ERROR(std::strerror(errno));
         }
@@ -93,6 +95,7 @@ void* Looper::routine(void *arg)
                     self->onConnect(self->connpool[connfd]);
                 }
             }
+            // 客户端关闭连接
             else if (self->evpool[i].events & EPOLLRDHUP) {
                 int connfd = self->evpool[i].data.fd;
                 self->onCloseByPeer(self->connpool[connfd]);

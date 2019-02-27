@@ -44,11 +44,13 @@ TcpEchoClient::TcpEchoClient(const char *servname, std::uint16_t port, std::stri
     }
 }
 
+// close(Client) -> EPOLLRDHUP(Looper)
 TcpEchoClient::~TcpEchoClient()
 {
     if (close(epfd) == -1) {
         ERROR(std::strerror(errno));
     }
+    // 关闭连接并告知服务端
     if (close(sockfd) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -68,6 +70,7 @@ void TcpEchoClient::run()
             }
         }
         for (int i = 0; i < cnt; ++i) {
+            // 服务端关闭连接
             if (evpool[i].events & EPOLLRDHUP) {
                 this->shutdown();
             }
