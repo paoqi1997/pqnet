@@ -25,18 +25,21 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port)
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
+    setNonBlock(sockfd, true);
+    setReuseAddr(sockfd, true);
+    setReusePort(sockfd, true);
     connptr = std::make_shared<TcpConnection>(sockfd);
     epfd = epoll_create(CLI_EVS);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
     poi.data.fd = sockfd;
-    poi.events = EPOLLRDHUP | EPOLLIN;
+    poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, sockfd, &poi) == -1) {
         ERROR(std::strerror(errno));
     }
     poi.data.fd = fileno(stdin);
-    poi.events = EPOLLIN;
+    poi.events = EPOLLET | EPOLLIN;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, fileno(stdin), &poi) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -83,7 +86,7 @@ void TcpClient::run()
                 if (evpool[i].events & EPOLLIN) {
                     this->onRead(connptr);
                     poi.data.fd = sockfd;
-                    poi.events = EPOLLRDHUP | EPOLLOUT;
+                    poi.events = EPOLLET | EPOLLRDHUP | EPOLLOUT;
                     if (epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &poi) == -1) {
                         ERROR(std::strerror(errno));
                     }
@@ -91,7 +94,7 @@ void TcpClient::run()
                 if (evpool[i].events & EPOLLOUT) {
                     this->onMessage(connptr);
                     poi.data.fd = sockfd;
-                    poi.events = EPOLLRDHUP | EPOLLIN;
+                    poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
                     if (epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &poi) == -1) {
                         ERROR(std::strerror(errno));
                     }
