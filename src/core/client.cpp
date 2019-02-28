@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
@@ -59,6 +60,7 @@ TcpClient::~TcpClient()
 
 void TcpClient::run()
 {
+    this->checkCallBack();
     this->onConnect(connptr);
     running = true;
     while (running) {
@@ -102,4 +104,14 @@ void TcpClient::run()
             }
         }
     }
+}
+
+void TcpClient::checkCallBack()
+{
+    assert(incb);
+    assert(conncb);
+    assert(readcb);
+    assert(msgcb);
+    assert(cpcb);
+    assert(cscb);
 }

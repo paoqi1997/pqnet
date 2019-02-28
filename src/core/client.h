@@ -35,6 +35,8 @@ public:
     void setCloseByPeerCallBack(const closeByPeerCallBack& cb) { cpcb = cb; }
     void setCloseBySockCallBack(const closeBySockCallBack& cb) { cscb = cb; }
 private:
+    void checkCallBack();
+private:
     inCallBack incb;
     connectCallBack conncb;
     readCallBack readcb;

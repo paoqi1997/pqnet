@@ -114,15 +114,15 @@ void TcpServer::run()
 
 void TcpServer::checkCallBack()
 {
-    assert(conncb != nullptr);
-    assert(readcb != nullptr);
-    assert(msgcb != nullptr);
-    assert(cpcb != nullptr);
-    assert(cscb != nullptr);
+    assert(conncb);
     pool.setConnectCallBack(conncb);
+    assert(readcb);
     pool.setReadCallBack(readcb);
+    assert(msgcb);
     pool.setMessageCallBack(msgcb);
+    assert(cpcb);
     pool.setCloseByPeerCallBack(cpcb);
+    assert(cscb);
     pool.setCloseBySockCallBack(cscb);
 }
 
