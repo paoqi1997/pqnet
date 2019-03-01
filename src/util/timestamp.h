@@ -13,12 +13,14 @@
 namespace pqnet
 {
 
+using uint = unsigned int;
+
 struct TimeStamp
 {
-    unsigned int Second() const { return tv.tv_sec; }
-    unsigned int Millisecond() const { return tv.tv_usec / 1000; }
-    unsigned int Microsecond() const { return tv.tv_usec; }
-    unsigned int Nanosecond() const { return tv.tv_usec * 1000; }
+    uint Second() const { return tv.tv_sec; }
+    uint Millisecond() const { return tv.tv_usec / 1000; }
+    uint Microsecond() const { return tv.tv_usec; }
+    uint Nanosecond() const { return tv.tv_usec * 1000; }
     std::uint64_t Int10() const { return tv.tv_sec; }
     std::uint64_t Int13() const { return tv.tv_sec * 1000 + tv.tv_usec / 1000; }
     std::uint64_t Int16() const { return tv.tv_sec * 1000000 + tv.tv_usec; }
@@ -33,7 +35,7 @@ struct TimeStamp
 
 TimeStamp now();
 
-std::pair<unsigned int, unsigned int> ms2SecAndNsec(unsigned int ms);
+std::pair<uint, uint> ms2SecAndNsec(uint ms);
 
 } // namespace pqnet
 

@@ -36,9 +36,9 @@ TimeStamp pqnet::now()
     return ts;
 }
 
-std::pair<unsigned int, unsigned int> pqnet::ms2SecAndNsec(unsigned int ms)
+std::pair<uint, uint> pqnet::ms2SecAndNsec(uint ms)
 {
-    unsigned int sec = ms / 1000;
-    unsigned int nsec = (ms - sec * 1000) * 1000 * 1000;
+    uint sec = ms / 1000;
+    uint nsec = (ms - sec * 1000) * 1000 * 1000;
     return std::make_pair(sec, nsec);
 }
