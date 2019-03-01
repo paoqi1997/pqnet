@@ -1,7 +1,6 @@
 #include <cerrno>
 #include <cstring>
 
-#include <iostream>
 #include <utility>
 
 #include <sys/timerfd.h>
@@ -52,13 +51,13 @@ TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiratio
         // 队列不为空
         auto head = timerqueue.begin();
         if (head->first <= endtime) {
-            // 稍后到期
+            // 新加入的定时器稍后到期
             // return std::pair<iterator, bool>
             auto result = timerqueue.insert(std::make_pair(endtime, timer));
             auto it = result.first;
             return it->second.getId();
         } else {
-            // 最先到期
+            // 新加入的定时器最先到期
             struct itimerspec its;
             its.it_value.tv_sec = expiration.first;
             its.it_value.tv_nsec = expiration.second;
@@ -79,7 +78,7 @@ void TimerQueue::delTimer(TimerId id)
 {
     for (auto it = timerqueue.begin(); it != timerqueue.end(); ++it) {
         if (it->second.getId() == id) {
-            // 最先到期
+            // 要删除的定时器最先到期
             if (it == timerqueue.begin()) {
                 if (timerqueue.size() == 1) {
                     // 只有一个定时器
@@ -117,7 +116,6 @@ void TimerQueue::handle()
 {
     std::uint64_t currtime = now().Int16();
     for (auto it = timerqueue.begin(); it != timerqueue.end(); ) {
-        std::cout << it->first << ' ' << currtime << ' ' << it->second.getInterval() << std::endl;
         // 已到期
         if (it->first <= currtime) {
             this->flush();

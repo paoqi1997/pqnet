@@ -59,13 +59,12 @@ int main()
         for (int i = 0; i < cnt; ++i) {
             if (evpool[i].events & EPOLLIN) {
                 print_time();
-                std::cout << count << std::endl;
                 // Ticker -> Ticker -> Ticker -> Timer -> Ticker -> ...
                 // 经历 Ticker -> Timer 后
                 // 下一次 Ticker 的时间戳将大于 currtime
+                // Ticker 共执行了 9 次
                 queue.handle();
                 ++count;
-                std::cout << count << std::endl;
                 if (count == 10) {
                     queue.delTimer(id);
                 }

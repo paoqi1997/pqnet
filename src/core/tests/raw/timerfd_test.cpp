@@ -25,7 +25,8 @@ void handle(int fd, const char *prefix) {
     if (read(fd, &msg, sizeof(std::uint64_t)) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
-    std::cout << prefix << std::endl;
+    count += msg;
+    std::cout << prefix << ": " << count << std::endl;
 }
 
 int main()
@@ -73,7 +74,6 @@ int main()
                 int fd = evpool[i].data.fd;
                 print_time();
                 handle(fd, "Timer");
-                ++count;
                 if (count == 10) {
                     struct itimerspec nxt_its;
                     std::memset(&nxt_its, 0, sizeof(nxt_its));
