@@ -33,7 +33,7 @@ TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiratio
     auto expiration = ms2SecAndNsec(_expiration);
     auto interval = ms2SecAndNsec(_interval);
     std::uint64_t endtime = now().Int16() + _expiration * 1000;
-    if (timerqueue.empty()) {
+    if (tmqueue.empty()) {
         // 队列为空
         struct itimerspec its;
         its.it_value.tv_sec = expiration.first;
@@ -44,18 +44,18 @@ TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiratio
             ERROR(std::strerror(errno));
         }
         // return std::pair<iterator, bool>
-        auto result = timerqueue.insert(std::make_pair(endtime, timer));
+        auto result = tmqueue.insert(std::make_pair(endtime, timer));
         auto it = result.first;
-        return it->second.getId();
+        return it->second.Id();
     } else {
         // 队列不为空
-        auto head = timerqueue.begin();
+        auto head = tmqueue.begin();
         if (head->first <= endtime) {
             // 新加入的定时器稍后到期
             // return std::pair<iterator, bool>
-            auto result = timerqueue.insert(std::make_pair(endtime, timer));
+            auto result = tmqueue.insert(std::make_pair(endtime, timer));
             auto it = result.first;
-            return it->second.getId();
+            return it->second.Id();
         } else {
             // 新加入的定时器最先到期
             struct itimerspec its;
@@ -67,20 +67,20 @@ TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiratio
                 ERROR(std::strerror(errno));
             }
             // return std::pair<iterator, bool>
-            auto result = timerqueue.insert(std::make_pair(endtime, timer));
+            auto result = tmqueue.insert(std::make_pair(endtime, timer));
             auto it = result.first;
-            return it->second.getId();
+            return it->second.Id();
         }
     }
 }
 
 void TimerQueue::delTimer(TimerId id)
 {
-    for (auto it = timerqueue.begin(); it != timerqueue.end(); ++it) {
-        if (it->second.getId() == id) {
+    for (auto it = tmqueue.begin(); it != tmqueue.end(); ++it) {
+        if (it->second.Id() == id) {
             // 要删除的定时器最先到期
-            if (it == timerqueue.begin()) {
-                if (timerqueue.size() == 1) {
+            if (it == tmqueue.begin()) {
+                if (tmqueue.size() == 1) {
                     // 只有一个定时器
                     struct itimerspec its;
                     std::memset(&its, 0, sizeof(its));
@@ -94,7 +94,7 @@ void TimerQueue::delTimer(TimerId id)
                     uint _diffval = _it->first - now().Int16();
                     auto diffval = us2SecAndNsec(_diffval);
                     // 更新间隔
-                    uint _interval = _it->second.getInterval();
+                    uint _interval = _it->second.Interval();
                     auto interval = ms2SecAndNsec(_interval);
                     struct itimerspec its;
                     its.it_value.tv_sec = diffval.first;
@@ -106,7 +106,7 @@ void TimerQueue::delTimer(TimerId id)
                     }
                 }
             }
-            timerqueue.erase(it);
+            tmqueue.erase(it);
             break;
         }
     }
@@ -115,26 +115,26 @@ void TimerQueue::delTimer(TimerId id)
 void TimerQueue::handle()
 {
     std::uint64_t currtime = now().Int16();
-    for (auto it = timerqueue.begin(); it != timerqueue.end(); ) {
+    for (auto it = tmqueue.begin(); it != tmqueue.end(); ) {
         // 已到期
         if (it->first <= currtime) {
-            this->flush();
+            this->refresh();
             Timer timer = it->second;
             timer.run();
             if (timer.isPeriodic()) {
                 // 周期性定时器
-                std::uint64_t endtime = currtime + timer.getInterval() * 1000;
-                it = timerqueue.erase(it);
-                timerqueue.insert(std::make_pair(endtime, timer));
+                std::uint64_t endtime = currtime + timer.Interval() * 1000;
+                it = tmqueue.erase(it);
+                tmqueue.insert(std::make_pair(endtime, timer));
             } else {
                 // 一次性定时器
-                it = timerqueue.erase(it);
+                it = tmqueue.erase(it);
             }
         } else {
             ++it;
         }
     }
-    if (timerqueue.empty()) {
+    if (tmqueue.empty()) {
         // 置空
         struct itimerspec its;
         std::memset(&its, 0, sizeof(its));
@@ -143,12 +143,12 @@ void TimerQueue::handle()
         }
     } else {
         // 重新设置
-        auto head = timerqueue.begin();
+        auto head = tmqueue.begin();
         // 更新到期时间
         uint _diffval = head->first - currtime;
         auto diffval = us2SecAndNsec(_diffval);
         // 更新间隔
-        uint _interval = head->second.getInterval();
+        uint _interval = head->second.Interval();
         auto interval = ms2SecAndNsec(_interval);
         struct itimerspec its;
         its.it_value.tv_sec = diffval.first;
@@ -161,7 +161,7 @@ void TimerQueue::handle()
     }
 }
 
-void TimerQueue::flush()
+void TimerQueue::refresh()
 {
     std::uint64_t msg;
     if (read(tmfd, &msg, sizeof(std::uint64_t)) == -1) {

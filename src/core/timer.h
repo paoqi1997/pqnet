@@ -19,9 +19,9 @@ class Timer
 public:
     Timer(const timerCallBack& cb, void *_arg, uint _interval);
     void run() { timercb(arg); }
-    TimerId getId() const { return id; }
+    TimerId Id() const { return id; }
+    uint Interval() const { return interval; }
     bool isPeriodic() const { return interval > 0; }
-    uint getInterval() const { return interval; }
 private:
     timerCallBack timercb;
     void *arg;
@@ -31,7 +31,7 @@ private:
 
 inline bool operator < (const Timer& lhs, const Timer& rhs)
 {
-    return lhs.getId() < rhs.getId();
+    return lhs.Id() < rhs.Id();
 }
 
 } // namespace pqnet

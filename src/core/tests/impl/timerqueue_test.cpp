@@ -32,17 +32,17 @@ int main()
     if (epfd == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
-    pqnet::TimerQueue queue;
+    pqnet::TimerQueue tq;
     struct epoll_event poi;
-    poi.data.fd = queue.getFd();
+    poi.data.fd = tq.getFd();
     poi.events = EPOLLET | EPOLLIN;
-    if (epoll_ctl(epfd, EPOLL_CTL_ADD, queue.getFd(), &poi) == -1) {
+    if (epoll_ctl(epfd, EPOLL_CTL_ADD, tq.getFd(), &poi) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
     print_time();
     std::cout << "Start Timing!" << std::endl;
-    queue.addTimer(func, const_cast<char*>("Timer!"), 6000);
-    auto id = queue.addTimer(func, const_cast<char*>("Ticker!"), 3000, 1000);
+    tq.addTimer(func, const_cast<char*>("Timer!"), 6000);
+    auto id = tq.addTimer(func, const_cast<char*>("Ticker!"), 3000, 1000);
     std::signal(SIGINT, sighandler);
     bool running = true;
     struct epoll_event evpool[evs];
@@ -63,10 +63,10 @@ int main()
                 // 经历 Ticker -> Timer 后
                 // 下一次 Ticker 的时间戳将大于 currtime
                 // Ticker 共执行了 9 次
-                queue.handle();
+                tq.handle();
                 ++count;
                 if (count == 10) {
-                    queue.delTimer(id);
+                    tq.delTimer(id);
                 }
             }
         }

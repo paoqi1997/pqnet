@@ -21,10 +21,10 @@ public:
     void delTimer(TimerId id);
     void handle();
 private:
-    void flush();
+    void refresh();
 private:
     int tmfd;
-    std::set<std::pair<std::uint64_t, Timer>> timerqueue;
+    std::set<std::pair<std::uint64_t, Timer>> tmqueue;
 };
 
 } // namespace pqnet
