@@ -90,14 +90,13 @@ void TimerQueue::delTimer(TimerId id)
                 } else {
                     // 存在两个定时器或以上
                     uint64_t usec = std::next(it, 1)->first - now().Int16();
-                    uint sec = usec / 1000000;
-                    uint nsec = (usec - sec * 1000000) * 1000;
+                    auto diff = us2SecAndNsec(usec);
                     Timer timer = std::next(it, 1)->second;
                     uint _interval = timer.getInterval();
                     auto interval = ms2SecAndNsec(_interval);
                     struct itimerspec its;
-                    its.it_value.tv_sec = sec;
-                    its.it_value.tv_nsec = nsec;
+                    its.it_value.tv_sec = diff.first;
+                    its.it_value.tv_nsec = diff.second;
                     its.it_interval.tv_sec = interval.first;
                     its.it_interval.tv_nsec = interval.second;
                     if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
@@ -144,14 +143,13 @@ void TimerQueue::handle()
         // 重新设置
         auto head = timerqueue.begin();
         uint64_t usec = head->first - currtime;
-        uint sec = usec / 1000000;
-        uint nsec = (usec - sec * 1000000) * 1000;
+        auto diff = us2SecAndNsec(usec);
         Timer timer = head->second;
         uint _interval = timer.getInterval();
         auto interval = ms2SecAndNsec(_interval);
         struct itimerspec its;
-        its.it_value.tv_sec = sec;
-        its.it_value.tv_nsec = nsec;
+        its.it_value.tv_sec = diff.first;
+        its.it_value.tv_nsec = diff.second;
         its.it_interval.tv_sec = interval.first;
         its.it_interval.tv_nsec = interval.second;
         if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {

@@ -36,6 +36,7 @@ struct TimeStamp
 TimeStamp now();
 
 std::pair<uint, uint> ms2SecAndNsec(uint ms);
+std::pair<uint, uint> us2SecAndNsec(uint us);
 
 } // namespace pqnet
 
