@@ -1,7 +1,9 @@
 CXX = g++
 CXXFLAGS = -g -Wall
 
-BINS = buffer_test endian_test ipaddr_test
+BINS = buffer_test endian_test ipaddr_test timerqueue_test
+
+OBJS = ../../timer.o ../../timerqueue.o ../../../util/logger.o ../../../util/timestamp.o
 
 .PHONY: build_all
 
@@ -14,6 +16,9 @@ endian_test: endian_test.o ../../endian.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 ipaddr_test: ipaddr_test.o ../../endian.o ../../ipaddr.o
+	${CXX} ${CXXFLAGS} $^ -o $@
+
+timerqueue_test: timerqueue_test.o ${OBJS}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 .PHONY: clean

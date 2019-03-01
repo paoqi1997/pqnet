@@ -3,7 +3,8 @@
 
 #include <cstdint>
 
-#include "callback.h"
+#include <set>
+
 #include "timer.h"
 
 namespace pqnet
@@ -13,14 +14,17 @@ class TimerQueue
 {
 public:
     TimerQueue();
+    ~TimerQueue();
     int getFd() const { return tmfd; }
     // Millisecond(s)
-    void addTimer(const timerCallBack& cb, unsigned int expiration, unsigned int interval = 0);
-    void delTimer(std::uint64_t id);
+    TimerId addTimer(const timerCallBack& cb, void *arg, uint _expiration, uint _interval = 0);
+    void delTimer(TimerId id);
     void handle();
 private:
+    void flush();
+private:
     int tmfd;
-    std::map<std::uint64_t, Timer> timerqueue;
+    std::set<std::pair<std::uint64_t, Timer>> timerqueue;
 };
 
 } // namespace pqnet
