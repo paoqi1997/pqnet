@@ -25,8 +25,7 @@ void handle(int fd, const char *prefix) {
     if (read(fd, &msg, sizeof(std::uint64_t)) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
-    count += msg;
-    std::cout << prefix << ": " << count << std::endl;
+    std::cout << prefix << std::endl;
 }
 
 int main()
@@ -49,6 +48,7 @@ int main()
         std::cout << std::strerror(errno) << std::endl;
     }
     print_time();
+    std::cout << "Start Timing!" << std::endl;
     struct epoll_event poi;
     poi.data.fd = tmfd;
     poi.events = EPOLLET | EPOLLIN;
@@ -71,8 +71,9 @@ int main()
         for (int i = 0; i < cnt; ++i) {
             if (evpool[i].events & EPOLLIN) {
                 int fd = evpool[i].data.fd;
-                handle(fd, "Timer");
                 print_time();
+                handle(fd, "Timer");
+                ++count;
                 if (count == 10) {
                     struct itimerspec nxt_its;
                     std::memset(&nxt_its, 0, sizeof(nxt_its));

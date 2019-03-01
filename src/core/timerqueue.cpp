@@ -1,6 +1,7 @@
 #include <cerrno>
 #include <cstring>
 
+#include <iostream>
 #include <utility>
 
 #include <sys/timerfd.h>
@@ -89,14 +90,16 @@ void TimerQueue::delTimer(TimerId id)
                     }
                 } else {
                     // 存在两个定时器或以上
-                    uint64_t usec = std::next(it, 1)->first - now().Int16();
-                    auto diff = us2SecAndNsec(usec);
-                    Timer timer = std::next(it, 1)->second;
-                    uint _interval = timer.getInterval();
+                    auto _it = std::next(it, 1);
+                    // 更新到期时间
+                    uint _diffval = _it->first - now().Int16();
+                    auto diffval = us2SecAndNsec(_diffval);
+                    // 更新间隔
+                    uint _interval = _it->second.getInterval();
                     auto interval = ms2SecAndNsec(_interval);
                     struct itimerspec its;
-                    its.it_value.tv_sec = diff.first;
-                    its.it_value.tv_nsec = diff.second;
+                    its.it_value.tv_sec = diffval.first;
+                    its.it_value.tv_nsec = diffval.second;
                     its.it_interval.tv_sec = interval.first;
                     its.it_interval.tv_nsec = interval.second;
                     if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
@@ -114,6 +117,7 @@ void TimerQueue::handle()
 {
     std::uint64_t currtime = now().Int16();
     for (auto it = timerqueue.begin(); it != timerqueue.end(); ) {
+        std::cout << it->first << ' ' << currtime << ' ' << it->second.getInterval() << std::endl;
         // 已到期
         if (it->first <= currtime) {
             this->flush();
@@ -142,14 +146,15 @@ void TimerQueue::handle()
     } else {
         // 重新设置
         auto head = timerqueue.begin();
-        uint64_t usec = head->first - currtime;
-        auto diff = us2SecAndNsec(usec);
-        Timer timer = head->second;
-        uint _interval = timer.getInterval();
+        // 更新到期时间
+        uint _diffval = head->first - currtime;
+        auto diffval = us2SecAndNsec(_diffval);
+        // 更新间隔
+        uint _interval = head->second.getInterval();
         auto interval = ms2SecAndNsec(_interval);
         struct itimerspec its;
-        its.it_value.tv_sec = diff.first;
-        its.it_value.tv_nsec = diff.second;
+        its.it_value.tv_sec = diffval.first;
+        its.it_value.tv_nsec = diffval.second;
         its.it_interval.tv_sec = interval.first;
         its.it_interval.tv_nsec = interval.second;
         if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {

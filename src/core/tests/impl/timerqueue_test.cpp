@@ -10,6 +10,8 @@
 
 #include "../../timerqueue.h"
 
+static int count = 0;
+
 void sighandler(int signum) {
     std::cout << std::endl;
     std::cout << "Bye!" << std::endl;
@@ -37,9 +39,10 @@ int main()
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, queue.getFd(), &poi) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
-    queue.addTimer(func, const_cast<char*>("Timer!"), 6000);
-    queue.addTimer(func, const_cast<char*>("Ticker!"), 3000, 1000);
     print_time();
+    std::cout << "Start Timing!" << std::endl;
+    queue.addTimer(func, const_cast<char*>("Timer!"), 6000);
+    auto id = queue.addTimer(func, const_cast<char*>("Ticker!"), 3000, 1000);
     std::signal(SIGINT, sighandler);
     bool running = true;
     struct epoll_event evpool[evs];
@@ -55,8 +58,17 @@ int main()
         }
         for (int i = 0; i < cnt; ++i) {
             if (evpool[i].events & EPOLLIN) {
-                queue.handle();
                 print_time();
+                std::cout << count << std::endl;
+                // Ticker -> Ticker -> Ticker -> Timer -> Ticker -> ...
+                // 经历 Ticker -> Timer 后
+                // 下一次 Ticker 的时间戳将大于 currtime
+                queue.handle();
+                ++count;
+                std::cout << count << std::endl;
+                if (count == 10) {
+                    queue.delTimer(id);
+                }
             }
         }
     }
