@@ -59,7 +59,7 @@ int main()
         for (int i = 0; i < cnt; ++i) {
             if (evpool[i].events & EPOLLIN) {
                 print_time();
-                // Ticker -> Ticker -> Ticker -> Timer -> Ticker -> ...
+                // Ticker -> Ticker -> Ticker -> Timer -> (currtime) -> Ticker -> ...
                 // 经历 Ticker -> Timer 后
                 // 下一次 Ticker 的时间戳将大于 currtime
                 // Ticker 共执行了 9 次

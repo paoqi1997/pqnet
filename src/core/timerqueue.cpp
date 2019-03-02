@@ -1,8 +1,6 @@
 #include <cerrno>
 #include <cstring>
 
-#include <utility>
-
 #include <sys/timerfd.h>
 #include <unistd.h>
 
