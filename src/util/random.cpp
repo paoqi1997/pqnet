@@ -9,11 +9,12 @@ namespace {
 
 // Engine
 std::default_random_engine engine(now().Int16());
+
 // Distribution
 std::uniform_int_distribution<std::uint32_t> dist32;
 std::uniform_int_distribution<std::uint64_t> dist64;
 
-}
+} // unnamed namespace
 
 std::uint32_t pqnet::Uint32(std::uint32_t left, std::uint32_t right)
 {
