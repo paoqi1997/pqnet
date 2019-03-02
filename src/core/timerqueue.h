@@ -17,7 +17,7 @@ public:
     TimerQueue();
     ~TimerQueue();
     int getFd() const { return tmfd; }
-    // Millisecond(s)
+    // Millisecond Level
     TimerId addTimer(const timerCallBack& cb, void *arg, uint _expiration, uint _interval = 0);
     void delTimer(TimerId id);
     void handle();
