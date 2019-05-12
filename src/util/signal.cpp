@@ -1,6 +1,5 @@
 #include <cerrno>
 #include <cstring>
-
 #include <map>
 
 #include "logger.h"
@@ -36,5 +35,8 @@ void pqnet::delSignal(int signum)
 {
     if (sigbox.find(signum) != sigbox.end()) {
         sigbox.erase(signum);
+        if (std::signal(signum, SIG_DFL) == SIG_ERR) {
+            ERROR(std::strerror(errno));
+        }
     }
 }
