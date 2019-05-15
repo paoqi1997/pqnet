@@ -13,46 +13,52 @@ namespace pqnet
 {
 
 // Thread Safe
-#define TS_TRACE(mtx, fmt, ...)                                                             \
-{                                                                                           \
-    mtx.lock();                                                                             \
-    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::TRACE, fmt, ##__VA_ARGS__);   \
-    mtx.unlock();                                                                           \
+#define TS_TRACE(mtx, fmt, ...)                                                  \
+{                                                                                \
+    mtx.lock();                                                                  \
+    auto logger = pqnet::Logger::getLogger();                                    \
+    logger->log(__FILE__, __LINE__, pqnet::Logger::TRACE, fmt, ##__VA_ARGS__);   \
+    mtx.unlock();                                                                \
 }
 
-#define TS_DEBUG(mtx, fmt, ...)                                                             \
-{                                                                                           \
-    mtx.lock();                                                                             \
-    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::DEBUG, fmt, ##__VA_ARGS__);   \
-    mtx.unlock();                                                                           \
+#define TS_DEBUG(mtx, fmt, ...)                                                  \
+{                                                                                \
+    mtx.lock();                                                                  \
+    auto logger = pqnet::Logger::getLogger();                                    \
+    logger->log(__FILE__, __LINE__, pqnet::Logger::DEBUG, fmt, ##__VA_ARGS__);   \
+    mtx.unlock();                                                                \
 }
 
-#define TS_INFO(mtx, fmt, ...)                                                              \
-{                                                                                           \
-    mtx.lock();                                                                             \
-    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::INFO, fmt, ##__VA_ARGS__);    \
-    mtx.unlock();                                                                           \
+#define TS_INFO(mtx, fmt, ...)                                                   \
+{                                                                                \
+    mtx.lock();                                                                  \
+    auto logger = pqnet::Logger::getLogger();                                    \
+    logger->log(__FILE__, __LINE__, pqnet::Logger::INFO, fmt, ##__VA_ARGS__);    \
+    mtx.unlock();                                                                \
 }
 
-#define TS_WARNING(mtx, fmt, ...)                                                           \
-{                                                                                           \
-    mtx.lock();                                                                             \
-    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::WARNING, fmt, ##__VA_ARGS__); \
-    mtx.unlock();                                                                           \
+#define TS_WARNING(mtx, fmt, ...)                                                \
+{                                                                                \
+    mtx.lock();                                                                  \
+    auto logger = pqnet::Logger::getLogger();                                    \
+    logger->log(__FILE__, __LINE__, pqnet::Logger::WARNING, fmt, ##__VA_ARGS__); \
+    mtx.unlock();                                                                \
 }
 
-#define TS_ERROR(mtx, fmt, ...)                                                             \
-{                                                                                           \
-    mtx.lock();                                                                             \
-    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::ERROR, fmt, ##__VA_ARGS__);   \
-    mtx.unlock();                                                                           \
+#define TS_ERROR(mtx, fmt, ...)                                                  \
+{                                                                                \
+    mtx.lock();                                                                  \
+    auto logger = pqnet::Logger::getLogger();                                    \
+    logger->log(__FILE__, __LINE__, pqnet::Logger::ERROR, fmt, ##__VA_ARGS__);   \
+    mtx.unlock();                                                                \
 }
 
-#define TS_FATAL(mtx, fmt, ...)                                                             \
-{                                                                                           \
-    mtx.lock();                                                                             \
-    pqnet::Logger::fastLog(__FILE__, __LINE__, pqnet::Logger::FATAL, fmt, ##__VA_ARGS__);   \
-    mtx.unlock();                                                                           \
+#define TS_FATAL(mtx, fmt, ...)                                                  \
+{                                                                                \
+    mtx.lock();                                                                  \
+    auto logger = pqnet::Logger::getLogger();                                    \
+    logger->log(__FILE__, __LINE__, pqnet::Logger::FATAL, fmt, ##__VA_ARGS__);   \
+    mtx.unlock();                                                                \
 }
 
 // Async Log

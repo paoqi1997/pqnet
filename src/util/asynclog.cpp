@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "asynclog.h"
+#include "timestamp.h"
 
 using namespace pqnet;
 
