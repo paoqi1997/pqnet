@@ -66,7 +66,7 @@ void Logger::setOutput(Output output)
     }
 }
 
-void Logger::log(const char *sourcefile, int line, LogLevel _level, const char *fmt, ...)
+void Logger::log(LogLevel _level, const char *sourcefile, int line, const char *fmt, ...)
 {
     this->checkLogName();
     std::va_list args1, args2;

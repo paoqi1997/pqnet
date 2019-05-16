@@ -17,7 +17,7 @@ namespace pqnet
 {                                                                                \
     mtx.lock();                                                                  \
     auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(__FILE__, __LINE__, pqnet::Logger::TRACE, fmt, ##__VA_ARGS__);   \
+    logger->log(pqnet::Logger::TRACE, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
     mtx.unlock();                                                                \
 }
 
@@ -25,7 +25,7 @@ namespace pqnet
 {                                                                                \
     mtx.lock();                                                                  \
     auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(__FILE__, __LINE__, pqnet::Logger::DEBUG, fmt, ##__VA_ARGS__);   \
+    logger->log(pqnet::Logger::DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
     mtx.unlock();                                                                \
 }
 
@@ -33,7 +33,7 @@ namespace pqnet
 {                                                                                \
     mtx.lock();                                                                  \
     auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(__FILE__, __LINE__, pqnet::Logger::INFO, fmt, ##__VA_ARGS__);    \
+    logger->log(pqnet::Logger::INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);    \
     mtx.unlock();                                                                \
 }
 
@@ -41,7 +41,7 @@ namespace pqnet
 {                                                                                \
     mtx.lock();                                                                  \
     auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(__FILE__, __LINE__, pqnet::Logger::WARNING, fmt, ##__VA_ARGS__); \
+    logger->log(pqnet::Logger::WARNING, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
     mtx.unlock();                                                                \
 }
 
@@ -49,7 +49,7 @@ namespace pqnet
 {                                                                                \
     mtx.lock();                                                                  \
     auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(__FILE__, __LINE__, pqnet::Logger::ERROR, fmt, ##__VA_ARGS__);   \
+    logger->log(pqnet::Logger::ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
     mtx.unlock();                                                                \
 }
 
@@ -57,7 +57,7 @@ namespace pqnet
 {                                                                                \
     mtx.lock();                                                                  \
     auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(__FILE__, __LINE__, pqnet::Logger::FATAL, fmt, ##__VA_ARGS__);   \
+    logger->log(pqnet::Logger::FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
     mtx.unlock();                                                                \
 }
 
