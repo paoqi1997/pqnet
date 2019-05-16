@@ -27,14 +27,19 @@ Logger::Logger() : level(Logger::INFO), dir("./log/"), currdate(now().toDate()),
     lf = std::fopen(lfname.c_str(), "a");
 }
 
-void Logger::checkDate()
+void Logger::checkLogName()
 {
-    const char *date = now().toDate();
-    if (std::strcmp(currdate.c_str(), date) != 0) {
-        currdate = date;
-        std::string lfname = dir;
-        lfname += currdate + ".log";
-        lf = std::fopen(lfname.c_str(), "a");
+    if (tofile) {
+        const char *date = now().toDate();
+        if (std::strcmp(currdate.c_str(), date) != 0) {
+            if (std::fclose(lf) != 0) {
+                ERROR(std::strerror(errno));
+            }
+            currdate = date;
+            std::string lfname = dir;
+            lfname += currdate + ".log";
+            lf = std::fopen(lfname.c_str(), "a");
+        }
     }
 }
 
@@ -49,7 +54,7 @@ void Logger::setOutput(Output output)
             tofile = !tofile;
         }
         break;
-    case Logger::TERMINAL:
+    case Logger::CONSOLE:
         if (tofile) {
             if (std::fclose(lf) != 0) {
                 ERROR(std::strerror(errno));
@@ -63,9 +68,7 @@ void Logger::setOutput(Output output)
 
 void Logger::log(const char *sourcefile, int line, LogLevel _level, const char *fmt, ...)
 {
-    if (tofile) {
-        this->checkDate();
-    }
+    this->checkLogName();
     std::va_list args1, args2;
     va_start(args1, fmt);
     va_copy(args2, args1);

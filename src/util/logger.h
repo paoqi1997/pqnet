@@ -58,7 +58,7 @@ public:
     };
     enum Output {
         FILE,
-        TERMINAL
+        CONSOLE
     };
     static Logger *getLogger() {
         if (instance == nullptr) {
@@ -69,7 +69,7 @@ public:
     void setLevel(LogLevel _level) {
         level = _level;
     }
-    void checkDate();
+    void checkLogName();
     void setOutput(Output output);
     void log(const char *sourcefile, int line, LogLevel _level, const char *fmt, ...);
 private:
@@ -80,6 +80,7 @@ private:
     std::FILE *lf;
     Logger();
     static Logger *instance;
+    // To delete the instance
     class Garbo
     {
     public:
