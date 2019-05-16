@@ -66,10 +66,10 @@ public:
         }
         return instance;
     }
-    void setLevel(LogLevel _level) {
+    void checkLogName();
+    void setLogLevel(LogLevel _level) {
         level = _level;
     }
-    void checkLogName();
     void setOutput(Output output);
     void log(const char *sourcefile, int line, LogLevel _level, const char *fmt, ...);
 private:
