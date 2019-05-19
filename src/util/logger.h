@@ -61,7 +61,7 @@ public:
         FILE,
         CONSOLE
     };
-    static Logger *getLogger() {
+    static Logger* getLogger() {
         if (instance == nullptr) {
             instance = new Logger();
         }

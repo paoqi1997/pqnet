@@ -5,7 +5,6 @@
 #include <queue>
 #include <vector>
 
-#include "asynclog.h"
 #include "condition.h"
 #include "thread.h"
 #include "types.h"
@@ -30,11 +29,9 @@ public:
     void shutdown() { running = false; }
     void addTask(Task task);
     Task take();
-    void flush();
     bool isRunning() const { return running; }
     bool isIdle() const { return taskqueue.empty(); }
 public:
-    AsyncLog al;
     Condition cond;
 private:
     bool running;

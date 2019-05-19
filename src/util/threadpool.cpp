@@ -39,8 +39,7 @@ void ThreadPool::run()
         t->run();
     }
     running = true;
-    for ( ; ; ) {
-        this->flush();
+    for (;;) {
         if (!running && this->isIdle()) {
             break;
         }
@@ -64,14 +63,4 @@ Task ThreadPool::take()
     Task task = taskqueue.front();
     taskqueue.pop();
     return task;
-}
-
-void ThreadPool::flush()
-{
-    while (!al.isIdle()) {
-        al.mtx.lock();
-        auto lmsg = al.take();
-        al.mtx.unlock();
-        al.consume(lmsg);
-    }
 }

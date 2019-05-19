@@ -2,94 +2,50 @@
 #define PQNET_UTIL_ASYNC_LOG_H
 
 #include <cstdio>
-
 #include <queue>
 #include <string>
 
+#include "condition.h"
 #include "logger.h"
 #include "mutex.h"
 
 namespace pqnet
 {
 
-// Thread Safe
-#define TS_TRACE(mtx, fmt, ...)                                                  \
+#define AL_TRACE(fmt, ...)                                                       \
 {                                                                                \
-    mtx.lock();                                                                  \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::TRACE, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
-    mtx.unlock();                                                                \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                    \
+    al->pushMsg(pqnet::Logger::TRACE, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
-#define TS_DEBUG(mtx, fmt, ...)                                                  \
+#define AL_DEBUG(fmt, ...)                                                       \
 {                                                                                \
-    mtx.lock();                                                                  \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
-    mtx.unlock();                                                                \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                    \
+    al->pushMsg(pqnet::Logger::DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
-#define TS_INFO(mtx, fmt, ...)                                                   \
+#define AL_INFO(fmt, ...)                                                        \
 {                                                                                \
-    mtx.lock();                                                                  \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);    \
-    mtx.unlock();                                                                \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                    \
+    al->pushMsg(pqnet::Logger::INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);    \
 }
 
-#define TS_WARNING(mtx, fmt, ...)                                                \
+#define AL_WARNING(fmt, ...)                                                     \
 {                                                                                \
-    mtx.lock();                                                                  \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::WARNING, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
-    mtx.unlock();                                                                \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                    \
+    al->pushMsg(pqnet::Logger::WARNING, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
 }
 
-#define TS_ERROR(mtx, fmt, ...)                                                  \
+#define AL_ERROR(fmt, ...)                                                       \
 {                                                                                \
-    mtx.lock();                                                                  \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
-    mtx.unlock();                                                                \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                    \
+    al->pushMsg(pqnet::Logger::ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
-#define TS_FATAL(mtx, fmt, ...)                                                  \
+#define AL_FATAL(fmt, ...)                                                       \
 {                                                                                \
-    mtx.lock();                                                                  \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
-    mtx.unlock();                                                                \
-}
-
-// Async Log
-#define ALOG_TRACE(al, fmt, ...)                                                \
-{                                                                               \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::TRACE, fmt, ##__VA_ARGS__);   \
-}
-
-#define ALOG_DEBUG(al, fmt, ...)                                                \
-{                                                                               \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::DEBUG, fmt, ##__VA_ARGS__);   \
-}
-
-#define ALOG_INFO(al, fmt, ...)                                                 \
-{                                                                               \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::INFO, fmt, ##__VA_ARGS__);    \
-}
-
-#define ALOG_WARNING(al, fmt, ...)                                              \
-{                                                                               \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::WARNING, fmt, ##__VA_ARGS__); \
-}
-
-#define ALOG_ERROR(al, fmt, ...)                                                \
-{                                                                               \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::ERROR, fmt, ##__VA_ARGS__);   \
-}
-
-#define ALOG_FATAL(al, fmt, ...)                                                \
-{                                                                               \
-    al.pushMsg(__FILE__, __LINE__, pqnet::Logger::FATAL, fmt, ##__VA_ARGS__);   \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                    \
+    al->pushMsg(pqnet::Logger::FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
 struct LogMsg
@@ -103,20 +59,58 @@ struct LogMsg
 class AsyncLog
 {
 public:
-    AsyncLog();
-    ~AsyncLog();
+    static AsyncLog* getAsyncLog() {
+        if (instance == nullptr) {
+            mtx.lock();
+            if (instance == nullptr) {
+                instance = new AsyncLog();
+                instance->run();
+            }
+            mtx.unlock();
+        }
+        return instance;
+    }
+    void run();
+    void shutdown();
+    static void* routine(void *arg);
     LogMsg take();
     void consume(LogMsg lmsg);
     void reset(const char *date);
     bool isIdle() const { return msgqueue.empty(); }
-    void pushMsg(const char *sourcefile, int line, Logger::LogLevel level, const char *fmt, ...);
+    void pushMsg(Logger::LogLevel level, const char *sourcefile, int line, const char *fmt, ...);
 public:
-    Mutex mtx;
+    static Mutex mtx;
+    Condition cond;
+    bool running;
 private:
-    std::FILE *lf;
+    Logger::LogLevel level;
     std::string dir;
     std::string currdate;
+    bool tofile;
+    std::FILE *lf;
+    pthread_t id;
     std::queue<LogMsg> msgqueue;
+    AsyncLog();
+    ~AsyncLog();
+    static AsyncLog *instance;
+    // To delete the instance
+    class Garbo
+    {
+    public:
+        ~Garbo() {
+            auto al = AsyncLog::instance;
+            if (al) {
+                if (al->tofile) {
+                    if (std::fclose(al->lf) != 0) {
+                        ERROR(std::strerror(errno));
+                    }
+                }
+                delete al;
+                al = nullptr;
+            }
+        }
+    };
+    static Garbo garbo;
 };
 
 } // namespace pqnet
