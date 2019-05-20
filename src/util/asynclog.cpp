@@ -87,25 +87,28 @@ void AsyncLog::consume(LogMsg lmsg)
         this->reset(date);
     }
     const char *msg = lmsg.msg.c_str();
-    switch (lmsg.level) {
-    case Logger::TRACE:
-        std::fprintf(lf, "[Trace] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
-        break;
-    case Logger::DEBUG:
-        std::fprintf(lf, "[Debug] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
-        break;
-    case Logger::INFO:
-        std::fprintf(lf, "[Info] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
-        break;
-    case Logger::WARNING:
-        std::fprintf(lf, "[Warning] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
-        break;
-    case Logger::ERROR:
-        std::fprintf(lf, "[Error] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
-        break;
-    case Logger::FATAL:
-        std::fprintf(lf, "[Fatal] %s %s:%d: %s\n", now().toDefault(), lmsg.sourcefile, lmsg.line, msg);
-        break;
+    if (lmsg.level >= level) {
+        pthread_t tid = lmsg.id;
+        switch (lmsg.level) {
+        case Logger::TRACE:
+            std::fprintf(lf, "[Trace] %s ThreadID:%ld %s:%d: %s\n", now().toDefault(), tid, lmsg.sourcefile, lmsg.line, msg);
+            break;
+        case Logger::DEBUG:
+            std::fprintf(lf, "[Debug] %s ThreadID:%ld %s:%d: %s\n", now().toDefault(), tid, lmsg.sourcefile, lmsg.line, msg);
+            break;
+        case Logger::INFO:
+            std::fprintf(lf, "[Info] %s ThreadID:%ld %s:%d: %s\n", now().toDefault(), tid, lmsg.sourcefile, lmsg.line, msg);
+            break;
+        case Logger::WARNING:
+            std::fprintf(lf, "[Warning] %s ThreadID:%ld %s:%d: %s\n", now().toDefault(), tid, lmsg.sourcefile, lmsg.line, msg);
+            break;
+        case Logger::ERROR:
+            std::fprintf(lf, "[Error] %s ThreadID:%ld %s:%d: %s\n", now().toDefault(), tid, lmsg.sourcefile, lmsg.line, msg);
+            break;
+        case Logger::FATAL:
+            std::fprintf(lf, "[Fatal] %s ThreadID:%ld %s:%d: %s\n", now().toDefault(), tid, lmsg.sourcefile, lmsg.line, msg);
+            break;
+        }
     }
 }
 
@@ -120,7 +123,7 @@ void AsyncLog::reset(const char *date)
     lf = std::fopen(lfname.c_str(), "a");
 }
 
-void AsyncLog::pushMsg(Logger::LogLevel level, const char *sourcefile, int line, const char *fmt, ...)
+void AsyncLog::pushMsg(Logger::LogLevel level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...)
 {
     std::va_list args1, args2;
     va_start(args1, fmt);
@@ -130,7 +133,7 @@ void AsyncLog::pushMsg(Logger::LogLevel level, const char *sourcefile, int line,
     std::vector<char> buf(size + 1);
     std::vsprintf(buf.data(), fmt, args2);
     va_end(args2);
-    LogMsg lmsg{ sourcefile, line, level, std::string(buf.data()) };
+    LogMsg lmsg{ sourcefile, line, level, _id, std::string(buf.data()) };
     cond.lock();
     msgqueue.push(lmsg);
     cond.unlock();
