@@ -54,30 +54,30 @@ void* AsyncLog::routine(void *arg)
             self->cond.unlock();
             break;
         }
-        auto info = self->take();
+        Log log = self->take();
         self->cond.unlock();
-        self->consume(info);
+        self->consume(log);
     }
     return nullptr;
 }
 
-LogInfo AsyncLog::take()
+Log AsyncLog::take()
 {
-    auto info = infoq.front();
-    infoq.pop();
-    return info;
+    Log log = logqueue.front();
+    logqueue.pop();
+    return log;
 }
 
-void AsyncLog::consume(LogInfo info)
+void AsyncLog::consume(Log log)
 {
     this->checkLogName();
-    if (info.level >= level) {
+    if (log.level >= level) {
         const char *time = now().toDefault();
-        pthread_t id = info.id;
-        const char *sourcefile = info.sourcefile;
-        int line = info.line;
-        const char *msg = info.msg.c_str();
-        switch (info.level) {
+        pthread_t id = log.id;
+        const char *sourcefile = log.sourcefile;
+        int line = log.line;
+        const char *msg = log.msg.c_str();
+        switch (log.level) {
         case Logger::TRACE:
             std::fprintf(lf, "[Trace] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
             break;
@@ -116,7 +116,7 @@ void AsyncLog::checkLogName()
     }
 }
 
-void AsyncLog::addInfo(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...)
+void AsyncLog::addLog(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...)
 {
     std::va_list args1, args2;
     va_start(args1, fmt);
@@ -126,9 +126,9 @@ void AsyncLog::addInfo(Logger::LogLevel _level, pthread_t _id, const char *sourc
     std::vector<char> buf(size + 1);
     std::vsprintf(buf.data(), fmt, args2);
     va_end(args2);
-    LogInfo info{ _level, _id, sourcefile, line, std::string(buf.data()) };
+    Log log{ _level, _id, sourcefile, line, std::string(buf.data()) };
     cond.lock();
-    infoq.push(info);
+    logqueue.push(log);
     cond.unlock();
     cond.notify();
 }

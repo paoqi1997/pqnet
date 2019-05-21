@@ -42,7 +42,7 @@ void* Thread::routine(void *arg)
             pool->cond.unlock();
             break;
         }
-        auto task = pool->take();
+        Task task = pool->take();
         pool->cond.unlock();
         task.run();
     }
