@@ -54,12 +54,12 @@ namespace pqnet
     al->pushMsg(pqnet::Logger::FATAL, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
-struct LogMsg
+struct LogInfo
 {
-    const char *sourcefile;
-    int line;
     Logger::LogLevel level;
     pthread_t id;
+    const char *sourcefile;
+    int line;
     std::string msg;
 };
 
@@ -80,23 +80,23 @@ public:
     void run();
     void shutdown();
     static void* routine(void *arg);
-    LogMsg take();
-    void consume(LogMsg lmsg);
+    LogInfo take();
+    void consume(LogInfo lmsg);
     void reset(const char *date);
-    bool isIdle() const { return msgqueue.empty(); }
-    void pushMsg(Logger::LogLevel level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...);
+    bool isEmpty() const { return infoq.empty(); }
+    void pushMsg(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...);
 public:
     static Mutex mtx;
     Condition cond;
     bool running;
 private:
     Logger::LogLevel level;
+    pthread_t id;
     std::string dir;
     std::string currdate;
     bool tofile;
     std::FILE *lf;
-    pthread_t id;
-    std::queue<LogMsg> msgqueue;
+    std::queue<LogInfo> infoq;
     AsyncLog();
     ~AsyncLog();
     static AsyncLog *instance;
