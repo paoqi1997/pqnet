@@ -16,42 +16,42 @@ namespace pqnet
 {                                                                                    \
     auto al = pqnet::AsyncLog::getAsyncLog();                                        \
     pthread_t id = pthread_self();                                                   \
-    al->pushMsg(pqnet::Logger::TRACE, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+    al->addInfo(pqnet::Logger::TRACE, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
 #define AL_DEBUG(fmt, ...)                                                           \
 {                                                                                    \
     auto al = pqnet::AsyncLog::getAsyncLog();                                        \
     pthread_t id = pthread_self();                                                   \
-    al->pushMsg(pqnet::Logger::DEBUG, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+    al->addInfo(pqnet::Logger::DEBUG, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
 #define AL_INFO(fmt, ...)                                                            \
 {                                                                                    \
     auto al = pqnet::AsyncLog::getAsyncLog();                                        \
     pthread_t id = pthread_self();                                                   \
-    al->pushMsg(pqnet::Logger::INFO, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);    \
+    al->addInfo(pqnet::Logger::INFO, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);    \
 }
 
 #define AL_WARNING(fmt, ...)                                                         \
 {                                                                                    \
     auto al = pqnet::AsyncLog::getAsyncLog();                                        \
     pthread_t id = pthread_self();                                                   \
-    al->pushMsg(pqnet::Logger::WARNING, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
+    al->addInfo(pqnet::Logger::WARNING, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
 }
 
 #define AL_ERROR(fmt, ...)                                                           \
 {                                                                                    \
     auto al = pqnet::AsyncLog::getAsyncLog();                                        \
     pthread_t id = pthread_self();                                                   \
-    al->pushMsg(pqnet::Logger::ERROR, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+    al->addInfo(pqnet::Logger::ERROR, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
 #define AL_FATAL(fmt, ...)                                                           \
 {                                                                                    \
     auto al = pqnet::AsyncLog::getAsyncLog();                                        \
     pthread_t id = pthread_self();                                                   \
-    al->pushMsg(pqnet::Logger::FATAL, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+    al->addInfo(pqnet::Logger::FATAL, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
 }
 
 struct LogInfo
@@ -71,24 +71,20 @@ public:
             mtx.lock();
             if (instance == nullptr) {
                 instance = new AsyncLog();
-                instance->run();
             }
             mtx.unlock();
         }
         return instance;
     }
-    void run();
-    void shutdown();
     static void* routine(void *arg);
     LogInfo take();
-    void consume(LogInfo lmsg);
-    void reset(const char *date);
-    bool isEmpty() const { return infoq.empty(); }
-    void pushMsg(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...);
+    void consume(LogInfo info);
+    void checkLogName();
+    bool isRunning() const { return running; }
+    bool isIdle() const { return infoq.empty(); }
+    void addInfo(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...);
 public:
-    static Mutex mtx;
     Condition cond;
-    bool running;
 private:
     Logger::LogLevel level;
     pthread_t id;
@@ -99,6 +95,8 @@ private:
     std::queue<LogInfo> infoq;
     AsyncLog();
     ~AsyncLog();
+    bool running;
+    static Mutex mtx;
     static AsyncLog *instance;
     // To delete the instance
     class Garbo

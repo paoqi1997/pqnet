@@ -17,8 +17,8 @@ AsyncLog *AsyncLog::instance = nullptr;
 AsyncLog::Garbo AsyncLog::garbo;
 
 AsyncLog::AsyncLog()
-    : running(false), level(Logger::INFO),
-      dir("./log/"), currdate(now().toDate()), tofile(true)
+    : level(Logger::INFO), dir("./log/"),
+      currdate(now().toDate()), tofile(true), running(true)
 {
     if (access(dir.c_str(), F_OK) != 0) {
         if (mkdir(dir.c_str(), 0777) != 0) {
@@ -28,24 +28,12 @@ AsyncLog::AsyncLog()
     std::string lfname = dir;
     lfname += currdate + ".log";
     lf = std::fopen(lfname.c_str(), "a");
-}
-
-AsyncLog::~AsyncLog()
-{
-    if (running) {
-        this->shutdown();
-    }
-}
-
-void AsyncLog::run()
-{
-    running = true;
     if (pthread_create(&id, nullptr, routine, this) != 0) {
         ERROR(std::strerror(errno));
     }
 }
 
-void AsyncLog::shutdown()
+AsyncLog::~AsyncLog()
 {
     running = false;
     cond.notify();
@@ -59,10 +47,10 @@ void* AsyncLog::routine(void *arg)
     auto self = static_cast<AsyncLog*>(arg);
     for (;;) {
         self->cond.lock();
-        while (self->running && self->isEmpty()) {
+        while (self->isRunning() && self->isIdle()) {
             self->cond.wait();
         }
-        if (!self->running) {
+        if (!self->isRunning()) {
             self->cond.unlock();
             break;
         }
@@ -82,10 +70,7 @@ LogInfo AsyncLog::take()
 
 void AsyncLog::consume(LogInfo info)
 {
-    const char *date = now().toDate();
-    if (std::strcmp(currdate.c_str(), date) != 0) {
-        this->reset(date);
-    }
+    this->checkLogName();
     if (info.level >= level) {
         const char *time = now().toDefault();
         pthread_t id = info.id;
@@ -115,18 +100,23 @@ void AsyncLog::consume(LogInfo info)
     }
 }
 
-void AsyncLog::reset(const char *date)
+void AsyncLog::checkLogName()
 {
-    if (std::fclose(lf) != 0) {
-        ERROR(std::strerror(errno));
+    if (tofile) {
+        const char *date = now().toDate();
+        if (std::strcmp(currdate.c_str(), date) != 0) {
+            if (std::fclose(lf) != 0) {
+                ERROR(std::strerror(errno));
+            }
+            currdate = date;
+            std::string lfname = dir;
+            lfname += currdate + ".log";
+            lf = std::fopen(lfname.c_str(), "a");
+        }
     }
-    currdate = date;
-    std::string lfname = dir;
-    lfname += currdate + ".log";
-    lf = std::fopen(lfname.c_str(), "a");
 }
 
-void AsyncLog::pushMsg(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...)
+void AsyncLog::addInfo(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...)
 {
     std::va_list args1, args2;
     va_start(args1, fmt);
