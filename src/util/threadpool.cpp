@@ -35,14 +35,9 @@ ThreadPool::~ThreadPool()
 
 void ThreadPool::run()
 {
+    running = true;
     for (auto &t : pool) {
         t->run();
-    }
-    running = true;
-    for (;;) {
-        if (!running && this->isIdle()) {
-            break;
-        }
     }
 }
 

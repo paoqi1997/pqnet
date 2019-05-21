@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <unistd.h>
+
 #include "../signal.h"
 #include "../threadpool.h"
 
@@ -26,5 +28,12 @@ int main()
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();
     pool.run();
+    for (;;) {
+        if (!pool.isRunning() && pool.isIdle()) {
+            break;
+        } else {
+            sleep(1);
+        }
+    }
     return 0;
 }

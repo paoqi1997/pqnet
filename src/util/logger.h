@@ -5,8 +5,6 @@
 #include <cstring>
 #include <string>
 
-#include "types.h"
-
 namespace pqnet
 {
 

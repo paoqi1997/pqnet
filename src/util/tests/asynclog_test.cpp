@@ -1,12 +1,13 @@
 #include <iostream>
 
+#include <unistd.h>
+
 #include "../asynclog.h"
 #include "../signal.h"
 #include "../thread.h"
 #include "../threadpool.h"
 
 void* func(void *arg) {
-    auto self = static_cast<pqnet::Thread*>(arg);
     const char *name = "pqnet";
     AL_INFO("Hello %s!", name);
     return nullptr;
@@ -28,5 +29,12 @@ int main()
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();
     pool.run();
+    for (;;) {
+        if (!pool.isRunning() && pool.isIdle()) {
+            break;
+        } else {
+            sleep(1);
+        }
+    }
     return 0;
 }

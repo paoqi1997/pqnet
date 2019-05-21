@@ -2,6 +2,7 @@
 #define PQNET_UTIL_ASYNC_LOG_H
 
 #include <cstdio>
+#include <cstring>
 #include <queue>
 #include <string>
 
