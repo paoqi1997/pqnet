@@ -116,6 +116,29 @@ void AsyncLog::checkLogName()
     }
 }
 
+void AsyncLog::setOutput(Logger::Output output)
+{
+    switch (output) {
+    case Logger::FILE:
+        if (!tofile) {
+            std::string lfname = dir;
+            lfname += currdate + ".log";
+            lf = std::fopen(lfname.c_str(), "a");
+            tofile = !tofile;
+        }
+        break;
+    case Logger::CONSOLE:
+        if (tofile) {
+            if (std::fclose(lf) != 0) {
+                ERROR(std::strerror(errno));
+            }
+            lf = stdout;
+            tofile = !tofile;
+        }
+        break;
+    }
+}
+
 void AsyncLog::addLog(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...)
 {
     std::va_list args1, args2;

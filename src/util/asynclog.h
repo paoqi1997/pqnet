@@ -80,6 +80,10 @@ public:
     Log take();
     void consume(Log log);
     void checkLogName();
+    void setLogLevel(Logger::LogLevel _level) {
+        level = _level;
+    }
+    void setOutput(Logger::Output output);
     bool isRunning() const { return running; }
     bool isIdle() const { return logqueue.empty(); }
     void addLog(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...);
