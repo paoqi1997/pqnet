@@ -10,7 +10,7 @@ namespace pqnet
 
 void waitSig();
 // Add or Update signal(s)
-void addSignal(int signum, pn_signal_func func);
+void addSignal(int signum, pn_signal_func_t func);
 // Delete signal(s)
 void delSignal(int signum);
 

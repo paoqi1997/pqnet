@@ -15,15 +15,15 @@ namespace pqnet
 struct Task
 {
     void run() { func(arg); }
-    pn_task_func func;
-    pn_task_arg arg;
+    pn_task_func_t func;
+    void *arg;
 };
 
 class ThreadPool
 {
 public:
     ThreadPool(std::size_t threadNumber);
-    ThreadPool(std::size_t threadNumber, pn_thread_func func);
+    ThreadPool(std::size_t threadNumber, pn_thread_func_t func);
     ~ThreadPool();
     void run();
     void shutdown() { running = false; }

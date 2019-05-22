@@ -14,16 +14,16 @@ class Thread
 {
 public:
     Thread(ThreadPool *_poolptr);
-    Thread(ThreadPool *_poolptr, pn_thread_func _func);
+    Thread(ThreadPool *_poolptr, pn_thread_func_t _func);
     void run();
     static void* routine(void *arg);
     pthread_t getId() const { return id; }
     ThreadPool* getPool() const { return poolptr; }
-    void setFunc(pn_thread_func _func) { func = _func; }
+    void setFunc(pn_thread_func_t _func) { func = _func; }
 private:
     pthread_t id;
     ThreadPool *poolptr;
-    pn_thread_func func;
+    pn_thread_func_t func;
 };
 
 } // namespace pqnet

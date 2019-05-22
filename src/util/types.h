@@ -14,12 +14,11 @@ namespace pqnet
 #define  CLI_EVS    8
 #define SERV_EVS 2048
 
-using pn_thread_func = void*(*)(void*);
+using pn_thread_func_t = void*(*)(void*);
 
-using pn_task_func = void(*)(void*);
-using pn_task_arg  = void*;
+using pn_task_func_t = void(*)(void*);
 
-using pn_signal_func = std::function<void()>;
+using pn_signal_func_t = std::function<void()>;
 
 } // namespace pqnet
 

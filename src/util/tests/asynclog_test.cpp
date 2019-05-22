@@ -4,7 +4,6 @@
 
 #include "../asynclog.h"
 #include "../signal.h"
-#include "../thread.h"
 #include "../threadpool.h"
 
 void* func(void *arg) {

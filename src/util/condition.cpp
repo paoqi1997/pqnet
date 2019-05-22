@@ -22,7 +22,7 @@ Condition::~Condition()
 
 void Condition::wait()
 {
-    if (pthread_cond_wait(&cond, mutex.getMutex()) != 0) {
+    if (pthread_cond_wait(&cond, mutex.getPtr()) != 0) {
         ERROR(std::strerror(errno));
     }
 }

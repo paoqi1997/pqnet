@@ -15,7 +15,7 @@ ThreadPool::ThreadPool(std::size_t threadNumber) : running(false), tn(threadNumb
     }
 }
 
-ThreadPool::ThreadPool(std::size_t threadNumber, pn_thread_func func)
+ThreadPool::ThreadPool(std::size_t threadNumber, pn_thread_func_t func)
     : running(false), tn(threadNumber)
 {
     for (std::size_t i = 0; i < tn; ++i) {

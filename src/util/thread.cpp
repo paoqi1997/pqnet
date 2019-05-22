@@ -14,7 +14,7 @@ Thread::Thread(ThreadPool *_poolptr) : poolptr(_poolptr), func(nullptr)
 
 }
 
-Thread::Thread(ThreadPool *_poolptr, pn_thread_func _func) : poolptr(_poolptr), func(_func)
+Thread::Thread(ThreadPool *_poolptr, pn_thread_func_t _func) : poolptr(_poolptr), func(_func)
 {
 
 }

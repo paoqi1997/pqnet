@@ -13,7 +13,7 @@ public:
     ~Mutex();
     void lock();
     void unlock();
-    pthread_mutex_t* getMutex() { return &mutex; }
+    pthread_mutex_t* getPtr() { return &mutex; }
 private:
     pthread_mutex_t mutex;
 };
