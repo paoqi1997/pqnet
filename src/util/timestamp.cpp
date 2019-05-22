@@ -17,7 +17,7 @@ const char* TimeStamp::toDefault()
     return buf;
 }
 
-const char* TimeStamp::toString(const char *format)
+const char* TimeStamp::toFmtStr(const char *format)
 {
     if (std::strftime(buf, sizeof(buf), format, group) != 0) {
         return buf;

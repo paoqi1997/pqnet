@@ -1,13 +1,14 @@
 #include <cerrno>
 #include <cstdarg>
 #include <cstring>
+#include <string>
 #include <vector>
 
+#include <pthread.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #include "asynclog.h"
-#include "thread.h"
 #include "timestamp.h"
 
 using namespace pqnet;
