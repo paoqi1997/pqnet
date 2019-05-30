@@ -38,14 +38,14 @@ TimeStamp pqnet::now()
 
 std::pair<uint, uint> pqnet::ms2SecAndNsec(uint ms)
 {
-    uint sec = ms / 1000;
-    uint nsec = (ms - sec * 1000) * 1000 * 1000;
+    uint sec = ms / 1e3;
+    uint nsec = (ms - sec * 1e3) * 1e6;
     return std::make_pair(sec, nsec);
 }
 
 std::pair<uint, uint> pqnet::us2SecAndNsec(uint us)
 {
-    uint sec = us / 1000000;
-    uint nsec = (us - sec * 1000000) * 1000;
+    uint sec = us / 1e6;
+    uint nsec = (us - sec * 1e6) * 1e3;
     return std::make_pair(sec, nsec);
 }

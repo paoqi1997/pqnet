@@ -1,5 +1,3 @@
-#include <cstdio>
-
 #include <iostream>
 
 #include "../timestamp.h"
@@ -19,8 +17,7 @@ int main()
     std::cout << ts.Int19() << std::endl;
 
     auto time = pqnet::ms2SecAndNsec(2500);
-
-    std::printf("%ds %dns\n", time.first, time.second);
+    cout << time.first << 's' << ' ' << time.second << 'ns\n';
 
     return 0;
 }

@@ -2,9 +2,7 @@
 
 int main()
 {
-    do {
-        const char *name = "pqnet";
-        INFO("Hello %s!", name);
-    } while (false);
+    const char *name = "pqnet";
+    INFO("Hello %s!", name);
     return 0;
 }
