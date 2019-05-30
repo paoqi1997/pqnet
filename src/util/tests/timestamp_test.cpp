@@ -16,8 +16,10 @@ int main()
     std::cout << ts.Int16() << std::endl;
     std::cout << ts.Int19() << std::endl;
 
-    auto time = pqnet::ms2SecAndNsec(2500);
-    cout << time.first << 's' << ' ' << time.second << 'ns\n';
+    auto time1 = pqnet::ms2SecAndNsec(2500);
+    std::cout << time1.first << 's' << ' ' << time1.second << "ns\n";
+    auto time2 = pqnet::us2SecAndNsec(2500);
+    std::cout << time2.first << 's' << ' ' << time2.second << "ns\n";
 
     return 0;
 }
