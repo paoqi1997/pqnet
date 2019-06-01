@@ -2,11 +2,13 @@
 #define PQNET_CORE_CLIENT_H
 
 #include <cstdint>
+#include <vector>
 
 #include <sys/epoll.h>
 
 #include "../util/types.h"
 #include "callback.h"
+#include "channel.h"
 #include "connection.h"
 #include "ipaddr.h"
 
@@ -20,15 +22,11 @@ public:
     ~TcpClient();
     void run();
     void shutdown() { running = false; }
+    int getEpfd() const { return epfd; }
+    TcpConnPtr getConn() const { return connptr; }
     // for stdin
-    void handleIn(const TcpConnPtr& conn) { incb(conn); }
     void setInCallBack(const inCallBack& cb) { incb = cb; }
     // CallBack(s)
-    void onConnect(const TcpConnPtr& conn) { conncb(conn); }
-    void onRead(const TcpConnPtr& conn) { readcb(conn); }
-    void onMessage(const TcpConnPtr& conn) { msgcb(conn); }
-    void onCloseByPeer(const TcpConnPtr& conn) { cpcb(conn); }
-    void onCloseBySock(const TcpConnPtr& conn) { cscb(conn); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setReadCallBack(const readCallBack& cb) { readcb = cb; }
     void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }
@@ -46,6 +44,7 @@ private:
     int sockfd;
     Ip4Addr addr;
     TcpConnPtr connptr;
+    std::vector<Channel*> channels;
     bool running;
     int epfd;
     struct epoll_event poi;

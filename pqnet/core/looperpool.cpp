@@ -15,7 +15,7 @@ LooperPool::LooperPool(std::size_t looperNumber) : ln(looperNumber)
     }
 }
 
-LooperPool::LooperPool(std::size_t looperNumber, pn_thread_func func) : ln(looperNumber)
+LooperPool::LooperPool(std::size_t looperNumber, pn_thread_func_t func) : ln(looperNumber)
 {
     for (std::size_t i = 0; i < ln; ++i) {
         loopers.emplace_back(new Looper(func));

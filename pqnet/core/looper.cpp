@@ -26,7 +26,7 @@ Looper::Looper() : msg(0), func(nullptr)
     }
 }
 
-Looper::Looper(pn_thread_func _func) : msg(0), func(_func)
+Looper::Looper(pn_thread_func_t _func) : msg(0), func(_func)
 {
     evfd = eventfd(0, EFD_NONBLOCK);
     if (evfd == -1) {
@@ -100,7 +100,7 @@ void* Looper::routine(void *arg)
                     if (epoll_ctl(self->epfd, EPOLL_CTL_ADD, connfd, &self->poi) == -1) {
                         ERROR(std::strerror(errno));
                     }
-                    self->connpool[connfd] = std::make_shared<TcpConnection>(connfd);
+                    self->connpool[connfd] = std::make_shared<TcpConnection>(self->epfd, connfd);
                     self->onConnect(self->connpool[connfd]);
                 }
             } else {

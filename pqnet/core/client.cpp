@@ -29,11 +29,11 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port)
     setNonBlock(sockfd, true);
     setReuseAddr(sockfd, true);
     setReusePort(sockfd, true);
-    connptr = std::make_shared<TcpConnection>(sockfd);
     epfd = epoll_create(CLI_EVS);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
+    /*
     poi.data.fd = sockfd;
     poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, sockfd, &poi) == -1) {
@@ -44,6 +44,11 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port)
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, fileno(stdin), &poi) == -1) {
         ERROR(std::strerror(errno));
     }
+    */
+    connptr = std::make_shared<TcpConnection>(epfd, sockfd);
+    connptr->setConnectCallBack(conncb);
+    connptr->setCloseCallBack(cpcb);
+    connptr->setMessageCallBack(msgcb);
 }
 
 // close(Client) -> EPOLLRDHUP(Looper)
@@ -60,7 +65,7 @@ TcpClient::~TcpClient()
 
 void TcpClient::run()
 {
-    this->checkCallBack();
+    //this->checkCallBack();
     this->onConnect(connptr);
     running = true;
     while (running) {
@@ -75,6 +80,12 @@ void TcpClient::run()
                 break;
             }
         }
+        for (int i = 0; i < cnt; ++i) {
+            auto ch = reinterpret_cast<Channel*>(evpool[i].data.ptr);
+            ch->setRevents(evpool[i].events);
+            ch->handleEvent();
+        }
+        /*
         for (int i = 0; i < cnt; ++i) {
             // 服务端关闭连接
             if (evpool[i].events & EPOLLRDHUP) {
@@ -103,6 +114,7 @@ void TcpClient::run()
                 }
             }
         }
+        */
     }
 }
 

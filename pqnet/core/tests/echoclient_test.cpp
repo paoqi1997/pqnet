@@ -2,6 +2,7 @@
 
 #include "../../util/logger.h"
 #include "../../util/signal.h"
+#include "../channel.h"
 #include "../client.h"
 
 using namespace std::placeholders;
@@ -10,7 +11,12 @@ class TcpEchoClient
 {
 public:
     TcpEchoClient(const char *servname, std::uint16_t port)
-        : cli(servname, port) {}
+        : cli(servname, port), inChannel(cli.getEpfd(), fileno(stdin))
+    {
+        inChannel.addToLoop();
+        inChannel.likeReading();
+        inChannel.setReadCallBack(std::bind(&TcpEchoClient::send, this));
+    }
     void run() {
         cli.setInCallBack(
             std::bind(&TcpEchoClient::handleIn, this, _1)
@@ -34,6 +40,10 @@ public:
     }
     void shutdown() {
         cli.shutdown();
+    }
+    void send() {
+        std::cin >> msg; msg += '\n';
+        cli.getConn()->send(msg.c_str(), msg.length());
     }
     void handleIn(const pqnet::TcpConnPtr& conn) {
         std::cin >> msg; msg += '\n';
@@ -64,6 +74,7 @@ public:
 private:
     std::string msg;
     pqnet::TcpClient cli;
+    pqnet::Channel inChannel;
 };
 
 int main()

@@ -14,7 +14,7 @@ class LooperPool
 {
 public:
     LooperPool(std::size_t looperNumber);
-    LooperPool(std::size_t looperNumber, pn_thread_func func);
+    LooperPool(std::size_t looperNumber, pn_thread_func_t func);
     ~LooperPool();
     void run();
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }

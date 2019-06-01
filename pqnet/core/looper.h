@@ -20,12 +20,12 @@ class Looper
 {
 public:
     Looper();
-    Looper(pn_thread_func _func);
+    Looper(pn_thread_func_t _func);
     ~Looper();
     void run();
     static void* routine(void *arg);
     pthread_t getId() const { return id; }
-    void setFunc(pn_thread_func _func) { func = _func; }
+    void setFunc(pn_thread_func_t _func) { func = _func; }
     void onConnect(const TcpConnPtr& conn) { conncb(conn); }
     void onRead(const TcpConnPtr& conn) { readcb(conn); }
     void onMessage(const TcpConnPtr& conn) { msgcb(conn); }
@@ -51,7 +51,7 @@ public:
     struct epoll_event evpool[SERV_EVS];
 private:
     pthread_t id;
-    pn_thread_func func;
+    pn_thread_func_t func;
 };
 
 } // namespace pqnet
