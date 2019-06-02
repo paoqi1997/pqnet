@@ -33,22 +33,6 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port)
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
-    /*
-    poi.data.fd = sockfd;
-    poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
-    if (epoll_ctl(epfd, EPOLL_CTL_ADD, sockfd, &poi) == -1) {
-        ERROR(std::strerror(errno));
-    }
-    poi.data.fd = fileno(stdin);
-    poi.events = EPOLLET | EPOLLIN;
-    if (epoll_ctl(epfd, EPOLL_CTL_ADD, fileno(stdin), &poi) == -1) {
-        ERROR(std::strerror(errno));
-    }
-    */
-    connptr = std::make_shared<TcpConnection>(epfd, sockfd);
-    connptr->setConnectCallBack(conncb);
-    connptr->setCloseCallBack(cpcb);
-    connptr->setMessageCallBack(msgcb);
 }
 
 // close(Client) -> EPOLLRDHUP(Looper)
@@ -65,15 +49,17 @@ TcpClient::~TcpClient()
 
 void TcpClient::run()
 {
-    //this->checkCallBack();
-    this->onConnect(connptr);
+    connptr = std::make_shared<TcpConnection>(epfd, sockfd);
+    connptr->setConnectCallBack(conncb);
+    connptr->setCloseCallBack(closecb);
+    connptr->setMessageArrivedCallBack(macb);
+    connptr->connectEstablished();
     running = true;
     while (running) {
         int cnt = epoll_wait(epfd, evpool, CLI_EVS, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
                 // Has been in shutdown state
-                this->onCloseBySock(connptr);
                 INFO("Signal coming: epoll_wait exits.");
             } else {
                 ERROR(std::strerror(errno));
@@ -116,14 +102,4 @@ void TcpClient::run()
         }
         */
     }
-}
-
-void TcpClient::checkCallBack()
-{
-    assert(incb);
-    assert(conncb);
-    assert(readcb);
-    assert(msgcb);
-    assert(cpcb);
-    assert(cscb);
 }

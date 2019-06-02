@@ -27,18 +27,18 @@ public:
     void omitWriting() { events &= ~EPOLLOUT; updateEvents(EPOLL_CTL_MOD); }
     bool isLikeReading() { return events & EPOLLIN; }
     bool isLikeWriting() { return events & EPOLLOUT; }
-    void setReadCallBack(const channelCallBack& cb) { readcb = cb; }
-    void setWriteCallBack(const channelCallBack& cb) { writecb = cb; }
-    void setCloseCallBack(const channelCallBack& cb) { closecb = cb; }
+    void setReadHandler(const readHandler& hd) { readhd = hd; }
+    void setWriteHandler(const writeHandler& hd) { writehd = hd; }
+    void setCloseHandler(const closeHandler& hd) { closehd = hd; }
 private:
     void updateEvents(int op);
     int epfd;
     int fd;
     std::uint32_t events;
     std::uint32_t revents;
-    channelCallBack readcb;
-    channelCallBack writecb;
-    channelCallBack closecb;
+    readHandler readhd;
+    writeHandler writehd;
+    closeHandler closehd;
 };
 
 } // namespace pqnet

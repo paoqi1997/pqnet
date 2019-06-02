@@ -57,7 +57,7 @@ Looper::~Looper()
         if (close(conn.first) == -1) {
             ERROR(std::strerror(errno));
         }
-        this->onCloseBySock(conn.second);
+        //this->onCloseBySock(conn.second);
     }
 }
 
@@ -74,13 +74,29 @@ void Looper::run()
 void* Looper::routine(void *arg)
 {
     auto self = static_cast<Looper*>(arg);
-    for ( ; ; ) {
+    for (;;) {
         int cnt = epoll_wait(self->epfd, self->evpool, SERV_EVS, -1);
         if (cnt == -1) {
             ERROR(std::strerror(errno));
             break;
         }
         for (int i = 0; i < cnt; ++i) {
+            if (self->evpool[i].data.fd == self->evfd) {
+                read(self->evfd, &self->msg, sizeof(std::uint64_t));
+                if (self->msg == EV_CONN) {
+                    int connfd = self->waitconns.front();
+                    self->connpool[connfd] = std::make_shared<TcpConnection>(self->epfd, connfd);
+                    self->connpool[connfd]->setConnectCallBack(self->conncb);
+                    self->connpool[connfd]->setCloseCallBack(self->closecb);
+                    self->connpool[connfd]->setMessageArrivedCallBack(self->macb);
+                    self->connpool[connfd]->connectEstablished();
+                }
+            } else {
+                auto ch = reinterpret_cast<Channel*>(self->evpool[i].data.ptr);
+                ch->setRevents(self->evpool[i].events);
+                ch->handleEvent();
+            }
+            /*
             // 客户端关闭连接
             if (self->evpool[i].events & EPOLLRDHUP) {
                 int connfd = self->evpool[i].data.fd;
@@ -123,6 +139,7 @@ void* Looper::routine(void *arg)
                     }
                 }
             }
+            */
         }
         if (self->msg == EV_EXIT) {
             INFO("Signal coming: epoll_wait exits.");

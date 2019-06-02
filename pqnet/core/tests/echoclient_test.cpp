@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iostream>
 
 #include "../../util/logger.h"
@@ -15,61 +16,41 @@ public:
     {
         inChannel.addToLoop();
         inChannel.likeReading();
-        inChannel.setReadCallBack(std::bind(&TcpEchoClient::send, this));
+        inChannel.setReadHandler(std::bind(&TcpEchoClient::handleStdIn, this));
     }
     void run() {
-        cli.setInCallBack(
-            std::bind(&TcpEchoClient::handleIn, this, _1)
-        );
         cli.setConnectCallBack(
             std::bind(&TcpEchoClient::onConnect, this, _1)
         );
-        cli.setReadCallBack(
-            std::bind(&TcpEchoClient::onRead, this, _1)
+        cli.setCloseCallBack(
+            std::bind(&TcpEchoClient::onClose, this, _1)
         );
-        cli.setMessageCallBack(
+        cli.setMessageArrivedCallBack(
             std::bind(&TcpEchoClient::onMessage, this, _1)
-        );
-        cli.setCloseByPeerCallBack(
-            std::bind(&TcpEchoClient::onCloseByPeer, this, _1)
-        );
-        cli.setCloseBySockCallBack(
-            std::bind(&TcpEchoClient::onCloseBySock, this, _1)
         );
         cli.run();
     }
     void shutdown() {
         cli.shutdown();
     }
-    void send() {
+    void handleStdIn() {
         std::cin >> msg; msg += '\n';
         cli.getConn()->send(msg.c_str(), msg.length());
-    }
-    void handleIn(const pqnet::TcpConnPtr& conn) {
-        std::cin >> msg; msg += '\n';
-        conn->append(msg.c_str());
-        conn->send();
+        TRACE("%d stdin.", cli.getConn()->getFd());
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
         TRACE("%d connect.", conn->getFd());
     }
-    void onRead(const pqnet::TcpConnPtr& conn) {
-        conn->recv();
+    void onClose(const pqnet::TcpConnPtr& conn) {
+        TRACE("%d close.", conn->getFd());
     }
     void onMessage(const pqnet::TcpConnPtr& conn) {
-        msg = conn->get();
+        msg = conn->getInputBuffer()->get(128);
         if (msg == "quit\n") {
             cli.shutdown();
-            cli.onCloseBySock(conn);
         } else {
             std::cout << msg;
         }
-    }
-    void onCloseByPeer(const pqnet::TcpConnPtr& conn) {
-        TRACE("%d closed by server.", conn->getFd());
-    }
-    void onCloseBySock(const pqnet::TcpConnPtr& conn) {
-        TRACE("%d closed by client.", conn->getFd());
     }
 private:
     std::string msg;
@@ -79,6 +60,8 @@ private:
 
 int main()
 {
+    pqnet::Logger::getLogger()->setLogLevel(pqnet::Logger::TRACE);
+    pqnet::Logger::getLogger()->setOutput(pqnet::Logger::CONSOLE);
     TcpEchoClient echocli("127.0.0.1", 12488);
     auto SIGINT_HANDLER = [&](){
         echocli.shutdown();

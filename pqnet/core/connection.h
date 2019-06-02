@@ -16,33 +16,27 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 {
 public:
     TcpConnection(int epfd, int _connfd);
-    int getFd() const { return connfd; }
-    // Remote -> Buffer
-    ssize_t recv() { return buffer.readFrom(connfd, buffer.writableBytes()); }
-    // Buffer -> Remote
-    ssize_t send() { return buffer.writeTo(connfd, buffer.readableBytes()); }
-    // Local -> Buffer
-    void append(const char *msg) { buffer.append(msg, std::strlen(msg)); }
-    // Buffer -> Local
-    std::string get() { return inputBuffer.get(inputBuffer.readableBytes()); }
+    int getFd() const { return fd; }
+    Buffer* getInputBuffer() { return &inputBuffer; }
+    Buffer* getOutputBuffer() { return &outputBuffer; }
+    void connectEstablished();
     void send(const char *data, std::size_t len);
-    void setConnectCallBack(const connectionCallBack& cb) { conncb = cb; }
-    void setCloseCallBack(const connectionCallBack& cb) { closecb = cb; }
-    void setMessageCallBack(const connectionCallBack& cb) { msgcb = cb; }
-    void setWriteCompletedCallBack(const connectionCallBack& cb) { wccb = cb; }
+    void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
+    void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
+    void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
+    void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
     void handleRead();
     void handleWrite();
     void handleClose();
-    int connfd;
-    Buffer buffer;
+    int fd;
     Buffer inputBuffer;
     Buffer outputBuffer;
     std::unique_ptr<Channel> ch;
-    connectionCallBack conncb;
-    connectionCallBack closecb;
-    connectionCallBack msgcb;
-    connectionCallBack wccb;
+    connectCallBack conncb;
+    closeCallBack closecb;
+    messageArrivedCallBack macb;
+    writeCompletedCallBack wccb;
 };
 
 } // namespace pqnet

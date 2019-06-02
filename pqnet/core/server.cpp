@@ -74,7 +74,9 @@ TcpServer::~TcpServer()
 
 void TcpServer::run()
 {
-    this->checkCallBack();
+    pool.setConnectCallBack(conncb);
+    pool.setCloseCallBack(closecb);
+    pool.setMessageArrivedCallBack(macb);
     pool.run();
     epfd = epoll_create(SERV_EVS);
     if (epfd == -1) {
@@ -110,20 +112,6 @@ void TcpServer::run()
             }
         }
     }
-}
-
-void TcpServer::checkCallBack()
-{
-    assert(conncb);
-    pool.setConnectCallBack(conncb);
-    assert(readcb);
-    pool.setReadCallBack(readcb);
-    assert(msgcb);
-    pool.setMessageCallBack(msgcb);
-    assert(cpcb);
-    pool.setCloseByPeerCallBack(cpcb);
-    assert(cscb);
-    pool.setCloseBySockCallBack(cscb);
 }
 
 void TcpServer::onConnect(int connfd)

@@ -9,13 +9,20 @@
 
 using namespace pqnet;
 
-TcpConnection::TcpConnection(int epfd, int _connfd)
-    : connfd(_connfd), ch(new Channel(epfd, _connfd))
+TcpConnection::TcpConnection(int epfd, int _fd)
+    : fd(_fd), ch(new Channel(epfd, _fd))
 {
-    ch->setReadCallBack(std::bind(&TcpConnection::handleRead, this));
-    ch->setWriteCallBack(std::bind(&TcpConnection::handleWrite, this));
+    ch->setReadHandler(std::bind(&TcpConnection::handleRead, this));
+    ch->setWriteHandler(std::bind(&TcpConnection::handleWrite, this));
+}
+
+void TcpConnection::connectEstablished()
+{
     ch->addToLoop();
     ch->likeReading();
+    if (conncb) {
+        conncb(shared_from_this());
+    }
 }
 
 void TcpConnection::send(const char *data, std::size_t len)
@@ -49,9 +56,11 @@ void TcpConnection::send(const char *data, std::size_t len)
 void TcpConnection::handleRead()
 {
     ssize_t n = inputBuffer.readFrom(ch->getFd(), inputBuffer.writableBytes());
+    TRACE("%d:%d handleRead.", getFd(), n);
     if (n > 0) {
-        if (msgcb) {
-            msgcb(shared_from_this());
+        if (macb) {
+            TRACE("%d macb.", getFd());
+            macb(shared_from_this());
         }
     } else if (n == 0) {
         handleClose();

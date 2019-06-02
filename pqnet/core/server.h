@@ -22,20 +22,17 @@ public:
     void run();
     void shutdown() { running = false; }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
-    void setReadCallBack(const readCallBack& cb) { readcb = cb; }
-    void setMessageCallBack(const messageCallBack& cb) { msgcb = cb; }
-    void setCloseByPeerCallBack(const closeByPeerCallBack& cb) { cpcb = cb; }
-    void setCloseBySockCallBack(const closeBySockCallBack& cb) { cscb = cb; }
+    void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
+    void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
+    void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
-    void checkCallBack();
     void onConnect(int connfd);
     std::size_t getNextLoopIndex();
 private:
     connectCallBack conncb;
-    readCallBack readcb;
-    messageCallBack msgcb;
-    closeByPeerCallBack cpcb;
-    closeBySockCallBack cscb;
+    closeCallBack closecb;
+    messageArrivedCallBack macb;
+    writeCompletedCallBack wccb;
     std::size_t index;
     std::size_t ln;
     LooperPool pool;

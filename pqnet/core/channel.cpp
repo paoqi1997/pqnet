@@ -6,7 +6,7 @@
 
 using namespace pqnet;
 
-Channel::Channel(int _epfd, int _fd) : epfd(_epfd), fd(_fd)
+Channel::Channel(int _epfd, int _fd) : epfd(_epfd), fd(_fd), events(0)
 {
     events |= EPOLLET;
     events |= EPOLLRDHUP;
@@ -15,13 +15,13 @@ Channel::Channel(int _epfd, int _fd) : epfd(_epfd), fd(_fd)
 void Channel::handleEvent()
 {
     if (revents & (EPOLLIN | EPOLLRDHUP)) {
-        if (readcb) {
-            readcb();
+        if (readhd) {
+            readhd();
         }
     }
     if (revents & EPOLLOUT) {
-        if (writecb) {
-            writecb();
+        if (writehd) {
+            writehd();
         }
     }
 }
