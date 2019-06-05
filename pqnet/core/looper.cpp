@@ -92,9 +92,9 @@ void* Looper::routine(void *arg)
                     self->connpool[connfd]->connectEstablished();
                 }
             } else {
-                auto ch = reinterpret_cast<Channel*>(self->evpool[i].data.ptr);
-                ch->setRevents(self->evpool[i].events);
-                ch->handleEvent();
+                auto tg = reinterpret_cast<Trigger*>(self->evpool[i].data.ptr);
+                tg->setRevents(self->evpool[i].events);
+                tg->handleEvent();
             }
             /*
             // 客户端关闭连接

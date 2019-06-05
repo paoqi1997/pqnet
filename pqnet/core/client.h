@@ -7,9 +7,9 @@
 
 #include "../util/types.h"
 #include "callback.h"
-#include "channel.h"
 #include "connection.h"
 #include "ipaddr.h"
+#include "trigger.h"
 
 namespace pqnet
 {

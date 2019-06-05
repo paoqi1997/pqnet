@@ -10,12 +10,10 @@
 namespace pqnet
 {
 
-class TcpClient;
-
-class Channel
+class Trigger
 {
 public:
-    Channel(int _epfd, int _fd);
+    Trigger(int _epfd, int _fd);
     int getFd() const { return fd; }
     void addToLoop() { updateEvents(EPOLL_CTL_ADD); }
     void removeFromLoop() { updateEvents(EPOLL_CTL_DEL); }

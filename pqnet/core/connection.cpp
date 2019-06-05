@@ -10,16 +10,16 @@
 using namespace pqnet;
 
 TcpConnection::TcpConnection(int epfd, int _fd)
-    : fd(_fd), ch(new Channel(epfd, _fd))
+    : fd(_fd), tg(new Trigger(epfd, _fd))
 {
-    ch->setReadHandler(std::bind(&TcpConnection::handleRead, this));
-    ch->setWriteHandler(std::bind(&TcpConnection::handleWrite, this));
+    tg->setReadHandler(std::bind(&TcpConnection::handleRead, this));
+    tg->setWriteHandler(std::bind(&TcpConnection::handleWrite, this));
 }
 
 void TcpConnection::connectEstablished()
 {
-    ch->addToLoop();
-    ch->likeReading();
+    tg->addToLoop();
+    tg->likeReading();
     if (conncb) {
         conncb(shared_from_this());
     }
@@ -30,8 +30,8 @@ void TcpConnection::send(const char *data, std::size_t len)
     bool flag = true;
     ssize_t n = 0;
     ssize_t remain = len;
-    if (!ch->isLikeWriting() && outputBuffer.readableBytes() == 0) {
-        n = write(ch->getFd(), data, len);
+    if (!tg->isLikeWriting() && outputBuffer.readableBytes() == 0) {
+        n = write(tg->getFd(), data, len);
         if (n > 0) {
             remain = len - n;
             if (remain == 0 && wccb) {
@@ -46,16 +46,16 @@ void TcpConnection::send(const char *data, std::size_t len)
     }
     if (flag && remain > 0) {
         outputBuffer.append(data + n, remain);
-        if (!ch->isLikeWriting()) {
+        if (!tg->isLikeWriting()) {
             // For TcpConnection::handleWrite
-            ch->likeWriting();
+            tg->likeWriting();
         }
     }
 }
 
 void TcpConnection::handleRead()
 {
-    ssize_t n = inputBuffer.readFrom(ch->getFd(), inputBuffer.writableBytes());
+    ssize_t n = inputBuffer.readFrom(tg->getFd(), inputBuffer.writableBytes());
     TRACE("%d:%d handleRead.", getFd(), n);
     if (n > 0) {
         if (macb) {
@@ -71,10 +71,10 @@ void TcpConnection::handleRead()
 
 void TcpConnection::handleWrite()
 {
-    ssize_t n = outputBuffer.writeTo(ch->getFd(), outputBuffer.readableBytes());
+    ssize_t n = outputBuffer.writeTo(tg->getFd(), outputBuffer.readableBytes());
     if (n > 0) {
         if (outputBuffer.readableBytes() == 0) {
-            ch->omitWriting();
+            tg->omitWriting();
             if (wccb) {
                 wccb(shared_from_this());
             }
@@ -86,7 +86,7 @@ void TcpConnection::handleWrite()
 
 void TcpConnection::handleClose()
 {
-    ch->removeFromLoop();
+    tg->removeFromLoop();
     if (closecb) {
         closecb(shared_from_this());
     }

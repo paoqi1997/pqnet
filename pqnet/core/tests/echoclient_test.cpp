@@ -3,8 +3,8 @@
 
 #include "../../util/logger.h"
 #include "../../util/signal.h"
-#include "../channel.h"
 #include "../client.h"
+#include "../trigger.h"
 
 using namespace std::placeholders;
 
@@ -12,11 +12,11 @@ class TcpEchoClient
 {
 public:
     TcpEchoClient(const char *servname, std::uint16_t port)
-        : cli(servname, port), inChannel(cli.getEpfd(), fileno(stdin))
+        : cli(servname, port), inTrigger(cli.getEpfd(), fileno(stdin))
     {
-        inChannel.addToLoop();
-        inChannel.likeReading();
-        inChannel.setReadHandler(std::bind(&TcpEchoClient::handleStdIn, this));
+        inTrigger.addToLoop();
+        inTrigger.likeReading();
+        inTrigger.setReadHandler(std::bind(&TcpEchoClient::handleStdIn, this));
     }
     void run() {
         cli.setConnectCallBack(
@@ -55,7 +55,7 @@ public:
 private:
     std::string msg;
     pqnet::TcpClient cli;
-    pqnet::Channel inChannel;
+    pqnet::Trigger inTrigger;
 };
 
 int main()

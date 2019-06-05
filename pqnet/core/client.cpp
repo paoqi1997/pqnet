@@ -67,9 +67,9 @@ void TcpClient::run()
             }
         }
         for (int i = 0; i < cnt; ++i) {
-            auto ch = reinterpret_cast<Channel*>(evpool[i].data.ptr);
-            ch->setRevents(evpool[i].events);
-            ch->handleEvent();
+            auto tg = reinterpret_cast<Trigger*>(evpool[i].data.ptr);
+            tg->setRevents(evpool[i].events);
+            tg->handleEvent();
         }
         /*
         for (int i = 0; i < cnt; ++i) {

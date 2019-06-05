@@ -2,17 +2,17 @@
 #include <cstring>
 
 #include "../util/logger.h"
-#include "channel.h"
+#include "trigger.h"
 
 using namespace pqnet;
 
-Channel::Channel(int _epfd, int _fd) : epfd(_epfd), fd(_fd), events(0)
+Trigger::Trigger(int _epfd, int _fd) : epfd(_epfd), fd(_fd), events(0)
 {
     events |= EPOLLET;
     events |= EPOLLRDHUP;
 }
 
-void Channel::handleEvent()
+void Trigger::handleEvent()
 {
     if (revents & (EPOLLIN | EPOLLRDHUP)) {
         if (readhd) {
@@ -26,7 +26,7 @@ void Channel::handleEvent()
     }
 }
 
-void Channel::updateEvents(int op)
+void Trigger::updateEvents(int op)
 {
     if (op == EPOLL_CTL_DEL) {
         if (epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr) != 0) {

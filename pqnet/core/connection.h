@@ -7,7 +7,7 @@
 
 #include "buffer.h"
 #include "callback.h"
-#include "channel.h"
+#include "trigger.h"
 
 namespace pqnet
 {
@@ -32,7 +32,7 @@ private:
     int fd;
     Buffer inputBuffer;
     Buffer outputBuffer;
-    std::unique_ptr<Channel> ch;
+    std::unique_ptr<Trigger> tg;
     connectCallBack conncb;
     closeCallBack closecb;
     messageArrivedCallBack macb;
