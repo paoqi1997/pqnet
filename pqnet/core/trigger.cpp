@@ -6,15 +6,14 @@
 
 using namespace pqnet;
 
-Trigger::Trigger(int _epfd, int _fd) : epfd(_epfd), fd(_fd), events(0)
+Trigger::Trigger(int _epfd, int _fd) : epfd(_epfd), fd(_fd), events(EPOLLET)
 {
-    events |= EPOLLET;
-    events |= EPOLLRDHUP;
+
 }
 
 void Trigger::handleEvent()
 {
-    if (revents & (EPOLLIN | EPOLLRDHUP)) {
+    if (revents & EPOLLIN) {
         if (readhd) {
             readhd();
         }

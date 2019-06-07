@@ -1,5 +1,5 @@
-#ifndef PQNET_CORE_CHANNEL_H
-#define PQNET_CORE_CHANNEL_H
+#ifndef PQNET_CORE_TRIGGER_H
+#define PQNET_CORE_TRIGGER_H
 
 #include <cstdint>
 
@@ -27,7 +27,6 @@ public:
     bool isLikeWriting() { return events & EPOLLOUT; }
     void setReadHandler(const readHandler& hd) { readhd = hd; }
     void setWriteHandler(const writeHandler& hd) { writehd = hd; }
-    void setCloseHandler(const closeHandler& hd) { closehd = hd; }
 private:
     void updateEvents(int op);
     int epfd;
@@ -36,9 +35,8 @@ private:
     std::uint32_t revents;
     readHandler readhd;
     writeHandler writehd;
-    closeHandler closehd;
 };
 
 } // namespace pqnet
 
-#endif // PQNET_CORE_CHANNEL_H
+#endif // PQNET_CORE_TRIGGER_H

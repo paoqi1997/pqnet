@@ -1,10 +1,10 @@
 #include <cstdio>
 #include <iostream>
 
-#include "../../util/logger.h"
-#include "../../util/signal.h"
-#include "../client.h"
-#include "../trigger.h"
+#include "../../../util/logger.h"
+#include "../../../util/signal.h"
+#include "../../client.h"
+#include "../../trigger.h"
 
 using namespace std::placeholders;
 

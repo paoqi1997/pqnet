@@ -13,7 +13,7 @@ Buffer::Buffer(std::size_t size) : buf(size), readerIndex(0), writerIndex(0)
 
 void Buffer::makeSpace(std::size_t len)
 {
-    if (len > writableBytes() + idleBytes()) {
+    if (len > writableBytes() + frontBytes()) {
         buf.resize(writerIndex + len);
     } else {
         std::size_t rbs = this->readableBytes();

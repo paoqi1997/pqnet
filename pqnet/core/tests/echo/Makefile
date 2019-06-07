@@ -2,10 +2,10 @@ CXX = g++
 CXXFLAGS = -g -Wall
 LIBS = -pthread
 
-CORE_SRCS = ${shell find .. -path ../tests -prune -o -name '*.cpp' -print}
+CORE_SRCS = ${shell find ../.. -path ../../tests -prune -o -name '*.cpp' -print}
 CORE_OBJS = ${CORE_SRCS:.cpp=.o}
 
-UTIL_OBJS = ../../util/logger.o ../../util/signal.o ../../util/timestamp.o
+UTIL_OBJS = ../../../util/logger.o ../../../util/signal.o ../../../util/timestamp.o
 
 BINS = echoclient_test echoserver_test
 

@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include <iostream>
@@ -6,7 +7,7 @@
 #include "../../buffer.h"
 
 void output(const pqnet::Buffer& buffer) {
-    std::cout << buffer.readableBytes() << ' ' << buffer.writableBytes() << std::endl;
+    std::printf("RB: %4lu WB: %4lu\n", buffer.readableBytes(), buffer.writableBytes());
 }
 
 int main()
@@ -24,6 +25,9 @@ int main()
     auto f = std::fopen("/proc/version", "r");
     buffer.readFrom(fileno(f), 192);
     output(buffer);
+    if (std::fclose(f) != 0) {
+        std::exit(EXIT_FAILURE);
+    }
 
     auto str = buffer.get(std::strlen(data));
     std::cout << str << std::endl;
@@ -33,7 +37,7 @@ int main()
     std::cout << x << std::endl;
     output(buffer);
 
-    buffer.writeTo(fileno(stdout), 192);
+    buffer.writeTo(fileno(stdout), 256);
     output(buffer);
 
     buffer.makeSpace(128);

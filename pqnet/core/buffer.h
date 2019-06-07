@@ -18,7 +18,7 @@ public:
     void makeSpace(std::size_t len);
     bool isReadable(std::size_t len) const;
     bool isWritable(std::size_t len) const;
-    std::size_t idleBytes() const { return readerIndex; }
+    std::size_t frontBytes() const { return readerIndex; }
     std::size_t readableBytes() const { return writerIndex - readerIndex; }
     std::size_t writableBytes() const { return buf.size() - writerIndex; }
     // Buffer -> Host/Net
