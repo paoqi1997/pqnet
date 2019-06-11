@@ -20,10 +20,10 @@ BINS = echoclient echoserver
 build_all: ${BINS}
 
 echoclient: echoclient.o ${CORE_OBJS} ${UTIL_OBJS}
-	${CXX} ${CXXFLAGS} $^ -o $@ ${INCS} ${LIBS}
+	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
 echoserver: echoserver.o ${CORE_OBJS} ${UTIL_OBJS}
-	${CXX} ${CXXFLAGS} $^ -o $@ ${INCS} ${LIBS}
+	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
 .PHONY: clean
 

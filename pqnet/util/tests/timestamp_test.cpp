@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../timestamp.h"
+#include <pqnet/util/timestamp.h>
 
 int main()
 {

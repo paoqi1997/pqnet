@@ -2,9 +2,9 @@
 
 #include <unistd.h>
 
-#include "../asynclog.h"
-#include "../signal.h"
-#include "../threadpool.h"
+#include <pqnet/util/asynclog.h>
+#include <pqnet/util/signal.h>
+#include <pqnet/util/threadpool.h>
 
 void* func(void *arg) {
     const char *name = "pqnet";

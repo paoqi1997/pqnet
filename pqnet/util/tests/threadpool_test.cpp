@@ -2,8 +2,8 @@
 
 #include <unistd.h>
 
-#include "../signal.h"
-#include "../threadpool.h"
+#include <pqnet/util/signal.h>
+#include <pqnet/util/threadpool.h>
 
 void func(void *arg) {
     std::cout << static_cast<char*>(arg) << std::endl;

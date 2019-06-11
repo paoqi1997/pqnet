@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../random.h"
+#include <pqnet/util/random.h>
 
 int main()
 {

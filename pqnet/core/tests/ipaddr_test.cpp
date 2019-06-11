@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <ipaddr.h>
+#include <pqnet/core/ipaddr.h>
 
 int main()
 {

@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 
-#include <buffer.h>
+#include <pqnet/core/buffer.h>
 
 void output(const pqnet::Buffer& buffer) {
     std::printf("RB: %4lu WB: %4lu\n", buffer.readableBytes(), buffer.writableBytes());

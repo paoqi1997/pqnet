@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <iostream>
 
-#include <endian.h>
+#include <pqnet/core/endian.h>
 
 int main()
 {
