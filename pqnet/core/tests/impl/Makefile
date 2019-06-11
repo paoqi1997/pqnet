@@ -3,7 +3,7 @@ CXXFLAGS = -g -Wall
 
 BINS = buffer_test endian_test ipaddr_test timerqueue_test
 
-TIME_OBJS = ../../timer.o ../../timerqueue.o
+# TIME_OBJS = ../../timer.o ../../timerqueue.o
 UTIL_OBJS = ../../../util/logger.o ../../../util/timestamp.o
 
 .PHONY: build_all
@@ -19,7 +19,7 @@ endian_test: endian_test.o ../../endian.o
 ipaddr_test: ipaddr_test.o ../../endian.o ../../ipaddr.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
-timerqueue_test: timerqueue_test.o ${TIME_OBJS} ${UTIL_OBJS}
+timerqueue_test: timerqueue_test.o ../../timer.o ../../timerqueue.o ${UTIL_OBJS}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 .PHONY: clean

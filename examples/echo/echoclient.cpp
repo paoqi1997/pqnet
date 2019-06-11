@@ -1,10 +1,10 @@
 #include <cstdio>
 #include <iostream>
 
-#include "../../../util/logger.h"
-#include "../../../util/signal.h"
-#include "../../client.h"
-#include "../../trigger.h"
+#include <pqnet/core/client.h>
+#include <pqnet/core/trigger.h>
+#include <pqnet/util/logger.h>
+#include <pqnet/util/signal.h>
 
 using namespace std::placeholders;
 

@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "../../../util/logger.h"
-#include "../../../util/signal.h"
-#include "../../server.h"
+#include <pqnet/core/server.h>
+#include <pqnet/util/logger.h>
+#include <pqnet/util/signal.h>
 
 using namespace std::placeholders;
 
