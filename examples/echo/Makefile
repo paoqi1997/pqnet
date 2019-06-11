@@ -3,7 +3,7 @@ CXXFLAGS = -g -Wall
 INCS = -I../..
 LIBS = -pthread
 
-CXXFLAGS += INCS
+CXXFLAGS += ${INCS}
 
 ROOT_DIR = ../../pqnet
 CORE_DIR = ${ROOT_DIR}/core

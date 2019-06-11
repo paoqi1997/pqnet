@@ -1,8 +1,7 @@
 #include <cstdint>
-
 #include <iostream>
 
-#include "../../endian.h"
+#include <endian.h>
 
 int main()
 {

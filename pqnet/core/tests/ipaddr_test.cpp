@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../../ipaddr.h"
+#include <ipaddr.h>
 
 int main()
 {
