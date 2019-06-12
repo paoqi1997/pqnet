@@ -15,16 +15,14 @@ using namespace pqnet;
 Logger *Logger::instance = nullptr;
 Logger::Garbo Logger::garbo;
 
-Logger::Logger() : level(Logger::INFO), dir("./log/"), currdate(now().toDate()), tofile(true)
+Logger::Logger() : level(Logger::INFO), dir("./log/"), currdate(now().toDate()), tofile(false)
 {
+    lf = stdout;
     if (access(dir.c_str(), F_OK) != 0) {
         if (mkdir(dir.c_str(), 0777) != 0) {
             ERROR(std::strerror(errno));
         }
     }
-    std::string lfname = dir;
-    lfname += currdate + ".log";
-    lf = std::fopen(lfname.c_str(), "a");
 }
 
 void Logger::checkLogName()

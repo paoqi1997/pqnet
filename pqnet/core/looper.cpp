@@ -96,50 +96,6 @@ void* Looper::routine(void *arg)
                 tg->setRevents(self->evpool[i].events);
                 tg->handleEvent();
             }
-            /*
-            // 客户端关闭连接
-            if (self->evpool[i].events & EPOLLRDHUP) {
-                int connfd = self->evpool[i].data.fd;
-                self->onCloseByPeer(self->connpool[connfd]);
-                if (epoll_ctl(self->epfd, EPOLL_CTL_DEL, connfd, nullptr) == -1) {
-                    ERROR(std::strerror(errno));
-                }
-                self->connpool.erase(connfd);
-            }
-            else if (self->evpool[i].data.fd == self->evfd) {
-                read(self->evfd, &self->msg, sizeof(std::uint64_t));
-                if (self->msg == EV_CONN) {
-                    int connfd = self->waitconns.front();
-                    self->waitconns.pop();
-                    self->poi.data.fd = connfd;
-                    self->poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
-                    if (epoll_ctl(self->epfd, EPOLL_CTL_ADD, connfd, &self->poi) == -1) {
-                        ERROR(std::strerror(errno));
-                    }
-                    self->connpool[connfd] = std::make_shared<TcpConnection>(self->epfd, connfd);
-                    self->onConnect(self->connpool[connfd]);
-                }
-            } else {
-                if (self->evpool[i].events & EPOLLIN) {
-                    int connfd = self->evpool[i].data.fd;
-                    self->onRead(self->connpool[connfd]);
-                    self->poi.data.fd = connfd;
-                    self->poi.events = EPOLLET | EPOLLRDHUP | EPOLLOUT;
-                    if (epoll_ctl(self->epfd, EPOLL_CTL_MOD, connfd, &self->poi) == -1) {
-                        ERROR(std::strerror(errno));
-                    }
-                }
-                if (self->evpool[i].events & EPOLLOUT) {
-                    int connfd = self->evpool[i].data.fd;
-                    self->onMessage(self->connpool[connfd]);
-                    self->poi.data.fd = connfd;
-                    self->poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
-                    if (epoll_ctl(self->epfd, EPOLL_CTL_MOD, connfd, &self->poi) == -1) {
-                        ERROR(std::strerror(errno));
-                    }
-                }
-            }
-            */
         }
         if (self->msg == EV_EXIT) {
             INFO("Signal coming: epoll_wait exits.");

@@ -19,16 +19,14 @@ AsyncLog::Garbo AsyncLog::garbo;
 
 AsyncLog::AsyncLog()
     : level(Logger::INFO), dir("./log/"),
-      currdate(now().toDate()), tofile(true), running(true)
+      currdate(now().toDate()), tofile(false), running(true)
 {
+    lf = stdout;
     if (access(dir.c_str(), F_OK) != 0) {
         if (mkdir(dir.c_str(), 0777) != 0) {
             ERROR(std::strerror(errno));
         }
     }
-    std::string lfname = dir;
-    lfname += currdate + ".log";
-    lf = std::fopen(lfname.c_str(), "a");
     if (pthread_create(&id, nullptr, routine, this) != 0) {
         ERROR(std::strerror(errno));
     }

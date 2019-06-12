@@ -2,7 +2,6 @@
 #define PQNET_CORE_IPADDR_H
 
 #include <cstdint>
-
 #include <string>
 
 #include <netinet/in.h>
@@ -19,7 +18,7 @@ public:
     std::uint16_t port() const;
     std::uint32_t ipInt() const;
     std::string toString() const;
-    struct sockaddr_in* getAddr() { return &addr; }
+    struct sockaddr_in* getPtr() { return &addr; }
 private:
     struct sockaddr_in addr;
 };

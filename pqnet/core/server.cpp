@@ -23,7 +23,7 @@ TcpServer::TcpServer(std::uint16_t port) : index(0), ln(2), pool(ln), addr(port)
     setReuseAddr(listenfd, true);
     setReusePort(listenfd, true);
     // bind
-    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getAddr());
+    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
     if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -45,7 +45,7 @@ TcpServer::TcpServer(const char *servname, std::uint16_t port)
     setReuseAddr(listenfd, true);
     setReusePort(listenfd, true);
     // bind
-    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getAddr());
+    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
     if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }

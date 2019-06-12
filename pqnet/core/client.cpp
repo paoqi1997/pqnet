@@ -22,7 +22,7 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port)
         ERROR(std::strerror(errno));
     }
     // connect
-    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getAddr());
+    auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
@@ -71,35 +71,5 @@ void TcpClient::run()
             tg->setRevents(evpool[i].events);
             tg->handleEvent();
         }
-        /*
-        for (int i = 0; i < cnt; ++i) {
-            // 服务端关闭连接
-            if (evpool[i].events & EPOLLRDHUP) {
-                this->shutdown();
-                this->onCloseByPeer(connptr);
-            }
-            else if (evpool[i].data.fd == fileno(stdin)) {
-                this->handleIn(connptr);
-            }
-            else {
-                if (evpool[i].events & EPOLLIN) {
-                    this->onRead(connptr);
-                    poi.data.fd = sockfd;
-                    poi.events = EPOLLET | EPOLLRDHUP | EPOLLOUT;
-                    if (epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &poi) == -1) {
-                        ERROR(std::strerror(errno));
-                    }
-                }
-                if (evpool[i].events & EPOLLOUT) {
-                    this->onMessage(connptr);
-                    poi.data.fd = sockfd;
-                    poi.events = EPOLLET | EPOLLRDHUP | EPOLLIN;
-                    if (epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &poi) == -1) {
-                        ERROR(std::strerror(errno));
-                    }
-                }
-            }
-        }
-        */
     }
 }
