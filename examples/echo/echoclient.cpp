@@ -26,7 +26,7 @@ public:
             std::bind(&TcpEchoClient::onClose, this, _1)
         );
         cli.setMessageArrivedCallBack(
-            std::bind(&TcpEchoClient::onMessage, this, _1)
+            std::bind(&TcpEchoClient::onMsgArrived, this, _1)
         );
         cli.run();
     }
@@ -34,22 +34,23 @@ public:
         cli.shutdown();
     }
     void handleStdIn() {
-        std::cin >> msg; msg += '\n';
+        TRACE("%d:%s", cli.getConn()->getFd(), __func__);
+        std::cin >> msg;
         cli.getConn()->send(msg.c_str(), msg.length());
-        TRACE("%d stdin.", cli.getConn()->getFd());
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
-        TRACE("%d connect.", conn->getFd());
+        TRACE("%d:%s", conn->getFd(), __func__);
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
-        TRACE("%d close.", conn->getFd());
+        TRACE("%d:%s", conn->getFd(), __func__);
     }
-    void onMessage(const pqnet::TcpConnPtr& conn) {
+    void onMsgArrived(const pqnet::TcpConnPtr& conn) {
+        TRACE("%d:%s", conn->getFd(), __func__);
         msg = conn->getInputBuffer()->get(128);
-        if (msg == "quit\n") {
+        if (msg == "quit") {
             cli.shutdown();
         } else {
-            std::cout << msg;
+            std::cout << msg << std::endl;
         }
     }
 private:
@@ -65,11 +66,11 @@ int main()
     auto SIGINT_HANDLER = [&](){
         echocli.shutdown();
         std::cout << std::endl;
-        std::cout << "Exit echo client." << std::endl;
+        std::cout << "Captures the signal: SIGINT(2)." << std::endl;
     };
     auto SIGTERM_HANDLER = [&](){
         echocli.shutdown();
-        std::cout << "Exit echo client." << std::endl;
+        std::cout << "Captures the signal: SIGTERM(15)." << std::endl;
     };
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);

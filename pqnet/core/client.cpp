@@ -16,12 +16,28 @@ using namespace pqnet;
 TcpClient::TcpClient(const char *servname, std::uint16_t port)
     : addr(servname, port), running(false)
 {
-    // socket
-    sockfd = new_socket();
+    epfd = epoll_create(CLI_EVS);
+    if (epfd == -1) {
+        ERROR(std::strerror(errno));
+    }
+}
+
+TcpClient::~TcpClient()
+{
+    if (conn->isConnected()) {
+        conn->connectDestroyed();
+    }
+    if (close(epfd) == -1) {
+        ERROR(std::strerror(errno));
+    }
+}
+
+void TcpClient::buildConn()
+{
+    int sockfd = new_socket();
     if (sockfd == -1) {
         ERROR(std::strerror(errno));
     }
-    // connect
     auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
@@ -29,38 +45,23 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port)
     setNonBlock(sockfd, true);
     setReuseAddr(sockfd, true);
     setReusePort(sockfd, true);
-    epfd = epoll_create(CLI_EVS);
-    if (epfd == -1) {
-        ERROR(std::strerror(errno));
-    }
-}
-
-// close(Client) -> EPOLLRDHUP(Looper)
-TcpClient::~TcpClient()
-{
-    if (close(epfd) == -1) {
-        ERROR(std::strerror(errno));
-    }
-    // 关闭连接并告知服务端
-    if (close(sockfd) == -1) {
-        ERROR(std::strerror(errno));
-    }
+    conn = std::make_shared<TcpConnection>(epfd, sockfd);
+    conn->setConnectCallBack(conncb);
+    conn->setCloseCallBack(closecb);
+    conn->setMessageArrivedCallBack(macb);
+    conn->setWriteCompletedCallBack(wccb);
+    conn->connectEstablished();
 }
 
 void TcpClient::run()
 {
-    connptr = std::make_shared<TcpConnection>(epfd, sockfd);
-    connptr->setConnectCallBack(conncb);
-    connptr->setCloseCallBack(closecb);
-    connptr->setMessageArrivedCallBack(macb);
-    connptr->connectEstablished();
+    this->buildConn();
     running = true;
     while (running) {
         int cnt = epoll_wait(epfd, evpool, CLI_EVS, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
-                // Has been in shutdown state
-                INFO("Signal coming: epoll_wait exits.");
+                TRACE("epoll_wait is interrupted by a signal  handler.");
             } else {
                 ERROR(std::strerror(errno));
                 break;

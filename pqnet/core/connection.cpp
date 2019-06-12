@@ -9,8 +9,7 @@
 
 using namespace pqnet;
 
-TcpConnection::TcpConnection(int epfd, int _fd)
-    : fd(_fd), tg(new Trigger(epfd, _fd))
+TcpConnection::TcpConnection(int epfd, int fd) : tg(new Trigger(epfd, fd))
 {
     tg->setReadHandler(std::bind(&TcpConnection::handleRead, this));
     tg->setWriteHandler(std::bind(&TcpConnection::handleWrite, this));
@@ -23,6 +22,20 @@ void TcpConnection::connectEstablished()
     if (conncb) {
         conncb(shared_from_this());
     }
+    connected = true;
+}
+
+void TcpConnection::connectDestroyed()
+{
+    TRACE("%d:%s", tg->getFd(), __func__);
+    tg->removeFromLoop();
+    if (close(tg->getFd()) != 0) {
+        ERROR(std::strerror(errno));
+    }
+    if (closecb) {
+        closecb(shared_from_this());
+    }
+    connected = false;
 }
 
 void TcpConnection::send(const char *data, std::size_t len)
@@ -55,15 +68,14 @@ void TcpConnection::send(const char *data, std::size_t len)
 
 void TcpConnection::handleRead()
 {
+    TRACE("%d:%s", tg->getFd(), __func__);
     ssize_t n = inputBuffer.readFrom(tg->getFd(), inputBuffer.writableBytes());
-    TRACE("%d:%d handleRead.", getFd(), n);
     if (n > 0) {
         if (macb) {
-            TRACE("%d macb.", getFd());
             macb(shared_from_this());
         }
     } else if (n == 0) {
-        handleClose();
+        this->connectDestroyed();
     } else {
         ERROR(std::strerror(errno));
     }
@@ -81,13 +93,5 @@ void TcpConnection::handleWrite()
         }
     } else {
         ERROR(std::strerror(errno));
-    }
-}
-
-void TcpConnection::handleClose()
-{
-    tg->removeFromLoop();
-    if (closecb) {
-        closecb(shared_from_this());
     }
 }

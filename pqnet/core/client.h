@@ -19,10 +19,11 @@ class TcpClient
 public:
     TcpClient(const char *servname, std::uint16_t port);
     ~TcpClient();
+    int getEpfd() const { return epfd; }
+    void buildConn();
+    TcpConnPtr getConn() const { return conn; }
     void run();
     void shutdown() { running = false; }
-    int getEpfd() const { return epfd; }
-    TcpConnPtr getConn() const { return connptr; }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
@@ -34,7 +35,7 @@ private:
     writeCompletedCallBack wccb;
     int sockfd;
     Ip4Addr addr;
-    TcpConnPtr connptr;
+    TcpConnPtr conn;
     bool running;
     int epfd;
     struct epoll_event poi;
