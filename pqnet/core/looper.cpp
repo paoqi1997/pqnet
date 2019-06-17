@@ -15,7 +15,7 @@ Looper::Looper() : msg(0), func(nullptr)
     if (evfd == -1) {
         ERROR(std::strerror(errno));
     }
-    epfd = epoll_create(SERV_EVS);
+    epfd = epoll_create(EPOLLSIZE);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
@@ -32,7 +32,7 @@ Looper::Looper(pn_thread_func_t _func) : msg(0), func(_func)
     if (evfd == -1) {
         ERROR(std::strerror(errno));
     }
-    epfd = epoll_create(SERV_EVS);
+    epfd = epoll_create(EPOLLSIZE);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
@@ -75,7 +75,7 @@ void* Looper::routine(void *arg)
 {
     auto self = static_cast<Looper*>(arg);
     for (;;) {
-        int cnt = epoll_wait(self->epfd, self->evpool, SERV_EVS, -1);
+        int cnt = epoll_wait(self->epfd, self->evpool, EPOLLSIZE, -1);
         if (cnt == -1) {
             ERROR(std::strerror(errno));
             break;

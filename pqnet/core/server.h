@@ -41,7 +41,7 @@ private:
     bool running;
     int epfd;
     struct epoll_event poi;
-    struct epoll_event evpool[SERV_EVS];
+    struct epoll_event evpool[EPOLLSIZE];
 };
 
 } // namespace pqnet

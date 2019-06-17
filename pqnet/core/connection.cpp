@@ -60,7 +60,7 @@ void TcpConnection::send(const char *data, std::size_t len)
     if (flag && remain > 0) {
         outputBuffer.append(data + n, remain);
         if (!tg->isLikeWriting()) {
-            // For TcpConnection::handleWrite
+            // for TcpConnection::handleWrite
             tg->likeWriting();
         }
     }

@@ -16,7 +16,7 @@ using namespace pqnet;
 TcpClient::TcpClient(const char *servname, std::uint16_t port)
     : addr(servname, port), running(false)
 {
-    epfd = epoll_create(CLI_EVS);
+    epfd = epoll_create(EPOLLSIZE);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
@@ -58,7 +58,7 @@ void TcpClient::run()
     this->buildConn();
     running = true;
     while (running) {
-        int cnt = epoll_wait(epfd, evpool, CLI_EVS, -1);
+        int cnt = epoll_wait(epfd, evpool, EPOLLSIZE, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
                 TRACE("epoll_wait is interrupted by a signal  handler.");

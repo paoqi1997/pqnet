@@ -78,7 +78,7 @@ void TcpServer::run()
     pool.setCloseCallBack(closecb);
     pool.setMessageArrivedCallBack(macb);
     pool.run();
-    epfd = epoll_create(SERV_EVS);
+    epfd = epoll_create(EPOLLSIZE);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
@@ -92,7 +92,7 @@ void TcpServer::run()
     socklen_t clilen = sizeof(struct sockaddr);
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
     while (running) {
-        int cnt = epoll_wait(epfd, evpool, SERV_EVS, -1);
+        int cnt = epoll_wait(epfd, evpool, EPOLLSIZE, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
                 INFO("Signal coming: epoll_wait exits.");

@@ -6,13 +6,12 @@
 namespace pqnet
 {
 
-#define  EV_CONN    1
-#define  EV_EXIT    2
+#define   EV_CONN    1
+#define   EV_EXIT    2
 
-#define  BACKLOG   16
-#define  BUFSIZE   32
-#define  CLI_EVS    8
-#define SERV_EVS 2048
+#define   BACKLOG   16
+#define   BUFSIZE   32
+#define EPOLLSIZE 1024
 
 using pn_thread_func_t = void*(*)(void*);
 

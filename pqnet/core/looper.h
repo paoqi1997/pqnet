@@ -41,7 +41,7 @@ public:
     std::map<int, TcpConnPtr> connpool;
     int epfd;
     struct epoll_event poi;
-    struct epoll_event evpool[SERV_EVS];
+    struct epoll_event evpool[EPOLLSIZE];
 private:
     pthread_t id;
     pn_thread_func_t func;
