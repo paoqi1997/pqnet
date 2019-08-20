@@ -33,12 +33,10 @@ private:
     closeCallBack closecb;
     messageArrivedCallBack macb;
     writeCompletedCallBack wccb;
-    int sockfd;
     Ip4Addr addr;
     TcpConnPtr conn;
     bool running;
     int epfd;
-    struct epoll_event poi;
     struct epoll_event evpool[EPOLLSIZE];
 };
 

@@ -61,7 +61,7 @@ void TcpClient::run()
         int cnt = epoll_wait(epfd, evpool, EPOLLSIZE, -1);
         if (cnt == -1) {
             if (errno == EINTR) {
-                TRACE("epoll_wait is interrupted by a signal  handler.");
+                TRACE("epoll_wait is interrupted by a signal handler.");
             } else {
                 ERROR(std::strerror(errno));
                 break;
