@@ -20,6 +20,7 @@ public:
     ~EventLoop();
     int getFd() const { return m_epfd; }
     void loop();
+    void shutdown() { loopFlag = false; }
 private:
     void handleRead();
     struct epoll_event* begin() { return evpool.data(); }

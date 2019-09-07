@@ -18,7 +18,7 @@ public:
         inTrigger.likeReading();
         inTrigger.setReadHandler(std::bind(&TcpEchoClient::handleStdIn, this));
     }
-    void run() {
+    void start() {
         cli.setConnectCallBack(
             std::bind(&TcpEchoClient::onConnect, this, _1)
         );
@@ -28,7 +28,7 @@ public:
         cli.setMessageArrivedCallBack(
             std::bind(&TcpEchoClient::onMsgArrived, this, _1)
         );
-        cli.run();
+        cli.start();
     }
     void shutdown() {
         cli.shutdown();
@@ -75,6 +75,6 @@ int main()
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();
-    echocli.run();
+    echocli.start();
     return 0;
 }

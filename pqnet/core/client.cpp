@@ -13,22 +13,15 @@
 
 using namespace pqnet;
 
-TcpClient::TcpClient(const char *servname, std::uint16_t port)
-    : addr(servname, port), running(false)
+TcpClient::TcpClient(const char *servname, std::uint16_t port) : addr(servname, port)
 {
-    epfd = epoll_create(EPOLLSIZE);
-    if (epfd == -1) {
-        ERROR(std::strerror(errno));
-    }
+
 }
 
 TcpClient::~TcpClient()
 {
     if (conn->isConnected()) {
         conn->connectDestroyed();
-    }
-    if (close(epfd) == -1) {
-        ERROR(std::strerror(errno));
     }
 }
 
@@ -53,26 +46,8 @@ void TcpClient::buildConn()
     conn->connectEstablished();
 }
 
-void TcpClient::run()
+void TcpClient::start()
 {
-    this->buildConn();
+    buildConn();
     m_looper.loop();
-    /*
-    running = true;
-    while (running) {
-        int cnt = epoll_wait(epfd, evpool, EPOLLSIZE, -1);
-        if (cnt == -1) {
-            if (errno == EINTR) {
-                TRACE("epoll_wait is interrupted by a signal handler.");
-            } else {
-                ERROR(std::strerror(errno));
-                break;
-            }
-        }
-        for (int i = 0; i < cnt; ++i) {
-            auto tg = reinterpret_cast<Trigger*>(evpool[i].data.ptr);
-            tg->setRevents(evpool[i].events);
-            tg->handleEvent();
-        }
-    }*/
 }

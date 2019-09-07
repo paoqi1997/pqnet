@@ -5,12 +5,13 @@
 
 #include <sys/epoll.h>
 
-#include "../util/types.h"
 #include "callback.h"
 #include "connection.h"
 #include "eventloop.h"
 #include "ipaddr.h"
 #include "trigger.h"
+
+#include "../util/types.h"
 
 namespace pqnet
 {
@@ -23,8 +24,8 @@ public:
     int getEpfd() const { return m_looper.getFd(); }
     void buildConn();
     TcpConnPtr getConn() const { return conn; }
-    void run();
-    void shutdown() { running = false; }
+    void start();
+    void shutdown() { m_looper.shutdown(); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
@@ -36,10 +37,7 @@ private:
     writeCompletedCallBack wccb;
     Ip4Addr addr;
     TcpConnPtr conn;
-    bool running;
-    int epfd;
     EventLoop m_looper;
-    struct epoll_event evpool[EPOLLSIZE];
 };
 
 } // namespace pqnet
