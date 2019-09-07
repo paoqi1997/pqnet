@@ -8,6 +8,7 @@
 #include "../util/types.h"
 #include "callback.h"
 #include "connection.h"
+#include "eventloop.h"
 #include "ipaddr.h"
 #include "trigger.h"
 
@@ -19,7 +20,7 @@ class TcpClient
 public:
     TcpClient(const char *servname, std::uint16_t port);
     ~TcpClient();
-    int getEpfd() const { return epfd; }
+    int getEpfd() const { return m_looper.getFd(); }
     void buildConn();
     TcpConnPtr getConn() const { return conn; }
     void run();
@@ -37,6 +38,7 @@ private:
     TcpConnPtr conn;
     bool running;
     int epfd;
+    EventLoop m_looper;
     struct epoll_event evpool[EPOLLSIZE];
 };
 

@@ -13,8 +13,10 @@ namespace pqnet
 class Trigger
 {
 public:
+    Trigger();
     Trigger(int _epfd, int _fd);
     int getFd() const { return fd; }
+    void setFds(int _epfd, int _fd) { epfd = _epfd; fd = _fd; }
     void addToLoop() { updateEvents(EPOLL_CTL_ADD); }
     void removeFromLoop() { updateEvents(EPOLL_CTL_DEL); }
     void setRevents(std::uint32_t _revents) { revents = _revents; }

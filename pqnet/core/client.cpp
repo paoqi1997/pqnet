@@ -45,7 +45,7 @@ void TcpClient::buildConn()
     setNonBlock(sockfd, true);
     setReuseAddr(sockfd, true);
     setReusePort(sockfd, true);
-    conn = std::make_shared<TcpConnection>(epfd, sockfd);
+    conn = std::make_shared<TcpConnection>(m_looper.getFd(), sockfd);
     conn->setConnectCallBack(conncb);
     conn->setCloseCallBack(closecb);
     conn->setMessageArrivedCallBack(macb);
@@ -56,6 +56,8 @@ void TcpClient::buildConn()
 void TcpClient::run()
 {
     this->buildConn();
+    m_looper.loop();
+    /*
     running = true;
     while (running) {
         int cnt = epoll_wait(epfd, evpool, EPOLLSIZE, -1);
@@ -72,5 +74,5 @@ void TcpClient::run()
             tg->setRevents(evpool[i].events);
             tg->handleEvent();
         }
-    }
+    }*/
 }

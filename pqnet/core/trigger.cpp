@@ -6,6 +6,11 @@
 
 using namespace pqnet;
 
+Trigger::Trigger() : epfd(-1), fd(-1), events(EPOLLET)
+{
+
+}
+
 Trigger::Trigger(int _epfd, int _fd) : epfd(_epfd), fd(_fd), events(EPOLLET)
 {
 
