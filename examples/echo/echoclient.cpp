@@ -12,7 +12,7 @@ class TcpEchoClient
 {
 public:
     TcpEchoClient(const char *servname, std::uint16_t port)
-        : cli(servname, port), inTrigger(cli.getEpfd(), fileno(stdin))
+        : cli(servname, port), inTrigger(cli.getLoopFd(), fileno(stdin))
     {
         inTrigger.addToLoop();
         inTrigger.likeReading();
@@ -34,18 +34,19 @@ public:
         cli.shutdown();
     }
     void handleStdIn() {
-        TRACE("%d:%s", cli.getConn()->getFd(), __func__);
+        TRACE("Fd: %d, CallBack: %s", cli.getConn()->getFd(), __func__);
         std::cin >> msg;
         cli.getConn()->send(msg.c_str(), msg.length());
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
-        TRACE("%d:%s", conn->getFd(), __func__);
+        TRACE("Fd: %d, Func: %s", conn->getFd(), __func__);
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
-        TRACE("%d:%s", conn->getFd(), __func__);
+        TRACE("Fd: %d, Func: %s", conn->getFd(), __func__);
+        cli.shutdown();
     }
     void onMsgArrived(const pqnet::TcpConnPtr& conn) {
-        TRACE("%d:%s", conn->getFd(), __func__);
+        TRACE("Fd: %d, Func: %s", conn->getFd(), __func__);
         msg = conn->getInputBuffer()->get(128);
         if (msg == "quit") {
             cli.shutdown();

@@ -13,7 +13,8 @@
 
 using namespace pqnet;
 
-TcpClient::TcpClient(const char *servname, std::uint16_t port) : addr(servname, port)
+TcpClient::TcpClient(const char *servname, std::uint16_t port)
+    : addr(servname, port), m_looper(new EventLoop())
 {
 
 }
@@ -38,7 +39,7 @@ void TcpClient::buildConn()
     setNonBlock(sockfd, true);
     setReuseAddr(sockfd, true);
     setReusePort(sockfd, true);
-    conn = std::make_shared<TcpConnection>(m_looper.getFd(), sockfd);
+    conn = std::make_shared<TcpConnection>(m_looper->getFd(), sockfd);
     conn->setConnectCallBack(conncb);
     conn->setCloseCallBack(closecb);
     conn->setMessageArrivedCallBack(macb);
@@ -49,5 +50,5 @@ void TcpClient::buildConn()
 void TcpClient::start()
 {
     buildConn();
-    m_looper.loop();
+    m_looper->loop();
 }

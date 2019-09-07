@@ -2,6 +2,7 @@
 #define PQNET_CORE_CLIENT_H
 
 #include <cstdint>
+#include <memory>
 
 #include <sys/epoll.h>
 
@@ -21,11 +22,11 @@ class TcpClient
 public:
     TcpClient(const char *servname, std::uint16_t port);
     ~TcpClient();
-    int getEpfd() const { return m_looper.getFd(); }
+    int getLoopFd() const { return m_looper->getFd(); }
     void buildConn();
     TcpConnPtr getConn() const { return conn; }
     void start();
-    void shutdown() { m_looper.shutdown(); }
+    void shutdown() { m_looper->shutdown(); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
@@ -37,7 +38,7 @@ private:
     writeCompletedCallBack wccb;
     Ip4Addr addr;
     TcpConnPtr conn;
-    EventLoop m_looper;
+    std::unique_ptr<EventLoop> m_looper;
 };
 
 } // namespace pqnet
