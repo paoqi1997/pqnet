@@ -12,7 +12,9 @@
 
 using namespace pqnet;
 
-TcpServer::TcpServer(std::uint16_t port) : index(0), ln(2), pool(ln), addr(port), running(false)
+TcpServer::TcpServer(std::uint16_t port)
+    : index(0), ln(2), addr(port), running(false),
+      listener(new Trigger()), m_looper(new EventLoop()), m_pool(new EventLoopThreadPool(2))
 {
     // socket
     listenfd = new_socket();
@@ -34,7 +36,7 @@ TcpServer::TcpServer(std::uint16_t port) : index(0), ln(2), pool(ln), addr(port)
 }
 
 TcpServer::TcpServer(const char *servname, std::uint16_t port)
-    : index(0), ln(2), pool(ln), addr(servname, port), running(false)
+    : index(0), ln(2), addr(servname, port), running(false)
 {
     // socket
     listenfd = new_socket();
@@ -57,27 +59,41 @@ TcpServer::TcpServer(const char *servname, std::uint16_t port)
 
 TcpServer::~TcpServer()
 {
-    if (close(epfd) == -1) {
+    /*if (close(epfd) == -1) {
         ERROR(std::strerror(errno));
-    }
+    }*/
     if (close(listenfd) == -1) {
         ERROR(std::strerror(errno));
     }
+    this->CloseUp();
+    /*
     for (std::size_t i = 0; i < ln; ++i) {
         int evfd = pool.loopers[i]->evfd;
         std::uint64_t msg = EV_EXIT;
         if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
             ERROR(std::strerror(errno));
         }
-    }
+    }*/
 }
 
 void TcpServer::run()
 {
+    /*
     pool.setConnectCallBack(conncb);
     pool.setCloseCallBack(closecb);
     pool.setMessageArrivedCallBack(macb);
     pool.run();
+    */
+    listener->setFds(m_looper->getFd(), listenfd);
+    listener->setReadHandler(std::bind(&TcpServer::onAccept, this));
+    listener->addToLoop();
+    listener->likeReading();
+    TRACE("Listener: %d", listenfd);
+    // TODO
+    m_pool->start();
+    m_looper->loop();
+    
+    /*
     epfd = epoll_create(EPOLLSIZE);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
@@ -111,19 +127,51 @@ void TcpServer::run()
                 this->onConnect(connfd);
             }
         }
+    }*/
+}
+
+void TcpServer::onAccept()
+{
+    struct sockaddr_in cliaddr;
+    auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
+    socklen_t clilen = sizeof(struct sockaddr);
+    int connfd = accept(listenfd, addrptr, &clilen);
+    if (connfd == -1) {
+        ERROR(std::strerror(errno));
+    }
+    setNonBlock(connfd, true);
+    auto currLooper = m_pool->getNextLoop();
+    connpool[connfd] = std::make_shared<TcpConnection>(currLooper->getFd(), connfd);
+    TRACE("CurrLooper: %d", currLooper->getFd());
+    connpool[connfd]->setConnectCallBack(conncb);
+    connpool[connfd]->setCloseCallBack(closecb);
+    connpool[connfd]->setMessageArrivedCallBack(macb);
+    connpool[connfd]->setWriteCompletedCallBack(wccb);
+    currLooper->exec(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
+    TRACE("onAccept: %d", connfd);
+}
+
+void TcpServer::CloseUp()
+{
+    for (std::size_t i = 0; i < m_pool->size(); ++i) {
+        int evfd = m_pool->getEvfdByIndex(i);
+        std::uint64_t msg = EV_EXIT;
+        if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
+            ERROR(std::strerror(errno));
+        }
     }
 }
 
 void TcpServer::onConnect(int connfd)
 {
-    setNonBlock(connfd, true);
+    /*setNonBlock(connfd, true);
     std::size_t li = this->getNextLoopIndex();
     int evfd = pool.loopers[li]->evfd;
     std::uint64_t msg = EV_CONN;
     pool.loopers[li]->waitconns.push(connfd);
     if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
         ERROR(std::strerror(errno));
-    }
+    }*/
 }
 
 std::size_t TcpServer::getNextLoopIndex()

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -13,13 +14,17 @@
 namespace pqnet
 {
 
+using Functor = std::function<void()>;
+
 class EventLoop
 {
 public:
     EventLoop(int eventPoolSize = 128);
     ~EventLoop();
     int getFd() const { return m_epfd; }
+    int getEvfd() const { return m_evfd; }
     void loop();
+    void exec(Functor fn) { fn(); }
     void shutdown() { loopFlag = false; }
 private:
     void handleRead();

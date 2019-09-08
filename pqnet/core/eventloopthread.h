@@ -13,6 +13,7 @@ class EventLoopThread
 public:
     EventLoopThread();
     pthread_t getId() const { return id; }
+    EventLoop* getEventLoop() { return &m_looper; }
     void start();
     static void* routine(void *arg);
 private:

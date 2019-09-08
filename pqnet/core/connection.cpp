@@ -17,6 +17,7 @@ TcpConnection::TcpConnection(int epfd, int fd) : tg(new Trigger(epfd, fd))
 
 void TcpConnection::connectEstablished()
 {
+    TRACE("%d:%s", tg->getFd(), __func__);
     tg->addToLoop();
     tg->likeReading();
     if (conncb) {

@@ -52,16 +52,19 @@ void EventLoop::loop()
         } else {
             for (int i = 0; i < cnt; ++i) {
                 auto tg = reinterpret_cast<Trigger*>(evpool[i].data.ptr);
+                TRACE("%d: Work", tg->getFd());
                 tg->setRevents(evpool[i].events);
                 tg->handleEvent();
             }
         }
     }
+    TRACE("GoodBye, loop.");
 }
 
 void EventLoop::handleRead()
 {
     ssize_t n = read(m_evfd, &msg, sizeof(msg));
+    TRACE("handleRead: %d", msg);
     if (n == -1) {
         ERROR(std::strerror(errno));
     } else {
