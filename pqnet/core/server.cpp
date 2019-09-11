@@ -79,7 +79,7 @@ void TcpServer::start()
 
 void TcpServer::onAccept()
 {
-    TRACE("Func: TcpServer::%s", __func__);
+    TRACE("Fd: %d, Func: TcpServer::%s", leader->getFd(), __func__);
     struct sockaddr_in cliaddr;
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
     socklen_t clilen = sizeof(struct sockaddr);

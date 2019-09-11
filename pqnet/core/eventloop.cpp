@@ -61,7 +61,7 @@ void EventLoop::loop()
 
 void EventLoop::handleRead()
 {
-    TRACE("Func: EventLoop::%s", __func__);
+    TRACE("Fd: %d, Func: EventLoop::%s", m_epfd, __func__);
     ssize_t n = read(m_evfd, &msg, sizeof(msg));
     if (n == -1) {
         ERROR(std::strerror(errno));

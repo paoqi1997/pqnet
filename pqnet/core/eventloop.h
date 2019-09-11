@@ -25,7 +25,6 @@ public:
     int getFd() const { return m_epfd; }
     int getEvfd() const { return m_evfd; }
     void loop();
-    void exec(Functor fn) { fn(); }
     void pushFn(Functor fn) { fnQueue.push(fn); }
     Functor popFn() {
         auto fn = fnQueue.front();
