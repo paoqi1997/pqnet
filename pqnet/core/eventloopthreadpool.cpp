@@ -42,6 +42,10 @@ int EventLoopThreadPool::getEvfdByIndex(std::size_t index)
 
 EventLoop* EventLoopThreadPool::getNextLoop()
 {
-    m_index = m_index < m_evThreadNumber ? m_index + 1 : 0;
-    return evThreadPool[m_index]->getEventLoop();
+    if (m_index < m_evThreadNumber) {
+        return evThreadPool[m_index++]->getEventLoop();
+    } else {
+        m_index = 0;
+        return evThreadPool[m_index]->getEventLoop();
+    }
 }
