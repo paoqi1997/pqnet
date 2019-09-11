@@ -9,13 +9,12 @@
 #include <unistd.h>
 
 #include "socket.h"
-
 #include "../util/logger.h"
 
 using namespace pqnet;
 
 TcpServer::TcpServer(std::uint16_t port)
-    : addr(port), listener(new Trigger()), m_looper(new EventLoop()), m_pool(new EventLoopThreadPool(2))
+    : addr(port), listenTrigger(new Trigger()), leader(new EventLoop()), followers(new EventLoopThreadPool(2))
 {
     // socket
     listenfd = new_socket();
@@ -67,13 +66,12 @@ TcpServer::~TcpServer()
 
 void TcpServer::run()
 {
-    listener->setFds(m_looper->getFd(), listenfd);
-    listener->setReadHandler(std::bind(&TcpServer::onAccept, this));
-    listener->addToLoop();
-    listener->likeReading();
-    TRACE("Listener: %d", listenfd);
-    m_pool->start();
-    m_looper->loop();
+    listenTrigger->setFds(leader->getFd(), listenfd);
+    listenTrigger->setReadHandler(std::bind(&TcpServer::onAccept, this));
+    listenTrigger->addToLoop();
+    listenTrigger->likeReading();
+    followers->start();
+    leader->loop();
 }
 
 void TcpServer::onAccept()
@@ -86,7 +84,7 @@ void TcpServer::onAccept()
         ERROR(std::strerror(errno));
     }
     setNonBlock(connfd, true);
-    auto currLooper = m_pool->getNextLoop();
+    auto currLooper = followers->getNextLoop();
     connpool[connfd] = std::make_shared<TcpConnection>(currLooper->getFd(), connfd);
     TRACE("CurrLooper: %d", currLooper->getFd());
     connpool[connfd]->setConnectCallBack(conncb);
@@ -99,8 +97,8 @@ void TcpServer::onAccept()
 
 void TcpServer::CloseUp()
 {
-    for (std::size_t i = 0; i < m_pool->size(); ++i) {
-        int evfd = m_pool->getEvfdByIndex(i);
+    for (std::size_t i = 0; i < followers->size(); ++i) {
+        int evfd = followers->getEvfdByIndex(i);
         std::uint64_t msg = EV_EXIT;
         if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
             ERROR(std::strerror(errno));

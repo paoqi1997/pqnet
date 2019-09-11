@@ -26,7 +26,7 @@ public:
     TcpServer(const char *servname, std::uint16_t port);
     ~TcpServer();
     void run();
-    void shutdown() { m_looper->shutdown(); }
+    void shutdown() { leader->shutdown(); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
@@ -39,12 +39,12 @@ private:
     closeCallBack closecb;
     messageArrivedCallBack macb;
     writeCompletedCallBack wccb;
-    int listenfd;
     Ip4Addr addr;
     std::map<int, TcpConnPtr> connpool;
-    std::unique_ptr<Trigger> listener;
-    std::unique_ptr<EventLoop> m_looper;
-    std::unique_ptr<EventLoopThreadPool> m_pool;
+    int listenfd;
+    std::unique_ptr<Trigger> listenTrigger;
+    std::unique_ptr<EventLoop> leader;
+    std::unique_ptr<EventLoopThreadPool> followers;
 };
 
 } // namespace pqnet
