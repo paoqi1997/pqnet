@@ -61,7 +61,7 @@ TcpServer::~TcpServer()
     if (close(listenfd) == -1) {
         ERROR(std::strerror(errno));
     }
-    this->Clear();
+    this->clear();
 }
 
 void TcpServer::start()
@@ -76,7 +76,7 @@ void TcpServer::start()
 
 void TcpServer::onAccept()
 {
-    TRACE("Func: %s", __func__);
+    TRACE("Func: TcpServer::%s", __func__);
     struct sockaddr_in cliaddr;
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
     socklen_t clilen = sizeof(struct sockaddr);
@@ -91,11 +91,20 @@ void TcpServer::onAccept()
     connpool[connfd]->setCloseCallBack(closecb);
     connpool[connfd]->setMessageArrivedCallBack(macb);
     connpool[connfd]->setWriteCompletedCallBack(wccb);
-    currLooper->exec(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
+    currLooper->pushFn(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
+    this->notify(currLooper->getEvfd(), EV_CONN);
+    //currLooper->exec(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
     TRACE("Connection %d in Looper %d.", connfd, currLooper->getFd());
 }
 
-void TcpServer::Clear()
+void TcpServer::notify(int evfd, std::uint64_t msg)
+{
+    if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
+        ERROR(std::strerror(errno));
+    }
+}
+
+void TcpServer::clear()
 {
     for (std::size_t i = 0; i < followers->size(); ++i) {
         int evfd = followers->getEvfdByIndex(i);

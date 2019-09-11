@@ -33,7 +33,8 @@ public:
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
     void onAccept();
-    void Clear();
+    void notify(int evfd, std::uint64_t msg);
+    void clear();
 private:
     connectCallBack conncb;
     closeCallBack closecb;

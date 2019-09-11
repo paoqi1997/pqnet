@@ -5,6 +5,7 @@
 
 #include <functional>
 #include <memory>
+#include <queue>
 #include <vector>
 
 #include <sys/epoll.h>
@@ -25,6 +26,12 @@ public:
     int getEvfd() const { return m_evfd; }
     void loop();
     void exec(Functor fn) { fn(); }
+    void pushFn(Functor fn) { fnQueue.push(fn); }
+    Functor popFn() {
+        auto fn = fnQueue.front();
+        fnQueue.pop();
+        return fn;
+    }
     void shutdown() { loopFlag = false; }
 private:
     void handleRead();
@@ -35,6 +42,7 @@ private:
     int m_evfd;
     bool loopFlag;
     std::uint64_t msg;
+    std::queue<Functor> fnQueue;
     std::unique_ptr<Trigger> evTrigger;
     std::vector<struct epoll_event> evpool;
 };

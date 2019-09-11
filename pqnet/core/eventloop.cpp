@@ -61,13 +61,16 @@ void EventLoop::loop()
 
 void EventLoop::handleRead()
 {
-    TRACE("Func: %s", __func__);
+    TRACE("Func: EventLoop::%s", __func__);
     ssize_t n = read(m_evfd, &msg, sizeof(msg));
     if (n == -1) {
         ERROR(std::strerror(errno));
     } else {
         if (msg == EV_EXIT) {
             loopFlag = false;
+        } else if (msg == EV_CONN) {
+            auto fn = this->popFn();
+            fn();
         }
     }
 }
