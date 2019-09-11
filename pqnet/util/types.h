@@ -6,12 +6,14 @@
 namespace pqnet
 {
 
-#define   EV_CONN    1
-#define   EV_EXIT    2
+// Event Codes
+#define EV_CONN 0x01
+#define EV_EXIT 0x02
 
-#define   BACKLOG   16
-#define   BUFSIZE   32
-#define EPOLLSIZE 1024
+// used by listen(2)
+#define BACKLOG 16
+// used by TimeStamp
+#define BUFSIZE 32
 
 using pn_thread_func_t = void*(*)(void*);
 

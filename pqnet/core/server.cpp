@@ -14,7 +14,8 @@
 using namespace pqnet;
 
 TcpServer::TcpServer(std::uint16_t port)
-    : addr(port), listenTrigger(new Trigger()), leader(new EventLoop()), followers(new EventLoopThreadPool(2))
+    : addr(port), listenTrigger(new Trigger()),
+      leader(new EventLoop()), followers(new EventLoopThreadPool(2))
 {
     // socket
     listenfd = new_socket();
@@ -35,7 +36,9 @@ TcpServer::TcpServer(std::uint16_t port)
     }
 }
 
-TcpServer::TcpServer(const char *servname, std::uint16_t port) : addr(servname, port)
+TcpServer::TcpServer(const char *servname, std::uint16_t port)
+    : addr(servname, port), listenTrigger(new Trigger()),
+      leader(new EventLoop()), followers(new EventLoopThreadPool(2))
 {
     // socket
     listenfd = new_socket();
@@ -93,7 +96,6 @@ void TcpServer::onAccept()
     connpool[connfd]->setWriteCompletedCallBack(wccb);
     currLooper->pushFn(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
     this->notify(currLooper->getEvfd(), EV_CONN);
-    //currLooper->exec(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
     TRACE("Connection %d in Looper %d.", connfd, currLooper->getFd());
 }
 
