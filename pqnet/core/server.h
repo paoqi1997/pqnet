@@ -25,7 +25,7 @@ public:
     TcpServer(std::uint16_t port);
     TcpServer(const char *servname, std::uint16_t port);
     ~TcpServer();
-    void run();
+    void start();
     void shutdown() { leader->shutdown(); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
@@ -33,7 +33,7 @@ public:
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
     void onAccept();
-    void CloseUp();
+    void Clear();
 private:
     connectCallBack conncb;
     closeCallBack closecb;

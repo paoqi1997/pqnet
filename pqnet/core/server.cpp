@@ -61,10 +61,10 @@ TcpServer::~TcpServer()
     if (close(listenfd) == -1) {
         ERROR(std::strerror(errno));
     }
-    this->CloseUp();
+    this->Clear();
 }
 
-void TcpServer::run()
+void TcpServer::start()
 {
     listenTrigger->setFds(leader->getFd(), listenfd);
     listenTrigger->setReadHandler(std::bind(&TcpServer::onAccept, this));
@@ -76,6 +76,7 @@ void TcpServer::run()
 
 void TcpServer::onAccept()
 {
+    TRACE("Func: %s", __func__);
     struct sockaddr_in cliaddr;
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
     socklen_t clilen = sizeof(struct sockaddr);
@@ -86,16 +87,15 @@ void TcpServer::onAccept()
     setNonBlock(connfd, true);
     auto currLooper = followers->getNextLoop();
     connpool[connfd] = std::make_shared<TcpConnection>(currLooper->getFd(), connfd);
-    TRACE("CurrLooper: %d", currLooper->getFd());
     connpool[connfd]->setConnectCallBack(conncb);
     connpool[connfd]->setCloseCallBack(closecb);
     connpool[connfd]->setMessageArrivedCallBack(macb);
     connpool[connfd]->setWriteCompletedCallBack(wccb);
     currLooper->exec(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
-    TRACE("onAccept: %d", connfd);
+    TRACE("Connection %d in Looper %d.", connfd, currLooper->getFd());
 }
 
-void TcpServer::CloseUp()
+void TcpServer::Clear()
 {
     for (std::size_t i = 0; i < followers->size(); ++i) {
         int evfd = followers->getEvfdByIndex(i);

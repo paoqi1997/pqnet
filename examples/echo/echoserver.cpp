@@ -10,7 +10,7 @@ class TcpEchoServer
 {
 public:
     TcpEchoServer(std::uint16_t port) : serv(port) {}
-    void run() {
+    void start() {
         serv.setConnectCallBack(
             std::bind(&TcpEchoServer::onConnect, this, _1)
         );
@@ -20,7 +20,7 @@ public:
         serv.setMessageArrivedCallBack(
             std::bind(&TcpEchoServer::onMsgArrived, this, _1)
         );
-        serv.run();
+        serv.start();
     }
     void shutdown() {
         serv.shutdown();
@@ -56,6 +56,6 @@ int main()
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();
-    echoserv.run();
+    echoserv.start();
     return 0;
 }

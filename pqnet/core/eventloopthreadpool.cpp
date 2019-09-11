@@ -28,10 +28,8 @@ EventLoopThreadPool::~EventLoopThreadPool()
 
 void EventLoopThreadPool::start()
 {
-    TRACE("SIZE: %d", evThreadPool.size());
     for (auto& evThread : evThreadPool) {
         evThread->start();
-        TRACE("evThread: %d", evThread->getEventLoop()->getFd());
     }
 }
 
