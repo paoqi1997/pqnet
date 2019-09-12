@@ -69,7 +69,8 @@ TcpServer::~TcpServer()
 
 void TcpServer::start()
 {
-    listenTrigger->setFds(leader->getFd(), listenfd);
+    listenTrigger->setEpfd(leader->getFd());
+    listenTrigger->setFd(listenfd);
     listenTrigger->setReadHandler(std::bind(&TcpServer::onAccept, this));
     listenTrigger->addToLoop();
     listenTrigger->likeReading();

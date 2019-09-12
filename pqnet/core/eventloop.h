@@ -22,10 +22,10 @@ class EventLoop
 public:
     EventLoop(int eventPoolSize = 128);
     ~EventLoop();
-    int getFd() const { return m_epfd; }
-    int getEvfd() const { return m_evfd; }
+    int getFd() const { return epfd; }
+    int getEvfd() const { return evfd; }
     void loop();
-    void pushFn(Functor fn) { fnQueue.push(fn); }
+    void pushFn(const Functor& fn) { fnQueue.push(fn); }
     Functor popFn() {
         auto fn = fnQueue.front();
         fnQueue.pop();
@@ -37,8 +37,8 @@ private:
     struct epoll_event* begin() { return evpool.data(); }
     const struct epoll_event* begin() const { return evpool.data(); }
 private:
-    int m_epfd;
-    int m_evfd;
+    int epfd;
+    int evfd;
     bool loopFlag;
     std::uint64_t msg;
     std::queue<Functor> fnQueue;

@@ -16,7 +16,8 @@ public:
     Trigger();
     Trigger(int _epfd, int _fd);
     int getFd() const { return fd; }
-    void setFds(int _epfd, int _fd) { epfd = _epfd; fd = _fd; }
+    void setEpfd(int _epfd) { epfd = _epfd; }
+    void setFd(int _fd) { fd = _fd; }
     void addToLoop() { updateEvents(EPOLL_CTL_ADD); }
     void removeFromLoop() { updateEvents(EPOLL_CTL_DEL); }
     void setRevents(std::uint32_t _revents) { revents = _revents; }
@@ -31,6 +32,7 @@ public:
     void setWriteHandler(const writeHandler& hd) { writehd = hd; }
 private:
     void updateEvents(int op);
+private:
     int epfd;
     int fd;
     std::uint32_t events;

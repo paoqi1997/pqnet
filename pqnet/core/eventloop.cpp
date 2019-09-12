@@ -13,15 +13,16 @@ using namespace pqnet;
 
 EventLoop::EventLoop(int eventPoolSize) : loopFlag(false), evTrigger(new Trigger()), evpool(eventPoolSize)
 {
-    m_epfd = epoll_create(eventPoolSize);
-    if (m_epfd == -1) {
+    epfd = epoll_create(eventPoolSize);
+    if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
-    m_evfd = eventfd(0, EFD_NONBLOCK);
-    if (m_evfd == -1) {
+    evfd = eventfd(0, EFD_NONBLOCK);
+    if (evfd == -1) {
         ERROR(std::strerror(errno));
     }
-    evTrigger->setFds(m_epfd, m_evfd);
+    evTrigger->setEpfd(epfd);
+    evTrigger->setFd(evfd);
     evTrigger->setReadHandler(std::bind(&EventLoop::handleRead, this));
     evTrigger->addToLoop();
     evTrigger->likeReading();
@@ -29,10 +30,10 @@ EventLoop::EventLoop(int eventPoolSize) : loopFlag(false), evTrigger(new Trigger
 
 EventLoop::~EventLoop()
 {
-    if (close(m_epfd) == -1) {
+    if (close(epfd) == -1) {
         ERROR(std::strerror(errno));
     }
-    if (close(m_evfd) == -1) {
+    if (close(evfd) == -1) {
         ERROR(std::strerror(errno));
     }
 }
@@ -41,7 +42,7 @@ void EventLoop::loop()
 {
     loopFlag = true;
     while (loopFlag) {
-        int cnt = epoll_wait(m_epfd, this->begin(), static_cast<int>(evpool.size()), -1);
+        int cnt = epoll_wait(epfd, this->begin(), static_cast<int>(evpool.size()), -1);
         if (cnt == -1) {
             loopFlag = false;
             if (errno == EINTR) {
@@ -61,16 +62,18 @@ void EventLoop::loop()
 
 void EventLoop::handleRead()
 {
-    TRACE("Fd: %d, Func: EventLoop::%s", m_epfd, __func__);
-    ssize_t n = read(m_evfd, &msg, sizeof(msg));
+    TRACE("Fd: %d, Func: EventLoop::%s", epfd, __func__);
+    ssize_t n = read(evfd, &msg, sizeof(msg));
     if (n == -1) {
         ERROR(std::strerror(errno));
     } else {
-        if (msg == EV_EXIT) {
+        switch (msg) {
+        case EV_CONN:
+            this->popFn()();
+            break;
+        case EV_EXIT:
             loopFlag = false;
-        } else if (msg == EV_CONN) {
-            auto fn = this->popFn();
-            fn();
+            break;
         }
     }
 }
