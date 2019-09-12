@@ -15,6 +15,9 @@ namespace pqnet
 // used by TimeStamp
 #define BUFSIZE 32
 
+// MESSAGES
+#define MSG_EPOLL_WAIT_EINTR "The Loop was interrupted by a signal handler."
+
 using pn_thread_func_t = void*(*)(void*);
 
 using pn_task_func_t = void(*)(void*);

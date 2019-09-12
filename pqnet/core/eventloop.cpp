@@ -46,7 +46,7 @@ void EventLoop::loop()
         if (cnt == -1) {
             loopFlag = false;
             if (errno == EINTR) {
-                TRACE("epoll_wait is interrupted by a signal handler.");
+                TRACE(MSG_EPOLL_WAIT_EINTR);
             } else {
                 ERROR(std::strerror(errno));
             }
