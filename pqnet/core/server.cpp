@@ -1,6 +1,5 @@
 #include "server.h"
 
-#include <cassert>
 #include <cerrno>
 #include <cstring>
 
@@ -10,6 +9,7 @@
 
 #include "socket.h"
 #include "../util/logger.h"
+#include "../util/types.h"
 
 using namespace pqnet;
 
@@ -96,24 +96,21 @@ void TcpServer::onAccept()
     connpool[connfd]->setMessageArrivedCallBack(macb);
     connpool[connfd]->setWriteCompletedCallBack(wccb);
     currLooper->pushFn(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
-    this->notify(currLooper->getEvfd(), EV_CONN);
+    this->tell(currLooper->getEvfd(), EV_CONN);
     TRACE("Connection %d in Looper %d.", connfd, currLooper->getFd());
-}
-
-void TcpServer::notify(int evfd, std::uint64_t msg)
-{
-    if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
-        ERROR(std::strerror(errno));
-    }
 }
 
 void TcpServer::clear()
 {
     for (std::size_t i = 0; i < followers->size(); ++i) {
         int evfd = followers->getEvfdByIndex(i);
-        std::uint64_t msg = EV_EXIT;
-        if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
-            ERROR(std::strerror(errno));
-        }
+        this->tell(evfd, EV_EXIT);
+    }
+}
+
+void TcpServer::tell(int evfd, std::uint64_t msg)
+{
+    if (write(evfd, &msg, sizeof(std::uint64_t)) == -1) {
+        ERROR(std::strerror(errno));
     }
 }

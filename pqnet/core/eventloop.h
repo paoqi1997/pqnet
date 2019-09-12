@@ -25,13 +25,13 @@ public:
     int getFd() const { return epfd; }
     int getEvfd() const { return evfd; }
     void loop();
+    void quit() { loopFlag = false; }
     void pushFn(const Functor& fn) { fnQueue.push(fn); }
     Functor popFn() {
         auto fn = fnQueue.front();
         fnQueue.pop();
         return fn;
     }
-    void shutdown() { loopFlag = false; }
 private:
     void handleRead();
     struct epoll_event* begin() { return evpool.data(); }

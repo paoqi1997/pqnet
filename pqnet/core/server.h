@@ -14,8 +14,6 @@
 #include "ipaddr.h"
 #include "trigger.h"
 
-#include "../util/types.h"
-
 namespace pqnet
 {
 
@@ -26,15 +24,15 @@ public:
     TcpServer(const char *servname, std::uint16_t port);
     ~TcpServer();
     void start();
-    void shutdown() { leader->shutdown(); }
+    void shutdown() { leader->quit(); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
     void onAccept();
-    void notify(int evfd, std::uint64_t msg);
     void clear();
+    void tell(int evfd, std::uint64_t msg);
 private:
     connectCallBack conncb;
     closeCallBack closecb;

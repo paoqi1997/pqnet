@@ -26,7 +26,7 @@ public:
     void buildConn();
     TcpConnPtr getConn() const { return conn; }
     void start();
-    void shutdown() { m_looper->shutdown(); }
+    void shutdown() { m_looper->quit(); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
