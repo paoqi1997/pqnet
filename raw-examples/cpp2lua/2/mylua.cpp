@@ -1,7 +1,8 @@
 #include "mylua.h"
 
-int lua_add(lua_State *L)
-{
+namespace mylua {
+
+int lua_add(lua_State *L) {
     int n = lua_gettop(L);
     lua_Number sum = 0;
     for (int i = 0; i <= n; ++i) {
@@ -11,8 +12,10 @@ int lua_add(lua_State *L)
     return 1;
 }
 
+} // namespace mylua
+
 struct luaL_Reg FuncList[] = {
-    {"add", lua_add},
+    {"add", mylua::lua_add},
     {nullptr, nullptr}
 };
 
