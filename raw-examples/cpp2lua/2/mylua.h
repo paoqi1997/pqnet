@@ -9,10 +9,10 @@ extern "C" {
 #include <lua.h>
 #include <lualib.h>
 
+int luaopen_mylua(lua_State *L);
+
 #ifdef __cplusplus
 }
 #endif
-
-extern "C" int luaopen_libmylua(lua_State *L);
 
 #endif // MYLUA_H

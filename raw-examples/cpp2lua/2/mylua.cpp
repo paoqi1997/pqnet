@@ -11,15 +11,14 @@ int lua_add(lua_State *L)
     return 1;
 }
 
-luaL_Reg funcList[] = {
+struct luaL_Reg FuncList[] = {
     {"add", lua_add},
     {nullptr, nullptr}
 };
 
-int luaopen_libmylua(lua_State *L)
+int luaopen_mylua(lua_State *L)
 {
-    //lua_register(L, "mylua", funcList);
     lua_newtable(L);
-    luaL_setfuncs(L, funcList, 0);
+    luaL_setfuncs(L, FuncList, 0);
     return 1;
 }

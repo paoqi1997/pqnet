@@ -2,19 +2,22 @@ CXX = g++
 CXXFLAGS = -g -Wall -fPIC
 LIBS = -llua
 
-SOS = libmylua.so
+NAME = mylua
+SRCS = ${NAME}.cpp
+OBJS = ${NAME}.o
+DLLS = ${NAME}.so
 
 .PHONY: build_all
 
-build_all: ${SOS}
+build_all: ${DLLS}
 
-mylua.o: mylua.cpp
+${OBJS}: ${SRCS}
 	${CXX} ${CXXFLAGS} -c $< ${LIBS}
 
-libmylua.so: mylua.o
+${DLLS}: ${OBJS}
 	${CXX} ${CXXFLAGS} -shared $^ -o $@
 
 .PHONY: clean
 
 clean:
-	rm ${SOS} *.o
+	rm ${DLLS} *.o
