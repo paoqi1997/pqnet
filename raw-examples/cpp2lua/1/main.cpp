@@ -21,6 +21,5 @@ int main()
     }
 
     lua_close(L);
-
     return 0;
 }

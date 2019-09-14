@@ -8,7 +8,7 @@ BINS = lua2cpp
 
 build_all: ${BINS}
 
-lua2cpp: main.o
+${BINS}: main.o
 	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
 .PHONY: clean
