@@ -2,13 +2,13 @@ CXX = g++
 CXXFLAGS = -g -Wall
 LIBS = -llua -ldl
 
-BINS = cpp2lua1
+BINS = cpp2lua
 
 .PHONY: build_all
 
 build_all: ${BINS}
 
-cpp2lua1: main.o
+${BINS}: main.o mylua.o
 	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
 .PHONY: clean

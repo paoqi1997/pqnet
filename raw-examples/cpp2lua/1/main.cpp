@@ -9,7 +9,7 @@ int main()
 {
     auto L = luaL_newstate();
 
-    // ldd cpp2lua1?
+    // ldd cpp2lua?
     // Makefile: I need -ldl.
     luaL_openlibs(L);
 
