@@ -4,8 +4,8 @@ const char *className = "Object";
 
 int createObject(lua_State *L)
 {
-    auto obj = static_cast<Object**>(lua_newuserdata(L, sizeof(Object*)));
-    *obj = new Object();
+    auto p = static_cast<Object**>(lua_newuserdata(L, sizeof(Object*)));
+    *p = new Object();
     luaL_getmetatable(L, className);
     lua_setmetatable(L, -2);
     return 1;
@@ -13,40 +13,46 @@ int createObject(lua_State *L)
 
 int deleteObject(lua_State *L)
 {
-    auto obj = static_cast<Object**>(luaL_checkudata(L, 1, className));
-    delete *obj;
+    auto p = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    delete *p;
     return 0;
 }
 
 int getName(lua_State *L)
 {
-    auto obj = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    auto p = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    luaL_argcheck(L, p != nullptr, 1, "null pointer");
     lua_settop(L, 0);
-    lua_pushstring(L, (*obj)->getName().c_str());
+    lua_pushstring(L, (*p)->getName().c_str());
     return 1;
 }
 
 int getSum(lua_State *L)
 {
-    auto obj = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    auto p = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    luaL_argcheck(L, p != nullptr, 1, "null pointer");
     lua_settop(L, 0);
-    lua_pushnumber(L, (*obj)->getSum());
+    lua_pushnumber(L, (*p)->getSum());
     return 1;
 }
 
 int setName(lua_State *L)
 {
-    auto obj = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    auto p = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    luaL_argcheck(L, p != nullptr, 1, "null pointer");
+    luaL_checktype(L, -1, LUA_TSTRING);
     std::string name = lua_tostring(L, -1);
-    (*obj)->setName(name);
+    (*p)->setName(name);
     return 0;
 }
 
 int setSum(lua_State *L)
 {
-    auto obj = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    auto p = static_cast<Object**>(luaL_checkudata(L, 1, className));
+    luaL_argcheck(L, p != nullptr, 1, "null pointer");
+    luaL_checktype(L, -1, LUA_TNUMBER);
     int sum = lua_tonumber(L, -1);
-    (*obj)->setSum(sum);
+    (*p)->setSum(sum);
     return 0;
 }
 
