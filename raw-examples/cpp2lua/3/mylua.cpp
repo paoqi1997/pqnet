@@ -50,8 +50,12 @@ int setSum(lua_State *L)
     return 0;
 }
 
-struct luaL_Reg FuncList[] = {
+struct luaL_Reg FnList[] = {
     {"Object", createObject},
+    {nullptr, nullptr}
+};
+
+struct luaL_Reg FuncList[] = {
     {"__gc", deleteObject},
     {"getName", getName},
     {"getSum", getSum},
@@ -66,5 +70,6 @@ int luaopen_mylua(lua_State *L)
     lua_pushvalue(L, -1);
     lua_setfield(L, -2, "__index");
     luaL_setfuncs(L, FuncList, 0);
+    luaL_newlib(L, FnList);
     return 1;
 }
