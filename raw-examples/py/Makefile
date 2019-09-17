@@ -14,7 +14,7 @@ DLLS = ${NAME}.so
 build_all: ${DLLS}
 
 ${OBJS}: ${SRCS}
-	${CXX} ${CXXFLAGS} -c $< ${LIBS}
+	${CXX} ${CXXFLAGS} -c $<
 
 ${DLLS}: ${OBJS}
 	${CXX} ${CXXFLAGS} -shared $^ -o $@
