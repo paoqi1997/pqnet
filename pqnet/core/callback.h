@@ -15,6 +15,7 @@ using TcpConnPtr = std::shared_ptr<TcpConnection>;
 
 using        connectCallBack = std::function<void(const TcpConnPtr&)>;
 using          closeCallBack = std::function<void(const TcpConnPtr&)>;
+using      implCloseCallBack = std::function<void(const TcpConnPtr&)>;
 using messageArrivedCallBack = std::function<void(const TcpConnPtr&)>;
 using writeCompletedCallBack = std::function<void(const TcpConnPtr&)>;
 

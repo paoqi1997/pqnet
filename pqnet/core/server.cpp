@@ -12,6 +12,7 @@
 #include "../util/types.h"
 
 using namespace pqnet;
+using namespace std::placeholders;
 
 TcpServer::TcpServer(std::uint16_t port)
     : addr(port), listenTrigger(new Trigger()),
@@ -93,6 +94,7 @@ void TcpServer::onAccept()
     connpool[connfd] = std::make_shared<TcpConnection>(currLooper->getFd(), connfd);
     connpool[connfd]->setConnectCallBack(conncb);
     connpool[connfd]->setCloseCallBack(closecb);
+    connpool[connfd]->setImplCloseCallBack(std::bind(&TcpServer::removeConnection, this, _1));
     connpool[connfd]->setMessageArrivedCallBack(macb);
     connpool[connfd]->setWriteCompletedCallBack(wccb);
     currLooper->pushFn(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));

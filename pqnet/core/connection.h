@@ -25,6 +25,7 @@ public:
     void send(const char *data, std::size_t len);
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
+    void setImplCloseCallBack(const implCloseCallBack& cb) { iccb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
@@ -32,6 +33,7 @@ private:
     void handleWrite();
     connectCallBack conncb;
     closeCallBack closecb;
+    implCloseCallBack iccb;
     messageArrivedCallBack macb;
     writeCompletedCallBack wccb;
     Buffer inputBuffer;

@@ -33,6 +33,7 @@ private:
     void onAccept();
     void clear();
     void tell(int evfd, std::uint64_t msg);
+    void removeConnection(const TcpConnPtr& conn) { connpool.erase(conn->getFd()); }
 private:
     connectCallBack conncb;
     closeCallBack closecb;

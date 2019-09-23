@@ -36,6 +36,9 @@ void TcpConnection::connectDestroyed()
     if (closecb) {
         closecb(shared_from_this());
     }
+    if (iccb) {
+        iccb(shared_from_this());
+    }
     connected = false;
 }
 
