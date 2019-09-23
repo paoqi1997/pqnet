@@ -9,10 +9,10 @@
 
 using namespace pqnet;
 
-EventLoopThreadPool::EventLoopThreadPool(std::size_t evThreadNumber)
-    : m_index(0), m_evThreadNumber(evThreadNumber)
+EventLoopThreadPool::EventLoopThreadPool(std::size_t _evThreadCount)
+    : currIndex(0), evThreadCount(_evThreadCount)
 {
-    for (std::size_t i = 0; i < m_evThreadNumber; ++i) {
+    for (std::size_t i = 0; i < evThreadCount; ++i) {
         evThreadPool.emplace_back(new EventLoopThread());
     }
 }
@@ -40,10 +40,10 @@ int EventLoopThreadPool::getEvfdByIndex(std::size_t index)
 
 EventLoop* EventLoopThreadPool::getNextLoop()
 {
-    if (m_index < m_evThreadNumber) {
-        return evThreadPool[m_index++]->getEventLoop();
+    if (currIndex < evThreadCount) {
+        return evThreadPool[currIndex++]->getEventLoop();
     } else {
-        m_index = 0;
-        return evThreadPool[m_index]->getEventLoop();
+        currIndex = 0;
+        return evThreadPool[currIndex]->getEventLoop();
     }
 }

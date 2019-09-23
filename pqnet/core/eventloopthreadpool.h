@@ -12,15 +12,15 @@ namespace pqnet
 class EventLoopThreadPool
 {
 public:
-    EventLoopThreadPool(std::size_t evThreadNumber);
+    EventLoopThreadPool(std::size_t _evThreadCount);
     ~EventLoopThreadPool();
     void start();
     std::size_t size() const { return evThreadPool.size(); }
     int getEvfdByIndex(std::size_t index);
     EventLoop* getNextLoop();
 private:
-    std::size_t m_index;
-    std::size_t m_evThreadNumber;
+    std::size_t currIndex;
+    std::size_t evThreadCount;
     std::vector<std::unique_ptr<EventLoopThread>> evThreadPool;
 };
 

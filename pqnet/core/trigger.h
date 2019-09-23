@@ -15,6 +15,7 @@ class Trigger
 public:
     Trigger();
     Trigger(int _epfd, int _fd);
+    int getEpfd() const { return epfd; }
     int getFd() const { return fd; }
     void setEpfd(int _epfd) { epfd = _epfd; }
     void setFd(int _fd) { fd = _fd; }
