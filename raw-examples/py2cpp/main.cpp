@@ -7,42 +7,49 @@ using std::endl;
 
 int main()
 {
+    PyObject *pyMod;
+    PyObject *pyFunc;
+    PyObject *pyArgs, *pyRes;
+
     Py_Initialize();
     if (!Py_IsInitialized()) {
         return 1;
     }
 
-    PyRun_SimpleString("import sys");
-    PyRun_SimpleString("sys.path.append('.')");
+    if (PyRun_SimpleString("import sys") != 0) {
+        return 1;
+    }
+    if (PyRun_SimpleString("sys.path.append('.')") != 0) {
+        return 1;
+    }
 
-    PyObject *pyMod = PyImport_ImportModule("mod");
+    pyMod = PyImport_ImportModule("mod");
     if (pyMod) {
-        PyObject *pyFunc;
         pyFunc = PyObject_GetAttrString(pyMod, "fn1");
         if (pyFunc) {
-            PyObject *pyArgs = Py_BuildValue("ii", 2, 4);
-            PyObject *pyRes = PyObject_CallObject(pyFunc, pyArgs);
+            pyArgs = Py_BuildValue("ii", 2, 4);
+            pyRes = PyObject_CallObject(pyFunc, pyArgs);
+            Py_DECREF(pyFunc);
+            Py_DECREF(pyArgs);
             if (pyRes) {
                 int myRes = 0;
                 PyArg_Parse(pyRes, "i", &myRes);
-                cout << myRes << endl;
                 Py_DECREF(pyRes);
+                cout << myRes << endl;
             }
-            Py_DECREF(pyArgs);
-            Py_DECREF(pyFunc);
         }
         pyFunc = PyObject_GetAttrString(pyMod, "fn2");
         if (pyFunc) {
-            PyObject *pyArgs = Py_BuildValue("()");
-            PyObject *pyRes = PyObject_CallObject(pyFunc, pyArgs);
+            pyArgs = Py_BuildValue("()");
+            pyRes = PyObject_CallObject(pyFunc, pyArgs);
+            Py_DECREF(pyFunc);
+            Py_DECREF(pyArgs);
             if (pyRes) {
                 int Res1 = 0, Res2 = 0;
                 PyArg_Parse(pyRes, "(ii)", &Res1, &Res2);
-                cout << Res1 << " " << Res2 << endl;
                 Py_DECREF(pyRes);
+                cout << Res1 << " " << Res2 << endl;
             }
-            Py_DECREF(pyArgs);
-            Py_DECREF(pyFunc);
         }
         Py_DECREF(pyMod);
     }
