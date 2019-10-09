@@ -109,7 +109,7 @@ PyModuleDef PyMod = {
 PyMODINIT_FUNC PyInit_mypy()
 {
     PyObject *m;
-    if (PyType_Ready(&ObjectType) < 0) {
+    if (PyType_Ready(&ObjectType) != 0) {
         return nullptr;
     }
 
@@ -119,9 +119,12 @@ PyMODINIT_FUNC PyInit_mypy()
     }
 
     Py_INCREF(&ObjectType);
-    if (PyModule_AddObject(m, "Object", reinterpret_cast<PyObject*>(&ObjectType)) < 0) {
+    if (PyModule_AddObject(m, "Object", reinterpret_cast<PyObject*>(&ObjectType)) != 0) {
         Py_DECREF(&ObjectType);
         Py_DECREF(m);
+        return nullptr;
+    }
+    if (PyModule_AddObject(m, "DEEP_DARK_FANTASY", Py_BuildValue("i", 2077)) != 0) {
         return nullptr;
     }
 

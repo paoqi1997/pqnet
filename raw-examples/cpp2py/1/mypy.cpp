@@ -27,7 +27,7 @@ PyModuleDef PyMod = {
     PyMethods
 };
 
-PyObject* PyInit_mypy()
+PyMODINIT_FUNC PyInit_mypy()
 {
     return PyModule_Create(&PyMod);
 }

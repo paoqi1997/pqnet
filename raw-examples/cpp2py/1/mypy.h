@@ -7,7 +7,7 @@ extern "C" {
 
 #include <Python.h>
 
-PyObject* PyInit_mypy();
+PyMODINIT_FUNC PyInit_mypy();
 
 #ifdef __cplusplus
 }
