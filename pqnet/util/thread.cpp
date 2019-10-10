@@ -33,7 +33,7 @@ void* Thread::routine(void *arg)
 {
     auto self = static_cast<Thread*>(arg);
     auto pool = self->getPool();
-    for ( ; ; ) {
+    for (;;) {
         pool->cond.lock();
         while (pool->isRunning() && pool->isIdle()) {
             pool->cond.wait();
