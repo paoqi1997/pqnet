@@ -2,7 +2,6 @@
 #define PQNET_CORE_TIMER_H
 
 #include <cstdint>
-
 #include <functional>
 
 #include "../util/timestamp.h"

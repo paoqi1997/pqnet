@@ -11,7 +11,8 @@
 
 using namespace pqnet;
 
-EventLoop::EventLoop(int eventPoolSize) : loopFlag(false), evTrigger(new Trigger()), evpool(eventPoolSize)
+EventLoop::EventLoop(int eventPoolSize)
+    : loopFlag(false), evTrigger(new Trigger()), evpool(eventPoolSize)
 {
     epfd = epoll_create(eventPoolSize);
     if (epfd == -1) {

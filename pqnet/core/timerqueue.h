@@ -2,7 +2,6 @@
 #define PQNET_CORE_TIMER_QUEUE_H
 
 #include <cstdint>
-
 #include <set>
 #include <utility>
 
