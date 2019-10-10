@@ -16,7 +16,7 @@ void sighandler(int signum) {
     std::cout << "Bye!" << std::endl;
 }
 
-void print_time() {
+void printCurrTime() {
     std::system("date +\"%F %T\"");
 }
 
@@ -38,7 +38,7 @@ int main()
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, tq.getFd(), &poi) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
-    print_time();
+    printCurrTime();
     std::cout << "Start Timing!" << std::endl;
     tq.addTimer(func, const_cast<char*>("Timer!"), 6000);
     auto id = tq.addTimer(func, const_cast<char*>("Ticker!"), 3000, 1000);
@@ -48,23 +48,17 @@ int main()
     while (running) {
         int cnt = epoll_wait(epfd, evpool, evs, -1);
         if (cnt == -1) {
-            if (errno == EINTR) {
-                running = false;
-            } else {
+            running = false;
+            if (errno != EINTR) {
                 std::cout << std::strerror(errno) << std::endl;
-                break;
             }
         }
         for (int i = 0; i < cnt; ++i) {
             if (evpool[i].events & EPOLLIN) {
-                print_time();
-                // Ticker -> Ticker -> Ticker -> Timer -> (currtime) -> Ticker -> ...
-                // 经历 Ticker -> Timer 后
-                // 下一次 Ticker 的时间戳将大于 currtime
-                // Ticker 共执行了 9 次
+                printCurrTime();
                 tq.handle();
-                ++count;
-                if (count == 10) {
+                // Ticker: 9, Timer: 1
+                if (++count == 10) {
                     tq.delTimer(id);
                 }
             }
