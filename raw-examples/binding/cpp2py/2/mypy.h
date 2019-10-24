@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #include <Python.h>
+#include <structmember.h>
 
 PyMODINIT_FUNC PyInit_mypy();
 
@@ -18,17 +19,19 @@ PyMODINIT_FUNC PyInit_mypy();
 
 class Object
 {
-    PyObject_HEAD
 public:
-    void init() { std::cout << "Object::Object" << std::endl; }
+    PyObject_HEAD
+    // Methods
+    void init() { flag = true; std::cout << "Object::Object" << std::endl; }
     void release() { std::cout << "Object::~Object" << std::endl; }
     std::string getName() const { return name; }
     int getSum() const { return sum; }
     void setName(const std::string& _name) { name = _name; }
     void setSum(int _sum) { sum = _sum; }
-private:
+    // Members
     std::string name;
     int sum;
+    bool flag;
 };
 
 #endif // MYPY_H

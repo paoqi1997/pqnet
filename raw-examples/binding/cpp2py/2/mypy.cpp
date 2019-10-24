@@ -58,6 +58,11 @@ PyMethodDef ObjectMethods[] = {
     {nullptr, nullptr, 0, nullptr}
 };
 
+PyMemberDef ObjectMembers[] = {
+    {"FLAG", T_BOOL, offsetof(Object, flag), 0, nullptr},
+    {nullptr}
+};
+
 PyTypeObject ObjectType = {
     PyVarObject_HEAD_INIT(nullptr, 0)
     "mypy.Object",                  /* tp_name */
@@ -87,7 +92,7 @@ PyTypeObject ObjectType = {
     0,                              /* tp_iter */
     0,                              /* tp_iternext */
     ObjectMethods,                  /* tp_methods */
-    0,                              /* tp_members */
+    ObjectMembers,                  /* tp_members */
     0,                              /* tp_getset */
     0,                              /* tp_base */
     0,                              /* tp_dict */
