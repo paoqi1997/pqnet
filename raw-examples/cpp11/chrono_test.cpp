@@ -4,14 +4,26 @@
 using std::cout;
 using std::endl;
 
+/**
+ * class duration:
+ * template <class Rep, class Period = std::ratio<1>>
+ */
 using std::chrono::duration;
 using std::chrono::duration_cast;
 using std::chrono::system_clock;
+/**
+ * class time_point:
+ * template <class Clock, class Duration = typename Clock::duration>
+ */
 using std::chrono::time_point;
 using std::chrono::time_point_cast;
 
 using  us_type = std::chrono::microseconds;
-using day_type = duration<int, std::ratio<60*60*24>>;
+/**
+ * class ratio:
+ * template <std::intmax_t Num, std::intmax_t Denom = 1>
+ */
+using day_type = duration<std::uint32_t, std::ratio<60*60*24>>;
 
 int main()
 {
