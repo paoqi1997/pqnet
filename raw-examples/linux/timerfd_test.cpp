@@ -16,7 +16,7 @@ void sighandler(int signum) {
     std::cout << "Bye!" << std::endl;
 }
 
-void print_time() {
+void printCurrTime() {
     std::system("date +\"%F %T\"");
 }
 
@@ -48,7 +48,7 @@ int main()
     if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
-    print_time();
+    printCurrTime();
     std::cout << "Start Timing!" << std::endl;
     struct epoll_event poi;
     poi.data.fd = tmfd;
@@ -62,17 +62,15 @@ int main()
     while (running) {
         int cnt = epoll_wait(epfd, evpool, evs, -1);
         if (cnt == -1) {
-            if (errno == EINTR) {
-                running = false;
-            } else {
+            running = false;
+            if (errno != EINTR) {
                 std::cout << std::strerror(errno) << std::endl;
-                break;
             }
         }
         for (int i = 0; i < cnt; ++i) {
             if (evpool[i].events & EPOLLIN) {
                 int fd = evpool[i].data.fd;
-                print_time();
+                printCurrTime();
                 handle(fd, "Timer");
                 if (count == 10) {
                     struct itimerspec nxt_its;
@@ -80,7 +78,7 @@ int main()
                     if (timerfd_settime(fd, 0, &nxt_its, nullptr) == -1) {
                         std::cout << std::strerror(errno) << std::endl;
                     }
-                    std::cout << "Stop Timer!" << std::endl;
+                    std::cout << "Stop Timing!" << std::endl;
                 }
             }
         }
