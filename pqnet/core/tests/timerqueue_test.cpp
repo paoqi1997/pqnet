@@ -27,21 +27,25 @@ void func(void *arg) {
 int main()
 {
     const int evs = 8;
+    // Epfd & Timerfd
     int epfd = epoll_create(evs);
     if (epfd == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
     pqnet::TimerQueue tq;
+    // Register timerfd to epfd
     struct epoll_event poi;
     poi.data.fd = tq.getFd();
     poi.events = EPOLLET | EPOLLIN;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, tq.getFd(), &poi) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+    // Add Timer
     printCurrTime();
     std::cout << "Start Timing!" << std::endl;
     tq.addTimer(func, const_cast<char*>("Timer!"), 6000);
     auto id = tq.addTimer(func, const_cast<char*>("Ticker!"), 3000, 1000);
+    // Others
     std::signal(SIGINT, sighandler);
     bool running = true;
     struct epoll_event evpool[evs];

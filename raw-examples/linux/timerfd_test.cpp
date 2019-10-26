@@ -20,18 +20,19 @@ void printCurrTime() {
     std::system("date +\"%F %T\"");
 }
 
-void handle(int fd, const char *prefix) {
+void handle(int fd) {
     std::uint64_t msg;
     if (read(fd, &msg, sizeof(std::uint64_t)) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
     count += msg;
-    std::cout << prefix << ": " << count << std::endl;
+    std::printf("Timer: %d\n", count);
 }
 
 int main()
 {
     const int evs = 8;
+    // Epfd & Timerfd
     int epfd = epoll_create(evs);
     if (epfd == -1) {
         std::cout << std::strerror(errno) << std::endl;
@@ -40,6 +41,16 @@ int main()
     if (tmfd == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+    // Register timerfd to epfd
+    struct epoll_event poi;
+    poi.data.fd = tmfd;
+    poi.events = EPOLLET | EPOLLIN;
+    if (epoll_ctl(epfd, EPOLL_CTL_ADD, tmfd, &poi) == -1) {
+        std::cout << std::strerror(errno) << std::endl;
+    }
+    // Add Timer
+    printCurrTime();
+    std::cout << "Start Timing!" << std::endl;
     struct itimerspec its;
     its.it_value.tv_sec = 3;
     its.it_value.tv_nsec = 0;
@@ -48,14 +59,7 @@ int main()
     if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
-    printCurrTime();
-    std::cout << "Start Timing!" << std::endl;
-    struct epoll_event poi;
-    poi.data.fd = tmfd;
-    poi.events = EPOLLET | EPOLLIN;
-    if (epoll_ctl(epfd, EPOLL_CTL_ADD, tmfd, &poi) == -1) {
-        std::cout << std::strerror(errno) << std::endl;
-    }
+    // Others
     std::signal(SIGINT, sighandler);
     bool running = true;
     struct epoll_event evpool[evs];
@@ -71,7 +75,7 @@ int main()
             if (evpool[i].events & EPOLLIN) {
                 int fd = evpool[i].data.fd;
                 printCurrTime();
-                handle(fd, "Timer");
+                handle(fd);
                 if (count == 10) {
                     struct itimerspec nxt_its;
                     std::memset(&nxt_its, 0, sizeof(nxt_its));
