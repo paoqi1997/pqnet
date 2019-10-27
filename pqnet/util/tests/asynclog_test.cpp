@@ -15,12 +15,12 @@ void* func(void *arg) {
 int main()
 {
     pqnet::ThreadPool pool(2, func);
-    auto SIGINT_HANDLER = [&](){
+    auto SIGINT_HANDLER = [&]{
         pool.shutdown();
         std::cout << std::endl;
         std::cout << "Exit thread pool." << std::endl;
     };
-    auto SIGTERM_HANDLER = [&](){
+    auto SIGTERM_HANDLER = [&]{
         pool.shutdown();
         std::cout << "Exit thread pool." << std::endl;
     };

@@ -44,12 +44,12 @@ int main()
 {
     pqnet::Logger::getLogger()->setLogLevel(pqnet::Logger::TRACE);
     TcpEchoServer echoserv(12488);
-    auto SIGINT_HANDLER = [&](){
+    auto SIGINT_HANDLER = [&]{
         echoserv.shutdown();
         std::cout << std::endl;
         std::cout << "Captures the signal: SIGINT(2)." << std::endl;
     };
-    auto SIGTERM_HANDLER = [&](){
+    auto SIGTERM_HANDLER = [&]{
         echoserv.shutdown();
         std::cout << "Captures the signal: SIGTERM(15)." << std::endl;
     };

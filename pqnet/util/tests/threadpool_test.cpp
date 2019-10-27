@@ -15,12 +15,12 @@ int main()
     for (int i = 0; i < 10; ++i) {
         pool.addTask(pqnet::Task{ func, const_cast<char*>("Hello pqnet!") });
     }
-    auto SIGINT_HANDLER = [&](){
+    auto SIGINT_HANDLER = [&]{
         pool.shutdown();
         std::cout << std::endl;
         std::cout << "Exit thread pool." << std::endl;
     };
-    auto SIGTERM_HANDLER = [&](){
+    auto SIGTERM_HANDLER = [&]{
         pool.shutdown();
         std::cout << "Exit thread pool." << std::endl;
     };
