@@ -7,7 +7,6 @@ ThreadPool::ThreadPool(std::size_t threadNumber) : running(false), tn(threadNumb
 
 ThreadPool::~ThreadPool()
 {
-    running = false;
     cond.notify_all();
     for (auto &t : pool) {
         if (t->joinable()) {
