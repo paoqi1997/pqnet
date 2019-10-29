@@ -4,6 +4,7 @@
 #include <thread>
 
 using std::chrono::duration_cast;
+using std::chrono::seconds;
 using std::chrono::system_clock;
 using std::chrono::time_point;
 
@@ -36,6 +37,7 @@ int main()
     if (t.joinable()) {
         t.join();
     }
+
     // Part 2: For std::async & std::launch
     time_point<system_clock> t1 = system_clock::now();
 
@@ -45,12 +47,14 @@ int main()
 
     time_point<system_clock> t2 = system_clock::now();
     // just need 3s.
-    std::cout << fileRes + dbRes << " " << duration_cast<std::chrono::seconds>(t2 - t1).count() << std::endl;
+    std::cout << fileRes + dbRes << " " << duration_cast<seconds>(t2 - t1).count() << std::endl;
+
     // Part 3: For std::packaged_task
     std::packaged_task<int(int)> task([](int x){ return x * x; });
     auto fObject = task.get_future();
     std::thread td(std::move(task), 2);
     td.join();
     std::cout << fObject.get() << std::endl;
+
     return 0;
 }
