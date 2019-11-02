@@ -1,7 +1,10 @@
+#include <cstring>
 #include <iostream>
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+const char *PORT = "12488";
 
 int main()
 {
@@ -12,7 +15,7 @@ int main()
         return 1;
     }
 
-    struct addrinfo hints, *result = nullptr;
+    struct addrinfo hints, *res = nullptr;
 
     ZeroMemory(&hints, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -20,7 +23,7 @@ int main()
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
-    iResult = getaddrinfo(nullptr, "12488", &hints, &result);
+    iResult = getaddrinfo(nullptr, PORT, &hints, &res);
     if (iResult != 0) {
         std::printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
@@ -28,25 +31,23 @@ int main()
     }
 
     // socket
-    SOCKET listenfd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+    SOCKET listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (listenfd == INVALID_SOCKET) {
-        std::printf("socket failed with error: %d\n", WSAGetLastError());
-        freeaddrinfo(result);
+        std::printf("socket failed with error: %ld\n", WSAGetLastError());
+        freeaddrinfo(res);
         WSACleanup();
         return 1;
     }
 
     // bind
-    iResult = bind(listenfd, result->ai_addr, static_cast<int>(result->ai_addrlen));
+    iResult = bind(listenfd, res->ai_addr, static_cast<int>(res->ai_addrlen));
+    freeaddrinfo(res);
     if (iResult == SOCKET_ERROR) {
         std::printf("bind failed with error: %d\n", WSAGetLastError());
-        freeaddrinfo(result);
         closesocket(listenfd);
         WSACleanup();
         return 1;
     }
-
-    freeaddrinfo(result);
 
     // listen
     iResult = listen(listenfd, SOMAXCONN);
@@ -66,13 +67,14 @@ int main()
         return 1;
     }
 
-    closesocket(listenfd);
-
     char recvBuf[1024];
-    do {
-        iResult = recv(connfd, recvBuf, 1024, 0);
+    std::memset(recvBuf, 0, sizeof(recvBuf));
+    for (;;) {
+        // recv
+        iResult = recv(connfd, recvBuf, sizeof(recvBuf), 0);
         if (iResult > 0) {
             std::printf("Recv: %s\n", recvBuf);
+            // send
             int iSendResult = send(connfd, recvBuf, iResult, 0);
             if (iSendResult == SOCKET_ERROR) {
                 std::printf("send failed with error: %d\n", WSAGetLastError());
@@ -82,22 +84,17 @@ int main()
             }
         } else if (iResult == 0) {
             std::printf("Connection closing...\n");
+            break;
         } else {
             std::printf("recv failed with error: %d\n", WSAGetLastError());
             closesocket(connfd);
             WSACleanup();
             return 1;
         }
-    } while (iResult > 0);
-
-    iResult = shutdown(connfd, SD_SEND);
-    if (iResult == SOCKET_ERROR) {
-        std::printf("shutdown failed with error: %d\n", WSAGetLastError());
-        closesocket(connfd);
-        WSACleanup();
-        return 1;
+        std::memset(recvBuf, 0, sizeof(recvBuf));
     }
 
+    closesocket(listenfd);
     closesocket(connfd);
     WSACleanup();
 
