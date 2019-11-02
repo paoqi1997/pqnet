@@ -60,15 +60,14 @@ int main()
 
     // accept
     SOCKET connfd = accept(listenfd, nullptr, nullptr);
+    closesocket(listenfd);
     if (connfd == INVALID_SOCKET) {
         std::printf("accept failed with error: %d\n", WSAGetLastError());
-        closesocket(listenfd);
         WSACleanup();
         return 1;
     }
 
-    char recvBuf[1024];
-    std::memset(recvBuf, 0, sizeof(recvBuf));
+    char recvBuf[1024] = {0};
     for (;;) {
         // recv
         iResult = recv(connfd, recvBuf, sizeof(recvBuf), 0);
@@ -94,7 +93,6 @@ int main()
         std::memset(recvBuf, 0, sizeof(recvBuf));
     }
 
-    closesocket(listenfd);
     closesocket(connfd);
     WSACleanup();
 

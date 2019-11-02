@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+const char *IPADDR = "127.0.0.1";
 const char *PORT = "12488";
 
 int main()
@@ -22,7 +23,7 @@ int main()
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
-    iResult = getaddrinfo(nullptr, PORT, &hints, &res);
+    iResult = getaddrinfo(IPADDR, PORT, &hints, &res);
     if (iResult != 0) {
         std::printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
@@ -48,8 +49,7 @@ int main()
         return 1;
     }
 
-    char sendBuf[1024], recvBuf[1024];
-    std::memset(recvBuf, 0, sizeof(recvBuf));
+    char sendBuf[1024], recvBuf[1024] = {0};
     for (;;) {
         std::cin >> sendBuf;
         // send
@@ -59,13 +59,10 @@ int main()
             closesocket(sockfd);
             WSACleanup();
             return 1;
-        } else {
-            std::printf("Bytes Sent: %d\n", iResult);
         }
         // recv
         iResult = recv(sockfd, recvBuf, sizeof(recvBuf), 0);
         if (iResult > 0) {
-            std::printf("Bytes received: %d\n", iResult);
             std::printf("Recv: %s\n", recvBuf);
         } else if (iResult == 0) {
             std::printf("Connection closed\n");
