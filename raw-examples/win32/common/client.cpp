@@ -69,6 +69,9 @@ int main()
             break;
         } else {
             std::printf("recv failed with error: %d\n", WSAGetLastError());
+            closesocket(sockfd);
+            WSACleanup();
+            return 1;
         }
         std::memset(recvBuf, 0, sizeof(recvBuf));
     }
