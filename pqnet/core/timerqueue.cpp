@@ -41,20 +41,14 @@ TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiratio
         if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
             ERROR(std::strerror(errno));
         }
-        // return std::pair<iterator, bool>
+        // std::pair<iterator, bool>
         auto result = tmqueue.insert(std::make_pair(endtime, timer));
         auto it = result.first;
         return it->second.Id();
     } else {
         // 队列不为空
         auto head = tmqueue.begin();
-        if (head->first <= endtime) {
-            // 新加入的定时器稍后到期
-            // return std::pair<iterator, bool>
-            auto result = tmqueue.insert(std::make_pair(endtime, timer));
-            auto it = result.first;
-            return it->second.Id();
-        } else {
+        if (endtime < head->first) {
             // 新加入的定时器最先到期
             struct itimerspec its;
             its.it_value.tv_sec = expiration.first;
@@ -64,11 +58,11 @@ TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiratio
             if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
                 ERROR(std::strerror(errno));
             }
-            // return std::pair<iterator, bool>
-            auto result = tmqueue.insert(std::make_pair(endtime, timer));
-            auto it = result.first;
-            return it->second.Id();
         }
+        // std::pair<iterator, bool>
+        auto result = tmqueue.insert(std::make_pair(endtime, timer));
+        auto it = result.first;
+        return it->second.Id();
     }
 }
 
