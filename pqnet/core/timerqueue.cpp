@@ -41,10 +41,6 @@ TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiratio
         if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
             ERROR(std::strerror(errno));
         }
-        // std::pair<iterator, bool>
-        auto result = tmqueue.insert(std::make_pair(endtime, timer));
-        auto it = result.first;
-        return it->second.Id();
     } else {
         // 队列不为空
         auto head = tmqueue.begin();
@@ -59,11 +55,11 @@ TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiratio
                 ERROR(std::strerror(errno));
             }
         }
-        // std::pair<iterator, bool>
-        auto result = tmqueue.insert(std::make_pair(endtime, timer));
-        auto it = result.first;
-        return it->second.Id();
     }
+    // std::pair<iterator, bool>
+    auto result = tmqueue.insert(std::make_pair(endtime, timer));
+    auto it = result.first;
+    return it->second.Id();
 }
 
 void TimerQueue::delTimer(TimerId id)
