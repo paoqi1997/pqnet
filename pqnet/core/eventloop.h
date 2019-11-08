@@ -10,6 +10,7 @@
 
 #include <sys/epoll.h>
 
+#include "timerqueue.h"
 #include "trigger.h"
 
 namespace pqnet
@@ -26,6 +27,12 @@ public:
     int getEvfd() const { return evfd; }
     void loop();
     void quit() { loopFlag = false; }
+    TimerId addTimer(const timerCallBack& cb, void *arg, uint _expiration, uint _interval = 0) {
+        return tmqueue->addTimer(cb, arg, _expiration, _interval);
+    }
+    void delTimer(TimerId id) {
+        tmqueue->delTimer(id);
+    }
     void pushFn(const Functor& fn) { fnQueue.push(fn); }
     Functor popFn() {
         auto fn = fnQueue.front();
@@ -43,6 +50,8 @@ private:
     std::uint64_t msg;
     std::queue<Functor> fnQueue;
     std::unique_ptr<Trigger> evTrigger;
+    std::unique_ptr<Trigger> tmTrigger;
+    std::unique_ptr<TimerQueue> tmqueue;
     std::vector<struct epoll_event> evpool;
 };
 
