@@ -103,8 +103,7 @@ int main()
                     if (iSendResult == SOCKET_ERROR) {
                         std::printf("send failed with error: %d\n", WSAGetLastError());
                         closesocket(connfd);
-                        WSACleanup();
-                        return 1;
+                        break;
                     }
                 } else if (iResult == 0 || WSAGetLastError() == WSAECONNRESET) {
                     std::printf("Connection closing...\n");
@@ -114,8 +113,7 @@ int main()
                 } else {
                     std::printf("recv failed with error: %d\n", WSAGetLastError());
                     closesocket(connfd);
-                    WSACleanup();
-                    return 1;
+                    break;
                 }
                 std::memset(recvBuf, 0, sizeof(recvBuf));
             }

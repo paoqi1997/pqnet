@@ -56,9 +56,7 @@ int main()
         iResult = send(sockfd, sendBuf, static_cast<int>(std::strlen(sendBuf)), 0);
         if (iResult == SOCKET_ERROR) {
             std::printf("send failed with error: %d\n", WSAGetLastError());
-            closesocket(sockfd);
-            WSACleanup();
-            return 1;
+            break;
         }
         // recv
         iResult = recv(sockfd, recvBuf, sizeof(recvBuf), 0);
@@ -69,9 +67,7 @@ int main()
             break;
         } else {
             std::printf("recv failed with error: %d\n", WSAGetLastError());
-            closesocket(sockfd);
-            WSACleanup();
-            return 1;
+            break;
         }
         std::memset(recvBuf, 0, sizeof(recvBuf));
     }
