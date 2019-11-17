@@ -14,8 +14,9 @@ Tim* TimingWheel::addTimer(const timerCallBack& cb, void *arg, uint expiration, 
     std::size_t _slotIdx = (slotIdx + ticks) % SlotNum;
     tim.Round = round;
     tim.SlotIdx = _slotIdx;
-    slots[_slotIdx].push_back(tim);
-    return &slots[_slotIdx].back();
+    auto& slot = slots[_slotIdx];
+    auto it = slot.insert(slot.end(), tim);
+    return &*it;
 }
 
 void TimingWheel::delTimer(Tim *tim)
@@ -37,21 +38,24 @@ void TimingWheel::handle()
             --it->Round;
             ++it;
         } else {
-            Tim tim = *it;
-            tim.run();
+            it->run();
             if (!it->isValid()) {
                 it = currSlot.erase(it);
                 continue;
             }
-            if (tim.isPeriodic()) {
-                std::size_t expiration = tim.Interval();
+            if (it->isPeriodic()) {
+                std::size_t expiration = it->Interval();
                 std::size_t ticks = expiration < tick ? 1 : expiration / tick;
                 std::size_t round = ticks / SlotNum;
                 std::size_t _slotIdx = (slotIdx + ticks) % SlotNum;
-                tim.Round = round;
-                tim.SlotIdx = _slotIdx;
-                it = currSlot.erase(it);
-                slots[_slotIdx].push_back(tim);
+                it->Round = round;
+                it->SlotIdx = _slotIdx;
+                // 将位于currSlot的定时器移至nextSlot
+                auto tmpIt = it;
+                std::advance(tmpIt, 1);
+                auto& nextSlot = slots[_slotIdx];
+                nextSlot.splice(nextSlot.end(), currSlot, it);
+                it = tmpIt;
             } else {
                 it = currSlot.erase(it);
             }
