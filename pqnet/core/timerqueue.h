@@ -22,8 +22,10 @@ public:
     void handle();
 private:
     void refresh();
+    bool isValid() const { return valid; }
 private:
     int tmfd;
+    bool valid;
     std::set<std::pair<std::uint64_t, Timer>> tmqueue;
 };
 

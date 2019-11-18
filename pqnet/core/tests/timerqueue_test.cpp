@@ -18,13 +18,12 @@ int main()
         std::cout << static_cast<char*>(arg) << std::endl;
         if (++count == 10) {
             looper.delTimer(myID);
-            looper.quit();
         }
     };
     printCurrTime();
     std::cout << "Start Timing!" << std::endl;
     looper.addTimer(cb, const_cast<char*>("Timer!"), 6000);
-    looper.addTimer(cb, const_cast<char*>("Ticker!"), 3000, 1000);
+    myID = looper.addTimer(cb, const_cast<char*>("Ticker!"), 3000, 1000);
     looper.loop();
     return 0;
 }
