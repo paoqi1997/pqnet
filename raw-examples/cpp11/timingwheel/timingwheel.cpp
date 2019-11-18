@@ -51,8 +51,7 @@ void TimingWheel::handle()
                 it->Round = round;
                 it->SlotIdx = _slotIdx;
                 // 将位于currSlot的定时器移至nextSlot
-                auto tmpIt = it;
-                std::advance(tmpIt, 1);
+                auto tmpIt = std::next(it, 1);
                 auto& nextSlot = slots[_slotIdx];
                 nextSlot.splice(nextSlot.end(), currSlot, it);
                 it = tmpIt;

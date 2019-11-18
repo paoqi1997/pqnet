@@ -38,6 +38,7 @@ public:
     Tim* addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval = 0);
     void delTimer(Tim *tim);
     void handle();
+    std::size_t getTick() const { return tick; }
 private:
     static const std::size_t SlotNum = 60;
 private:
