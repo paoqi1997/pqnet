@@ -28,12 +28,22 @@ private:
     uint interval;
 };
 
+class TimId
+{
+public:
+    TimId() : tim(nullptr) {}
+    TimId(Tim *_tim) : tim(_tim) {}
+    Tim* getPtr() { return tim; }
+private:
+    Tim *tim;
+};
+
 class TimingWheel
 {
 public:
     TimingWheel(std::size_t _tick) : tick(_tick), slotIdx(0), rhTimerId(0) {}
-    Tim* addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval = 0);
-    void delTimer(Tim *tim);
+    TimId addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval = 0);
+    void delTimer(TimId tid);
     void handle();
     std::size_t getTick() const { return tick; }
 private:

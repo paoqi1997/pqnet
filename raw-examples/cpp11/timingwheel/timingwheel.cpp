@@ -6,7 +6,7 @@ Tim::Tim(const timerCallBack& cb, void *_arg, uint _interval)
     id = reinterpret_cast<TimerId>(this);
 }
 
-Tim* TimingWheel::addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval)
+TimId TimingWheel::addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval)
 {
     Tim tim(cb, arg, interval);
     std::size_t ticks = expiration < tick ? 1 : expiration / tick;
@@ -16,11 +16,12 @@ Tim* TimingWheel::addTimer(const timerCallBack& cb, void *arg, uint expiration, 
     tim.SlotIdx = _slotIdx;
     auto& slot = slots[_slotIdx];
     auto it = slot.insert(slot.end(), tim);
-    return &*it;
+    return TimId(&*it);
 }
 
-void TimingWheel::delTimer(Tim *tim)
+void TimingWheel::delTimer(TimId tid)
 {
+    Tim *tim = tid.getPtr();
     std::list<Tim>& slot = slots[tim->SlotIdx];
     for (auto it = slot.begin(); it != slot.end(); ++it) {
         if (it->Id() == tim->Id()) {
