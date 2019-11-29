@@ -1,7 +1,7 @@
 #include "timingwheel.h"
 
 Tim::Tim(const timerCallBack& cb, void *_arg, uint _interval)
-    : timercb(cb), arg(_arg), interval(_interval), valid(true)
+    : timercb(cb), arg(_arg), interval(_interval)
 {
     id = reinterpret_cast<TimerId>(this);
 }
@@ -24,7 +24,10 @@ void TimingWheel::delTimer(Tim *tim)
     std::list<Tim>& slot = slots[tim->SlotIdx];
     for (auto it = slot.begin(); it != slot.end(); ++it) {
         if (it->Id() == tim->Id()) {
-            it->invalidate();
+            if (slotIdx == tim->SlotIdx && it == slot.begin()) {
+                rhTimerId = tim->Id();
+            }
+            slot.erase(it);
             break;
         }
     }
@@ -38,9 +41,13 @@ void TimingWheel::handle()
             --it->Round;
             ++it;
         } else {
+            auto tmpIt = std::next(it, 1);
+            Tim tim = *it;
             it->run();
-            if (!it->isValid()) {
-                it = currSlot.erase(it);
+            // timer 在 run.delTimer 中被移除
+            if (rhTimerId == tim.Id()) {
+                rhTimerId = 0;
+                it = tmpIt;
                 continue;
             }
             if (it->isPeriodic()) {

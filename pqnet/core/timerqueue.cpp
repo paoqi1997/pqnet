@@ -10,7 +10,7 @@
 
 using namespace pqnet;
 
-TimerQueue::TimerQueue() : rmHead(false)
+TimerQueue::TimerQueue()
 {
     tmfd = timerfd_create(CLOCK_REALTIME, TFD_NONBLOCK);
     if (tmfd == -1) {
@@ -93,7 +93,7 @@ void TimerQueue::delTimer(TimerId id)
                         ERROR(std::strerror(errno));
                     }
                 }
-                rmHead = true;
+                rhTimerId = id;
             }
             tmqueue.erase(it);
             break;
@@ -111,8 +111,9 @@ void TimerQueue::handle()
             auto tmpIt = std::next(it, 1);
             Timer timer = it->second;
             timer.run();
-            if (this->isRmHead()) {
-                rmHead = false;
+            // timer 在 run.delTimer 中被移除
+            if (rhTimerId == timer.Id()) {
+                rhTimerId = 0;
                 it = tmpIt;
                 continue;
             }

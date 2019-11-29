@@ -18,8 +18,6 @@ public:
     TimerId Id() const { return id; }
     uint Interval() const { return interval; }
     bool isPeriodic() const { return interval > 0; }
-    void invalidate() { valid = false; }
-    bool isValid() const { return valid; }
 public:
     std::size_t Round;
     std::size_t SlotIdx;
@@ -28,13 +26,12 @@ private:
     void *arg;
     TimerId id;
     uint interval;
-    bool valid;
 };
 
 class TimingWheel
 {
 public:
-    TimingWheel(std::size_t _tick) : tick(_tick), slotIdx(0) {}
+    TimingWheel(std::size_t _tick) : tick(_tick), slotIdx(0), rhTimerId(0) {}
     Tim* addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval = 0);
     void delTimer(Tim *tim);
     void handle();
@@ -44,6 +41,7 @@ private:
 private:
     std::size_t tick;
     std::size_t slotIdx;
+    TimerId rhTimerId;
     std::array<std::list<Tim>, SlotNum> slots;
 };
 
