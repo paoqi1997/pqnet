@@ -65,6 +65,10 @@ TcpServer::~TcpServer()
     if (close(listenfd) == -1) {
         ERROR(std::strerror(errno));
     }
+    for (auto& kv : connpool) {
+        // TODO: Destroy connections by followers
+        kv.second->connectDestroyed();
+    }
     this->clear();
 }
 
