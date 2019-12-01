@@ -19,7 +19,7 @@ void printCurrTime() {
 int main()
 {
     int count = 0;
-    TimingWheel tw(10);
+    TimingWheel tw(50);
     TimId myID;
     auto cb = [&](void *arg){
         printCurrTime();

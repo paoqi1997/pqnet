@@ -10,7 +10,7 @@
 
 using namespace pqnet;
 
-TimerQueue::TimerQueue()
+TimerQueue::TimerQueue() : rhTimerId(0)
 {
     tmfd = timerfd_create(CLOCK_REALTIME, TFD_NONBLOCK);
     if (tmfd == -1) {
