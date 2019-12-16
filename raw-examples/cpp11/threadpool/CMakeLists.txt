@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.4)
-project (timingwheel)
+project (threadpool)
 
 file (GLOB SRCS *.cpp)
 file (GLOB INCS *.h)
