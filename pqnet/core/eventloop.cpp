@@ -31,7 +31,7 @@ EventLoop::EventLoop(int eventPoolSize)
     evTrigger->likeReading();
     // For TmFd
     tmTrigger->setEpfd(epfd);
-    tmTrigger-> setFd(tmqueue->getFd());
+    tmTrigger->setFd(tmqueue->getFd());
     tmTrigger->setReadHandler([this]{ tmqueue->handle(); });
     tmTrigger->addToLoop();
     tmTrigger->likeReading();
