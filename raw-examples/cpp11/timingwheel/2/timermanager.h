@@ -13,11 +13,12 @@
 #define TVN_MASK (TVN_SIZE - 1)
 #define TVR_MASK (TVR_SIZE - 1)
 
-#define INDEX(TIME, N) ((TIME >> (TVR_BITS + N * TVN_BITS)) & TVN_MASK)
-
 using uint = unsigned int;
 using timerCallBack = std::function<void(void*)>;
 
+/**
+ * Microsecond Level
+ */
 std::uint64_t now();
 
 struct TimerNode
@@ -25,17 +26,10 @@ struct TimerNode
     TimerNode() : prev(nullptr), next(nullptr) {}
     TimerNode(const timerCallBack& cb, void *_arg, uint _interval, std::uint64_t _endtime)
         : timercb(cb), arg(_arg), interval(_interval), endtime(_endtime), prev(nullptr), next(nullptr) {}
-    ~TimerNode() { disconnect(); }
+    ~TimerNode() { unlink(); }
     void run() { timercb(arg); }
+    void unlink();
     bool isPeriodic() const { return interval > 0; }
-    void disconnect() {
-        if (prev != nullptr) {
-            prev->next = next;
-        }
-        if (next != nullptr) {
-            next->prev = prev;
-        }
-    }
     timerCallBack timercb;
     void *arg;
     uint interval;
@@ -47,30 +41,9 @@ struct TimerNode
 class List
 {
 public:
-    List() : head(new TimerNode()), tail(new TimerNode()) {
-        head->next = tail;
-        tail->prev = head;
-    }
-    ~List() {
-        auto p = head->next;
-        while (p != tail) {
-            auto q = p->next;
-            delete p;
-            p = q;
-        }
-        delete head;
-        delete tail;
-        head = tail = nullptr;
-    }
-    void push_back(TimerNode *node) {
-        auto p = tail->prev;
-        // prev部分
-        node->prev = p;
-        tail->prev = node;
-        // next部分
-        p->next = node;
-        node->next = tail;
-    }
+    List();
+    ~List();
+    void push_back(TimerNode *node);
     TimerNode* begin() { return head->next; }
     TimerNode* end() { return tail; }
 private:
@@ -78,19 +51,29 @@ private:
     TimerNode *tail;
 };
 
+class TimerId
+{
+public:
+    TimerId() : node(nullptr) {}
+    TimerId(TimerNode *_node) : node(_node) {}
+    TimerNode* getPtr() { return node; }
+private:
+    TimerNode *node;
+};
+
 class TimerManager
 {
 public:
-    TimerManager() : jiffies(now()) {}
-    TimerNode* addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval = 0);
-    void delTimer(TimerNode *node);
+    TimerManager() : rmNode(nullptr), jiffies(now()) {}
+    // Millisecond Level
+    TimerId addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval = 0);
+    void delTimer(TimerId tid);
     void handle();
 private:
     void addTimerNode(TimerNode *node);
-    std::size_t cascade(List *list, std::size_t n);
+    std::size_t cascade(List *tw, std::size_t n);
 private:
-    std::size_t wheel;
-    std::size_t slotIdx;
+    TimerNode *rmNode;
     std::uint64_t jiffies;
     List tw1[TVR_SIZE];
     List tw2[TVN_SIZE];

@@ -19,20 +19,20 @@ void printCurrTime() {
 int main()
 {
     int count = 0;
-    std::size_t tick = 50;
+    std::size_t tick = 20; // 50Hz
     TimerManager tm;
-    TimerNode *node;
+    TimerId myID;
     auto cb = [&](void *arg){
         printCurrTime();
         std::cout << static_cast<char*>(arg) << std::endl;
         if (++count == 10) {
-            tm.delTimer(node);
+            tm.delTimer(myID);
         }
     };
     printCurrTime();
     std::cout << "Start Timing!" << std::endl;
-    //tm.addTimer(cb, const_cast<char*>("Timer!"), 6000);
-    node = tm.addTimer(cb, const_cast<char*>("Ticker!"), 3000, 1000);
+    tm.addTimer(cb, const_cast<char*>("Timer!"), 6000);
+    myID = tm.addTimer(cb, const_cast<char*>("Ticker!"), 3000, 1000);
     for (;;) {
         std::this_thread::sleep_for(std::chrono::milliseconds(tick));
         tm.handle();
