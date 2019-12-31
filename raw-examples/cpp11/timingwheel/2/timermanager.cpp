@@ -7,6 +7,24 @@ using std::chrono::time_point;
 using std::chrono::time_point_cast;
 using us_type = std::chrono::microseconds;
 
+std::uint64_t now()
+{
+    time_point<system_clock, us_type> tp = time_point_cast<us_type>(system_clock::now());
+    return tp.time_since_epoch().count();
+}
+
+TimerNode::TimerNode()
+    : timercb(nullptr), arg(nullptr), interval(0), endtime(0), prev(nullptr), next(nullptr)
+{
+
+}
+
+TimerNode::TimerNode(const timerCallBack& cb, void *_arg, uint _interval, std::uint64_t _endtime)
+    : timercb(cb), arg(_arg), interval(_interval), endtime(_endtime), prev(nullptr), next(nullptr)
+{
+
+}
+
 void TimerNode::unlink()
 {
     if (prev != nullptr) {
@@ -45,12 +63,6 @@ void List::push_back(TimerNode *node)
     // next部分
     p->next = node;
     node->next = tail;
-}
-
-std::uint64_t now()
-{
-    time_point<system_clock, us_type> tp = time_point_cast<us_type>(system_clock::now());
-    return tp.time_since_epoch().count();
 }
 
 TimerId TimerManager::addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval)

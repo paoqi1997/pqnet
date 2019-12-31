@@ -4,8 +4,14 @@
 #include <cstdint>
 #include <functional>
 
+/**
+ * 内存较小时可将其置为1
+ */
 #define CONFIG_BASE_SMALL 0 // TVN_SIZE=64 TVR_SIZE=256
 
+/**
+ * TV: timeval N: nervous R: relax
+ */
 #define TVN_BITS (CONFIG_BASE_SMALL ? 4 : 6)
 #define TVR_BITS (CONFIG_BASE_SMALL ? 6 : 8)
 #define TVN_SIZE (1 << TVN_BITS)
@@ -23,9 +29,8 @@ std::uint64_t now();
 
 struct TimerNode
 {
-    TimerNode() : prev(nullptr), next(nullptr) {}
-    TimerNode(const timerCallBack& cb, void *_arg, uint _interval, std::uint64_t _endtime)
-        : timercb(cb), arg(_arg), interval(_interval), endtime(_endtime), prev(nullptr), next(nullptr) {}
+    TimerNode();
+    TimerNode(const timerCallBack& cb, void *_arg, uint _interval, std::uint64_t _endtime);
     ~TimerNode() { unlink(); }
     void run() { timercb(arg); }
     void unlink();
