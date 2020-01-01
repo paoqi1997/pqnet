@@ -58,8 +58,8 @@ void List::push_back(TimerNode *node)
 {
     auto p = tail->prev;
     // prev部分
-    node->prev = p;
     tail->prev = node;
+    node->prev = p;
     // next部分
     p->next = node;
     node->next = tail;
@@ -78,23 +78,36 @@ void TimerManager::addTimerNode(TimerNode *node)
     std::uint64_t endtime = node->endtime;
     uint expiration = endtime - jiffies;
     List *slot;
+    // expiration < 2^8
     if (expiration < TVR_SIZE) {
-        std::size_t idx = endtime & TVR_MASK;
+        std::size_t idx = endtime & TVR_MASK;                                // endtime & 2^8-1
         slot = &tw1[idx];
-    } else if (expiration < 1 << (TVR_BITS + TVN_BITS)) {
-        std::size_t idx = (endtime >> TVR_BITS) & TVN_MASK;
+    }
+    // expiration < 2^14
+    else if (expiration < 1 << (TVR_BITS + TVN_BITS)) {
+        std::size_t idx = (endtime >> TVR_BITS) & TVN_MASK;                  // (endtime >> 8) & 2^6-1
         slot = &tw2[idx];
-    } else if (expiration < 1 << (TVR_BITS + 2 * TVN_BITS)) {
-        std::size_t idx = (endtime >> (TVR_BITS + TVN_BITS)) & TVN_MASK;
+    }
+    // expiration < 2^20
+    else if (expiration < 1 << (TVR_BITS + 2 * TVN_BITS)) {
+        std::size_t idx = (endtime >> (TVR_BITS + TVN_BITS)) & TVN_MASK;     // (endtime >> 14) & 2^6-1
         slot = &tw3[idx];
-    } else if (expiration < 1 << (TVR_BITS + 3 * TVN_BITS)) {
-        std::size_t idx = (endtime >> (TVR_BITS + 2 * TVN_BITS)) & TVN_MASK;
+    }
+    // expiration < 2^26
+    else if (expiration < 1 << (TVR_BITS + 3 * TVN_BITS)) {
+        std::size_t idx = (endtime >> (TVR_BITS + 2 * TVN_BITS)) & TVN_MASK; // (endtime >> 20) & 2^6-1
         slot = &tw4[idx];
-    } else {
-        if (expiration > UINT32_MAX) {
-            expiration = UINT32_MAX;
-        }
-        std::size_t idx = (endtime >> (TVR_BITS + 3 * TVN_BITS)) & TVN_MASK;
+    }
+    // if expiration >= 2^26:
+    //     then expiration is in: [-(2^32 - 2^26), -1] or [2^26, (2^32) - 1]
+    // if static_cast<signed long>(expiration) < 0:
+    //     then expiration is in: [-(2^31), -1] or [2^31, (2^32) - 1]
+    else if (static_cast<signed long>(expiration) < 0) {
+        std::size_t idx = jiffies & TVR_MASK;                                // jiffies & 2^8-1
+        slot = &tw1[idx];
+    }
+    else {
+        std::size_t idx = (endtime >> (TVR_BITS + 3 * TVN_BITS)) & TVN_MASK; // (endtime >> 26) & 2^6-1
         slot = &tw5[idx];
     }
     slot->push_back(node);
