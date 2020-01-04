@@ -34,6 +34,20 @@ TimeStamp pqnet::now()
     return ts;
 }
 
+TimeStamp pqnet::oneday(const tm_t& box)
+{
+    struct TimeStamp ts;
+    ts.group.tm_year = std::get<0>(box) - 1900;
+    ts.group.tm_mon  = std::get<1>(box) - 1;
+    ts.group.tm_mday = std::get<2>(box);
+    ts.group.tm_hour = std::get<3>(box);
+    ts.group.tm_min  = std::get<4>(box);
+    ts.group.tm_sec  = std::get<5>(box);
+    ts.tv.tv_sec = std::mktime(&ts.group);
+    ts.tv.tv_usec = 0;
+    return ts;
+}
+
 std::pair<uint, uint> pqnet::ms2SecAndNsec(uint ms)
 {
     uint sec = ms / K1E3;

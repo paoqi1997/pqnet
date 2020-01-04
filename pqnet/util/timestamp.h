@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <ctime>
+#include <tuple>
 #include <utility>
 
 #include <sys/time.h>
@@ -13,6 +14,7 @@ namespace pqnet
 {
 
 using uint = unsigned int;
+using tm_t = std::tuple<int, int, int, int, int, int>;
 
 struct TimeStamp
 {
@@ -45,6 +47,7 @@ struct TimeStamp
 };
 
 TimeStamp now();
+TimeStamp oneday(const tm_t& box);
 
 std::pair<uint, uint> ms2SecAndNsec(uint ms);
 std::pair<uint, uint> us2SecAndNsec(uint us);

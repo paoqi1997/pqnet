@@ -2,19 +2,29 @@
 
 #include <pqnet/util/timestamp.h>
 
+using std::cout;
+using std::endl;
+
 int main()
 {
     auto ts = pqnet::now();
 
-    std::cout << ts.Second() << std::endl;
-    std::cout << ts.Millisecond() << std::endl;
-    std::cout << ts.Microsecond() << std::endl;
-    std::cout << ts.Nanosecond() << std::endl;
+    cout << ts.Second() << endl;
+    cout << ts.Millisecond() << endl;
+    cout << ts.Microsecond() << endl;
+    cout << ts.Nanosecond() << endl;
 
-    std::cout << ts.Int10() << std::endl;
-    std::cout << ts.Int13() << std::endl;
-    std::cout << ts.Int16() << std::endl;
-    std::cout << ts.Int19() << std::endl;
+    cout << ts.Int10() << endl;
+    cout << ts.Int13() << endl;
+    cout << ts.Int16() << endl;
+    cout << ts.Int19() << endl;
+
+    auto ts2 = pqnet::oneday({2020, 10, 1, 10, 30, 0});
+
+    cout << ts2.Int10() << endl;
+    cout << ts2.Int13() << endl;
+    cout << ts2.Int16() << endl;
+    cout << ts2.Int19() << endl;
 
     pqnet::uint t = 2500;
     auto time1 = pqnet::ms2SecAndNsec(t);
