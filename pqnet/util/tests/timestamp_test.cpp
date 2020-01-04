@@ -16,10 +16,11 @@ int main()
     std::cout << ts.Int16() << std::endl;
     std::cout << ts.Int19() << std::endl;
 
-    auto time1 = pqnet::ms2SecAndNsec(2500);
-    std::cout << time1.first << 's' << ' ' << time1.second << "ns\n";
-    auto time2 = pqnet::us2SecAndNsec(2500);
-    std::cout << time2.first << 's' << ' ' << time2.second << "ns\n";
+    pqnet::uint t = 2500;
+    auto time1 = pqnet::ms2SecAndNsec(t);
+    std::printf("%dms is %ds+%dns.\n", t, time1.first, time1.second);
+    auto time2 = pqnet::us2SecAndNsec(t);
+    std::printf("%dus is %ds+%dns.\n", t, time2.first, time2.second);
 
     return 0;
 }

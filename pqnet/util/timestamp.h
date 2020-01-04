@@ -16,9 +16,21 @@ using uint = unsigned int;
 
 struct TimeStamp
 {
-    uint Second() const { return tv.tv_sec; }
+    /**
+     * 返回TimeStamp对应的那一分钟的第几秒
+     */
+    uint Second() const { return group.tm_sec; }
+    /**
+     * 返回TimeStamp对应的那一秒内的毫秒偏移量
+     */
     uint Millisecond() const { return tv.tv_usec / K1E3; }
+    /**
+     * 返回TimeStamp对应的那一秒内的微秒偏移量
+     */
     uint Microsecond() const { return tv.tv_usec; }
+    /**
+     * 返回TimeStamp对应的那一秒内的纳秒偏移量
+     */
     uint Nanosecond() const { return tv.tv_usec * K1E3; }
     std::uint64_t Int10() const { return tv.tv_sec; }
     std::uint64_t Int13() const { return tv.tv_sec * K1E3 + tv.tv_usec / K1E3; }
@@ -27,9 +39,9 @@ struct TimeStamp
     const char* toDate();
     const char* toDefault();
     const char* toFmtStr(const char *format);
-    char buf[BUFSIZE];
     struct timeval tv;
-    std::tm *group;
+    std::tm group;
+    char buf[BUFSIZE];
 };
 
 TimeStamp now();
