@@ -10,6 +10,12 @@ const char* TimeStamp::toDate()
     return buf;
 }
 
+const char* TimeStamp::toClock()
+{
+    std::snprintf(buf, sizeof(buf), "%02d:%02d:%02d", group.tm_hour, group.tm_min, group.tm_sec);
+    return buf;
+}
+
 const char* TimeStamp::toDefault()
 {
     std::snprintf(buf, sizeof(buf), "%d-%02d-%02d %02d:%02d:%02d:%06ld",

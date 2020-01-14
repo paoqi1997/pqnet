@@ -8,11 +8,7 @@ using std::endl;
 int main()
 {
     auto ts = pqnet::now();
-
-    cout << ts.Second() << endl;
-    cout << ts.Millisecond() << endl;
-    cout << ts.Microsecond() << endl;
-    cout << ts.Nanosecond() << endl;
+    std::printf("TimeStamp1:now\n");
 
     cout << ts.Int10() << endl;
     cout << ts.Int13() << endl;
@@ -20,6 +16,7 @@ int main()
     cout << ts.Int19() << endl;
 
     auto ts2 = pqnet::oneday({2020, 10, 1, 10, 30, 0});
+    std::printf("TimeStamp2:oneday\n");
 
     cout << ts2.Int10() << endl;
     cout << ts2.Int13() << endl;

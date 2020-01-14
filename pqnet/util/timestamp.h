@@ -39,6 +39,7 @@ struct TimeStamp
     std::uint64_t Int16() const { return tv.tv_sec * K1E6 + tv.tv_usec; }
     std::uint64_t Int19() const { return tv.tv_sec * K1E9 + tv.tv_usec * K1E3; }
     const char* toDate();
+    const char* toClock();
     const char* toDefault();
     const char* toFmtStr(const char *format);
     struct timeval tv;
