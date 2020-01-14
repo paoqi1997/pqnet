@@ -19,7 +19,11 @@ Logger::Logger() : level(Logger::INFO), dir("./log/"), currdate(now().toDate()),
 {
     lf = stdout;
     if (access(dir.c_str(), F_OK) != 0) {
-        if (mkdir(dir.c_str(), 0777) != 0) {
+        if (errno == ENOENT) {
+            if (mkdir(dir.c_str(), 0777) != 0) {
+                ERROR(std::strerror(errno));
+            }
+        } else {
             ERROR(std::strerror(errno));
         }
     }
