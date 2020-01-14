@@ -1,11 +1,14 @@
 CXX = g++
 CXXFLAGS = -g -Wall
 
-BINS = timerfd_test
+BINS = daemon_test timerfd_test
 
 .PHONY: build_all
 
 build_all: ${BINS}
+
+daemon_test: daemon_test.o
+	${CXX} ${CXXFLAGS} $^ -o $@
 
 timerfd_test: timerfd_test.o
 	${CXX} ${CXXFLAGS} $^ -o $@
