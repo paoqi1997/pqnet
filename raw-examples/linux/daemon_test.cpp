@@ -29,29 +29,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    char buf[32];
-    if (getcwd(buf, sizeof(buf)) == nullptr) {
-        cout << std::strerror(errno) << endl;
-        return 1;
-    } else {
-        std::printf("CurrWorkDir: %s\n", buf);
-    }
-
-    if (chdir("/") == -1) {
-        cout << std::strerror(errno) << endl;
-        return 1;
-    }
-
-    if (getcwd(buf, sizeof(buf)) == nullptr) {
-        cout << std::strerror(errno) << endl;
-        return 1;
-    } else {
-        std::printf("CurrWorkDir: %s\n", buf);
-    }
-
     std::signal(SIGHUP, SIG_IGN);
 
-    umask(0);
+    // ~022
+    umask(S_IWGRP | S_IWOTH);
 
     pid = fork();
     if (pid == -1) {
@@ -62,7 +43,8 @@ int main(int argc, char *argv[])
         _exit(0);
     }
 
-    int fd = open("/dev/null", O_RDWR);
+    // 0666 & ~022 = 0644
+    int fd = open("./daemon.log", O_CREAT | O_WRONLY, 0666);
     if (fd == -1) {
         cout << std::strerror(errno) << endl;
         return 1;
@@ -90,6 +72,8 @@ int main(int argc, char *argv[])
     for (;;) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         cout << "Hello daemon!\n";
+        // Flush stdout stream buffer so it goes to correct file.
+        std::fflush(stdout);
     }
 
     return 0;
