@@ -33,7 +33,7 @@ void TcpClient::buildConn()
         ERROR(std::strerror(errno));
     }
     auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
-    if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
+    if (connect(sockfd, addrptr, sizeof(struct sockaddr_in)) == -1) {
         ERROR(std::strerror(errno));
     }
     if (!setNonBlock(sockfd, true)) {

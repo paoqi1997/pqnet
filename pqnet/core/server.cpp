@@ -34,7 +34,7 @@ TcpServer::TcpServer(std::uint16_t port)
     }
     // bind
     auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
-    if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
+    if (bind(listenfd, addrptr, sizeof(struct sockaddr_in)) == -1) {
         ERROR(std::strerror(errno));
     }
     // listen
@@ -63,7 +63,7 @@ TcpServer::TcpServer(const char *servname, std::uint16_t port)
     }
     // bind
     auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
-    if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
+    if (bind(listenfd, addrptr, sizeof(struct sockaddr_in)) == -1) {
         ERROR(std::strerror(errno));
     }
     // listen
@@ -100,7 +100,7 @@ void TcpServer::onAccept()
     TRACE("Fd: %d, Func: TcpServer::%s", leader->getFd(), __func__);
     struct sockaddr_in cliaddr;
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
-    socklen_t clilen = sizeof(struct sockaddr);
+    socklen_t clilen = sizeof(struct sockaddr_in);
     int connfd = accept(listenfd, addrptr, &clilen);
     if (connfd == -1) {
         ERROR(std::strerror(errno));
