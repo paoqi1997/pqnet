@@ -19,6 +19,10 @@ namespace pqnet
 #define MSG_EPOLL_WAIT_EINTR "The Loop was interrupted by a signal handler."
 
 // Constants
+#define    TRUE  1
+#define   FALSE  0
+#define UNKNOWN -1
+
 #define K1E3 (1000)
 #define K1E6 (1000 * 1000)
 #define K1E9 (1000 * 1000 * 1000)
