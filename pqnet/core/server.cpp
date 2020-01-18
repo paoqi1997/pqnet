@@ -23,9 +23,15 @@ TcpServer::TcpServer(std::uint16_t port)
     if (listenfd == -1) {
         ERROR(std::strerror(errno));
     }
-    setNonBlock(listenfd, true);
-    setReuseAddr(listenfd, true);
-    setReusePort(listenfd, true);
+    if (!setNonBlock(listenfd, true)) {
+        ERROR(std::strerror(errno));
+    }
+    if (!setReuseAddr(listenfd, true)) {
+        ERROR(std::strerror(errno));
+    }
+    if (!setReusePort(listenfd, true)) {
+        ERROR(std::strerror(errno));
+    }
     // bind
     auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
     if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
@@ -46,9 +52,15 @@ TcpServer::TcpServer(const char *servname, std::uint16_t port)
     if (listenfd == -1) {
         ERROR(std::strerror(errno));
     }
-    setNonBlock(listenfd, true);
-    setReuseAddr(listenfd, true);
-    setReusePort(listenfd, true);
+    if (!setNonBlock(listenfd, true)) {
+        ERROR(std::strerror(errno));
+    }
+    if (!setReuseAddr(listenfd, true)) {
+        ERROR(std::strerror(errno));
+    }
+    if (!setReusePort(listenfd, true)) {
+        ERROR(std::strerror(errno));
+    }
     // bind
     auto addrptr = reinterpret_cast<struct sockaddr*>(addr.getPtr());
     if (bind(listenfd, addrptr, sizeof(struct sockaddr)) == -1) {
@@ -93,7 +105,9 @@ void TcpServer::onAccept()
     if (connfd == -1) {
         ERROR(std::strerror(errno));
     }
-    setNonBlock(connfd, true);
+    if (!setNonBlock(connfd, true)) {
+        ERROR(std::strerror(errno));
+    }
     auto currLooper = followers->getNextLoop();
     connpool[connfd] = std::make_shared<TcpConnection>(currLooper->getFd(), connfd);
     connpool[connfd]->setConnectCallBack(conncb);

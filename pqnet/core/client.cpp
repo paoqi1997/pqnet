@@ -36,9 +36,15 @@ void TcpClient::buildConn()
     if (connect(sockfd, addrptr, sizeof(struct sockaddr)) == -1) {
         ERROR(std::strerror(errno));
     }
-    setNonBlock(sockfd, true);
-    setReuseAddr(sockfd, true);
-    setReusePort(sockfd, true);
+    if (!setNonBlock(sockfd, true)) {
+        ERROR(std::strerror(errno));
+    }
+    if (!setReuseAddr(sockfd, true)) {
+        ERROR(std::strerror(errno));
+    }
+    if (!setReusePort(sockfd, true)) {
+        ERROR(std::strerror(errno));
+    }
     conn = std::make_shared<TcpConnection>(m_looper->getFd(), sockfd);
     conn->setConnectCallBack(conncb);
     conn->setCloseCallBack(closecb);
