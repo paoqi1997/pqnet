@@ -45,7 +45,7 @@ void TcpClient::buildConn()
     if (!setReusePort(sockfd, true)) {
         ERROR(std::strerror(errno));
     }
-    conn = std::make_shared<TcpConnection>(looper->getFd(), sockfd);
+    conn = std::make_shared<TcpConnection>(looper.get(), looper->getFd(), sockfd);
     conn->setConnectCallBack(conncb);
     conn->setCloseCallBack(closecb);
     conn->setMessageArrivedCallBack(macb);

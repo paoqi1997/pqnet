@@ -7,6 +7,7 @@
 
 #include "buffer.h"
 #include "callback.h"
+#include "eventloop.h"
 #include "trigger.h"
 
 namespace pqnet
@@ -15,8 +16,9 @@ namespace pqnet
 class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 {
 public:
-    TcpConnection(int epfd, int fd);
+    TcpConnection(EventLoop *_looper, int epfd, int fd);
     int getFd() const { return tg->getFd(); }
+    EventLoop* getEventLoop() { return looper; }
     Buffer* getInputBuffer() { return &inputBuffer; }
     Buffer* getOutputBuffer() { return &outputBuffer; }
     void connectEstablished();
@@ -39,6 +41,7 @@ private:
     Buffer inputBuffer;
     Buffer outputBuffer;
     bool connected;
+    EventLoop *looper;
     std::unique_ptr<Trigger> tg;
 };
 
