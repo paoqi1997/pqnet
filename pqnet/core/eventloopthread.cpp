@@ -14,14 +14,14 @@ EventLoopThread::EventLoopThread()
 
 void EventLoopThread::start()
 {
-    if (pthread_create(&id, nullptr, routine, &m_looper) != 0) {
+    if (pthread_create(&id, nullptr, routine, &looper) != 0) {
         ERROR(std::strerror(errno));
     }
 }
 
 void* EventLoopThread::routine(void *arg)
 {
-    auto looper = static_cast<EventLoop*>(arg);
-    looper->loop();
+    auto lp = static_cast<EventLoop*>(arg);
+    lp->loop();
     return nullptr;
 }

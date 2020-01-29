@@ -13,12 +13,12 @@ class EventLoopThread
 public:
     EventLoopThread();
     pthread_t getId() const { return id; }
-    EventLoop* getEventLoop() { return &m_looper; }
+    EventLoop* getEventLoop() { return &looper; }
     void start();
     static void* routine(void *arg);
 private:
     pthread_t id;
-    EventLoop m_looper;
+    EventLoop looper;
 };
 
 } // namespace pqnet

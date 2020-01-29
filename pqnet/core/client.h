@@ -22,11 +22,11 @@ class TcpClient
 public:
     TcpClient(const char *servname, std::uint16_t port);
     ~TcpClient();
-    int getLoopFd() const { return m_looper->getFd(); }
+    int getLoopFd() const { return looper->getFd(); }
     void buildConn();
     TcpConnPtr getConn() const { return conn; }
     void start();
-    void shutdown() { m_looper->quit(); }
+    void shutdown() { looper->quit(); }
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
@@ -38,7 +38,7 @@ private:
     writeCompletedCallBack wccb;
     Ip4Addr addr;
     TcpConnPtr conn;
-    std::unique_ptr<EventLoop> m_looper;
+    std::unique_ptr<EventLoop> looper;
 };
 
 } // namespace pqnet
