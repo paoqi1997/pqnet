@@ -16,7 +16,7 @@ namespace pqnet
 class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 {
 public:
-    TcpConnection(EventLoop *_looper, int epfd, int fd);
+    TcpConnection(EventLoop *_looper, int fd);
     int getFd() const { return tg->getFd(); }
     EventLoop* getEventLoop() { return looper; }
     Buffer* getInputBuffer() { return &inputBuffer; }

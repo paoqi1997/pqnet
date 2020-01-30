@@ -109,7 +109,7 @@ void TcpServer::onAccept()
         ERROR(std::strerror(errno));
     }
     auto currLooper = followers->getNextLoop();
-    connpool[connfd] = std::make_shared<TcpConnection>(currLooper, currLooper->getFd(), connfd);
+    connpool[connfd] = std::make_shared<TcpConnection>(currLooper, connfd);
     connpool[connfd]->setConnectCallBack(conncb);
     connpool[connfd]->setCloseCallBack(closecb);
     connpool[connfd]->setImplCloseCallBack(std::bind(&TcpServer::removeConnection, this, _1));

@@ -9,8 +9,8 @@
 
 using namespace pqnet;
 
-TcpConnection::TcpConnection(EventLoop *_looper, int epfd, int fd)
-    : looper(_looper), tg(new Trigger(epfd, fd))
+TcpConnection::TcpConnection(EventLoop *_looper, int fd)
+    : looper(_looper), tg(new Trigger(_looper->getFd(), fd))
 {
     tg->setReadHandler(std::bind(&TcpConnection::handleRead, this));
     tg->setWriteHandler(std::bind(&TcpConnection::handleWrite, this));
