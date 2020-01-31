@@ -104,11 +104,11 @@ void TimerQueue::delTimer(TimerId id)
 
 void TimerQueue::handle()
 {
+    this->refresh();
     std::uint64_t currtime = now().Int16();
     for (auto it = tmqueue.begin(); it != tmqueue.end(); ) {
         // 已到期
         if (it->first <= currtime) {
-            this->refresh();
             auto tmpIt = std::next(it, 1);
             Timer timer = it->second;
             timer.run();

@@ -40,10 +40,9 @@ int EventLoopThreadPool::getEvfdByIndex(std::size_t index)
 
 EventLoop* EventLoopThreadPool::getNextLoop()
 {
-    if (currIndex < evThreadCount) {
-        return evThreadPool[currIndex++]->getEventLoop();
-    } else {
+    auto looper = evThreadPool[currIndex++]->getEventLoop();
+    if (currIndex >= evThreadCount) {
         currIndex = 0;
-        return evThreadPool[currIndex]->getEventLoop();
     }
+    return looper;
 }
