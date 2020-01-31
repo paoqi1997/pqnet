@@ -28,9 +28,10 @@ TimerQueue::~TimerQueue()
 TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiration, uint _interval)
 {
     Timer timer(cb, arg, _interval);
-    auto expiration = ms2SecAndNsec(_expiration);
+    // _expiration为0时将其调整为0.1ms
+    auto expiration = _expiration > 0 ? ms2SecAndNsec(_expiration) : us2SecAndNsec(100);
     auto interval = ms2SecAndNsec(_interval);
-    std::uint64_t endtime = now().Int16() + _expiration * 1000;
+    std::uint64_t endtime = now().Int16() + (_expiration > 0 ? _expiration * 1000 : 100);
     if (tmqueue.empty()) {
         // 队列为空
         struct itimerspec its;
