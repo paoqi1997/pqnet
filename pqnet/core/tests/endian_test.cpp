@@ -3,6 +3,9 @@
 
 #include <pqnet/core/endian.h>
 
+using std::cout;
+using std::endl;
+
 int main()
 {
     std::uint16_t h16val = 8088;
@@ -14,8 +17,14 @@ int main()
     std::uint16_t _h16val = pqnet::n2h16(n16val);
     std::uint32_t _h32val = pqnet::n2h32(n32val);
 
-    std::cout << h16val << ' ' << n16val << ' ' << _h16val << std::endl;
-    std::cout << h32val << ' ' << n32val << ' ' << _h32val << std::endl;
+    if (pqnet::Endian() == IS_LITTLE_ENDIAN) {
+        cout << "little-endian" << endl;
+    } else {
+        cout << "big-endian" << endl;
+    }
+
+    cout << h16val << ' ' << n16val << ' ' << _h16val << endl;
+    cout << h32val << ' ' << n32val << ' ' << _h32val << endl;
 
     return 0;
 }

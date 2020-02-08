@@ -1,8 +1,23 @@
-#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "endian.h"
 
 using namespace pqnet;
+
+int pqnet::Endian()
+{
+    union {
+        char s[4];
+        std::uint32_t n;
+    } un {'L', '?', '?', 'B'};
+
+    char c = static_cast<char>(un.n);
+    if (c == 'L') {
+        return IS_LITTLE_ENDIAN;
+    } else {
+        return IS_BIG_ENDIAN;
+    }
+}
 
 std::uint16_t pqnet::h2n16(std::uint16_t h16val)
 {

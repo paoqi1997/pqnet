@@ -23,6 +23,9 @@ namespace pqnet
 #define   FALSE  0
 #define UNKNOWN -1
 
+#define    IS_BIG_ENDIAN 1
+#define IS_LITTLE_ENDIAN 2
+
 #define K1E3 (1000)
 #define K1E6 (1000 * 1000)
 #define K1E9 (1000 * 1000 * 1000)

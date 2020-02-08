@@ -3,8 +3,12 @@
 
 #include <cstdint>
 
+#include "../util/types.h"
+
 namespace pqnet
 {
+
+int Endian();
 
 std::uint16_t h2n16(std::uint16_t h16val);
 std::uint32_t h2n32(std::uint32_t h32val);
