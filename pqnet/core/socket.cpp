@@ -1,4 +1,6 @@
 #include <fcntl.h>
+#include <netinet/in.h>  // for IPPROTO_TCP
+#include <netinet/tcp.h> // for TCP_NODELAY
 #include <sys/socket.h>
 
 #include "socket.h"
@@ -45,6 +47,26 @@ int pqnet::isReusePort(int sockfd)
     return opt;
 }
 
+int pqnet::isNoDelay(int sockfd)
+{
+    int opt;
+    socklen_t optlen = sizeof(opt);
+    if (getsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &opt, &optlen) == -1) {
+        return UNKNOWN;
+    }
+    return opt;
+}
+
+int pqnet::isKeepAlive(int sockfd)
+{
+    int opt;
+    socklen_t optlen = sizeof(opt);
+    if (getsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &opt, &optlen) == -1) {
+        return UNKNOWN;
+    }
+    return opt;
+}
+
 bool pqnet::setNonBlock(int sockfd, bool flag)
 {
     int flags = fcntl(sockfd, F_GETFL, 0);
@@ -77,6 +99,24 @@ bool pqnet::setReusePort(int sockfd, bool flag)
 {
     int opt = flag;
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+        return false;
+    }
+    return true;
+}
+
+bool pqnet::setNoDelay(int sockfd, bool flag)
+{
+    int opt = flag;
+    if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt)) == -1) {
+        return false;
+    }
+    return true;
+}
+
+bool pqnet::setKeepAlive(int sockfd, bool flag)
+{
+    int opt = flag;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) == -1) {
         return false;
     }
     return true;
