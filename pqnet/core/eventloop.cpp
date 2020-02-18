@@ -69,6 +69,31 @@ void EventLoop::loop()
     }
 }
 
+TimerId EventLoop::runAt(const timerCallBack& cb, void *arg, const TimeStamp& ts)
+{
+    TimeStamp nowTs = now();
+    if (nowTs.Int13() < ts.Int13()) {
+        return tmqueue->addTimer(cb, arg, ts.Int13() - nowTs.Int13());
+    } else {
+        return tmqueue->addTimer(cb, arg, 0);
+    }
+}
+
+TimerId EventLoop::runAfter(const timerCallBack& cb, void *arg, uint expiration)
+{
+    return tmqueue->addTimer(cb, arg, expiration);
+}
+
+TimerId EventLoop::runEvery(const timerCallBack& cb, void *arg, uint expiration, uint interval)
+{
+    return tmqueue->addTimer(cb, arg, expiration, interval);
+}
+
+void EventLoop::cancel(TimerId id)
+{
+    tmqueue->delTimer(id);
+}
+
 void EventLoop::handleRead()
 {
     TRACE("Fd: %d, Func: EventLoop::%s", epfd, __func__);

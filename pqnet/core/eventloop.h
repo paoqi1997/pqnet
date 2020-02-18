@@ -26,12 +26,10 @@ public:
     int getEvfd() const { return evfd; }
     void loop();
     void quit() { loopFlag = false; }
-    TimerId addTimer(const timerCallBack& cb, void *arg, uint _expiration, uint _interval = 0) {
-        return tmqueue->addTimer(cb, arg, _expiration, _interval);
-    }
-    void delTimer(TimerId id) {
-        tmqueue->delTimer(id);
-    }
+    TimerId runAt(const timerCallBack& cb, void *arg, const TimeStamp& ts);
+    TimerId runAfter(const timerCallBack& cb, void *arg, uint expiration);
+    TimerId runEvery(const timerCallBack& cb, void *arg, uint expiration, uint interval);
+    void cancel(TimerId id);
     void pushFn(const Functor& fn) { fnQueue.push(fn); }
     Functor popFn() {
         auto fn = fnQueue.front();
