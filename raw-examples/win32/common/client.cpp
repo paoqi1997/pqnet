@@ -36,7 +36,7 @@ int main()
         // socket
         sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
         if (sockfd == INVALID_SOCKET) {
-            printf("socket failed with error: %ld\n", WSAGetLastError());
+            printf("socket failed with error: %d\n", WSAGetLastError());
             WSACleanup();
             return 1;
         }

@@ -34,7 +34,7 @@ int main()
     // socket
     SOCKET listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (listenfd == INVALID_SOCKET) {
-        printf("socket failed with error: %ld\n", WSAGetLastError());
+        printf("socket failed with error: %d\n", WSAGetLastError());
         freeaddrinfo(res);
         WSACleanup();
         return 1;
