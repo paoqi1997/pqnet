@@ -1,4 +1,3 @@
-#include <cstring>
 #include <iostream>
 
 #ifndef FD_SETSIZE
@@ -15,7 +14,7 @@ int main()
     WSADATA wsaData;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
-        std::printf("WSAStartup failed with error: %d\n", iResult);
+        printf("WSAStartup failed with error: %d\n", iResult);
         return 1;
     }
 
@@ -29,7 +28,7 @@ int main()
 
     iResult = getaddrinfo(nullptr, PORT, &hints, &res);
     if (iResult != 0) {
-        std::printf("getaddrinfo failed with error: %d\n", iResult);
+        printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
         return 1;
     }
@@ -37,7 +36,7 @@ int main()
     // socket
     SOCKET listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (listenfd == INVALID_SOCKET) {
-        std::printf("socket failed with error: %ld\n", WSAGetLastError());
+        printf("socket failed with error: %ld\n", WSAGetLastError());
         freeaddrinfo(res);
         WSACleanup();
         return 1;
@@ -47,7 +46,7 @@ int main()
     iResult = bind(listenfd, res->ai_addr, static_cast<int>(res->ai_addrlen));
     freeaddrinfo(res);
     if (iResult == SOCKET_ERROR) {
-        std::printf("bind failed with error: %d\n", WSAGetLastError());
+        printf("bind failed with error: %d\n", WSAGetLastError());
         closesocket(listenfd);
         WSACleanup();
         return 1;
@@ -56,7 +55,7 @@ int main()
     // listen
     iResult = listen(listenfd, SOMAXCONN);
     if (iResult == SOCKET_ERROR) {
-        std::printf("listen failed with error: %d\n", WSAGetLastError());
+        printf("listen failed with error: %d\n", WSAGetLastError());
         closesocket(listenfd);
         WSACleanup();
         return 1;
@@ -66,56 +65,57 @@ int main()
     FD_ZERO(&mySet);
     FD_SET(listenfd, &mySet);
 
-    char recvBuf[1024] = {0};
+    char buf[1024] = {0};
     for (;;) {
         fd_set tmpSet = mySet;
         // select
         int cnt = select(0, &tmpSet, nullptr, nullptr, nullptr);
         if (cnt == SOCKET_ERROR) {
-            std::printf("select failed with error: %d\n", WSAGetLastError());
+            printf("select failed with error: %d\n", WSAGetLastError());
             break;
         }
-        // For ListenFd
-        if (FD_ISSET(listenfd, &tmpSet)) {
-            SOCKET connfd = accept(listenfd, nullptr, nullptr);
-            if (connfd == INVALID_SOCKET) {
-                std::printf("accept failed with error: %d\n", WSAGetLastError());
-                break;
-            }
-            if (mySet.fd_count == FD_SETSIZE) {
-                std::printf("too many clients!\n");
+        for (std::size_t i = 0; i < mySet.fd_count; ++i) {
+            SOCKET sockfd = mySet.fd_array[i];
+            if (!FD_ISSET(sockfd, &tmpSet)) {
                 continue;
             }
-            FD_SET(connfd, &mySet);
-        } else {
-            // For Clients
-            for (std::size_t i = 0; i < mySet.fd_count; ++i) {
-                SOCKET connfd = mySet.fd_array[i];
-                if (!FD_ISSET(connfd, &tmpSet)) {
+            /// Listenfd
+            if (sockfd == listenfd) {
+                SOCKET connfd = accept(listenfd, nullptr, nullptr);
+                if (connfd == INVALID_SOCKET) {
+                    printf("accept failed with error: %d\n", WSAGetLastError());
+                    break;
+                }
+                if (mySet.fd_count == FD_SETSIZE) {
+                    printf("too many clients!\n");
                     continue;
                 }
-                // recv
-                iResult = recv(connfd, recvBuf, sizeof(recvBuf), 0);
-                if (iResult > 0) {
-                    std::printf("Recv: %s\n", recvBuf);
-                    // send
-                    int iSendResult = send(connfd, recvBuf, iResult, 0);
-                    if (iSendResult == SOCKET_ERROR) {
-                        std::printf("send failed with error: %d\n", WSAGetLastError());
-                        closesocket(connfd);
-                        break;
-                    }
-                } else if (iResult == 0 || WSAGetLastError() == WSAECONNRESET) {
-                    std::printf("Connection closing...\n");
-                    closesocket(connfd);
-                    FD_CLR(connfd, &mySet);
-                    continue;
-                } else {
-                    std::printf("recv failed with error: %d\n", WSAGetLastError());
+                FD_SET(connfd, &mySet);
+                printf("Connection %d coming...\n", connfd);
+                continue;
+            }
+            /// Clients
+            SOCKET connfd = sockfd;
+            // recv
+            iResult = recv(connfd, buf, sizeof(buf), 0);
+            if (iResult > 0) {
+                printf("Recv: %s\n", buf);
+                // send
+                int iSendResult = send(connfd, buf, iResult, 0);
+                if (iSendResult == SOCKET_ERROR) {
+                    printf("send failed with error: %d\n", WSAGetLastError());
                     closesocket(connfd);
                     break;
                 }
-                std::memset(recvBuf, 0, sizeof(recvBuf));
+            } else if (iResult == -1 && WSAGetLastError() == WSAECONNRESET) {
+                printf("Connection %d closing...\n", connfd);
+                closesocket(connfd);
+                FD_CLR(connfd, &mySet);
+                continue;
+            } else {
+                printf("recv failed with error: %d\n", WSAGetLastError());
+                closesocket(connfd);
+                break;
             }
         }
     }
