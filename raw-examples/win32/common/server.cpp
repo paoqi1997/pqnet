@@ -1,8 +1,9 @@
-#include <cstring>
 #include <iostream>
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+using namespace std;
 
 const char *PORT = "12488";
 
@@ -11,7 +12,7 @@ int main()
     WSADATA wsaData;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
-        std::printf("WSAStartup failed with error: %d\n", iResult);
+        printf("WSAStartup failed with error: %d\n", iResult);
         return 1;
     }
 
@@ -25,7 +26,7 @@ int main()
 
     iResult = getaddrinfo(nullptr, PORT, &hints, &res);
     if (iResult != 0) {
-        std::printf("getaddrinfo failed with error: %d\n", iResult);
+        printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
         return 1;
     }
@@ -33,7 +34,7 @@ int main()
     // socket
     SOCKET listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (listenfd == INVALID_SOCKET) {
-        std::printf("socket failed with error: %ld\n", WSAGetLastError());
+        printf("socket failed with error: %ld\n", WSAGetLastError());
         freeaddrinfo(res);
         WSACleanup();
         return 1;
@@ -43,7 +44,7 @@ int main()
     iResult = bind(listenfd, res->ai_addr, static_cast<int>(res->ai_addrlen));
     freeaddrinfo(res);
     if (iResult == SOCKET_ERROR) {
-        std::printf("bind failed with error: %d\n", WSAGetLastError());
+        printf("bind failed with error: %d\n", WSAGetLastError());
         closesocket(listenfd);
         WSACleanup();
         return 1;
@@ -52,44 +53,49 @@ int main()
     // listen
     iResult = listen(listenfd, SOMAXCONN);
     if (iResult == SOCKET_ERROR) {
-        std::printf("listen failed with error: %d\n", WSAGetLastError());
+        printf("listen failed with error: %d\n", WSAGetLastError());
         closesocket(listenfd);
         WSACleanup();
         return 1;
     }
 
-    // accept
-    SOCKET connfd = accept(listenfd, nullptr, nullptr);
-    closesocket(listenfd);
-    if (connfd == INVALID_SOCKET) {
-        std::printf("accept failed with error: %d\n", WSAGetLastError());
-        WSACleanup();
-        return 1;
-    }
+    SOCKET connfd = INVALID_SOCKET;
 
-    char recvBuf[1024] = {0};
+    char buf[1024] = {0};
     for (;;) {
+        if (connfd == INVALID_SOCKET) {
+            // accept
+            connfd = accept(listenfd, nullptr, nullptr);
+            if (connfd == INVALID_SOCKET) {
+                printf("accept failed with error: %d\n", WSAGetLastError());
+                WSACleanup();
+                return 1;
+            }
+            printf("Connection %d coming...\n", connfd);
+        }
         // recv
-        iResult = recv(connfd, recvBuf, sizeof(recvBuf), 0);
+        iResult = recv(connfd, buf, sizeof(buf), 0);
         if (iResult > 0) {
-            std::printf("Recv: %s\n", recvBuf);
+            printf("Recv: %s\n", buf);
             // send
-            int iSendResult = send(connfd, recvBuf, iResult, 0);
+            int iSendResult = send(connfd, buf, iResult, 0);
             if (iSendResult == SOCKET_ERROR) {
-                std::printf("send failed with error: %d\n", WSAGetLastError());
+                printf("send failed with error: %d\n", WSAGetLastError());
                 break;
             }
-        } else if (iResult == 0 || WSAGetLastError() == WSAECONNRESET) {
-            std::printf("Connection closing...\n");
-            break;
+        } else if (iResult == -1 && WSAGetLastError() == WSAECONNRESET) {
+            printf("Connection %d closing...\n", connfd);
+            closesocket(connfd);
+            connfd = INVALID_SOCKET;
+            continue;
         } else {
-            std::printf("recv failed with error: %d\n", WSAGetLastError());
+            printf("recv failed with error: %d\n", WSAGetLastError());
             break;
         }
-        std::memset(recvBuf, 0, sizeof(recvBuf));
     }
 
     closesocket(connfd);
+    closesocket(listenfd);
     WSACleanup();
 
     return 0;

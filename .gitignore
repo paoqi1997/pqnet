@@ -33,3 +33,6 @@
 
 # By-products
 .vscode
+
+# Output directories
+build
