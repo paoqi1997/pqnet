@@ -1,9 +1,6 @@
 CXX = g++
-CXXFLAGS = -g -Wall
-INCS = -I../..
+CXXFLAGS = -g -Wall -I../..
 LIBS = -pthread
-
-CXXFLAGS += ${INCS}
 
 ROOT_DIR = ../../pqnet
 CORE_DIR = ${ROOT_DIR}/core
