@@ -7,4 +7,10 @@ pqnet是一个面向Linux的、基于Reactor模式的网络库，由C++编写。
 
 ## How to use?
 
-目前pqnet还不完善，不建议在实际项目中使用。
+安装pqnet。
+
+```
+$ cd pqnet
+$ make
+$ sudo make install
+```
