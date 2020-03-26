@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -Wall -I../.. -L../../pqnet
+CXXFLAGS = -g -Wall -std=c++11 -I../.. -L../../pqnet
 LIBS = -lpqnet -pthread
 
 BINS = echoclient echoserver
