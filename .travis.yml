@@ -1,8 +1,10 @@
 language: cpp
-matrix:
-  include:
-    - os: linux
-    - compiler: gcc
-script:
+os:
+  - linux
+compiler:
+  - gcc
+install:
   - cd pqnet && make
+  - sudo make install
+script:
   - cd ../examples/echo && make -f uselib.mk
