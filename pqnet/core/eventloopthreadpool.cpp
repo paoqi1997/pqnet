@@ -33,12 +33,12 @@ void EventLoopThreadPool::start()
     }
 }
 
-int EventLoopThreadPool::getEvfdByIndex(std::size_t index)
+EventLoop* EventLoopThreadPool::getEventLoopByIndex(std::size_t index)
 {
-    return evThreadPool[index]->getEventLoop()->getEvfd();
+    return evThreadPool[index]->getEventLoop();
 }
 
-EventLoop* EventLoopThreadPool::getNextLoop()
+EventLoop* EventLoopThreadPool::getNextEventLoop()
 {
     auto looper = evThreadPool[currIndex++]->getEventLoop();
     if (currIndex >= evThreadCount) {

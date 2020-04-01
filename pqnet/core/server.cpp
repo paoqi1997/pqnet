@@ -108,7 +108,7 @@ void TcpServer::onAccept()
     if (!setNonBlock(connfd, true)) {
         ERROR(std::strerror(errno));
     }
-    auto currLooper = followers->getNextLoop();
+    auto currLooper = followers->getNextEventLoop();
     connpool[connfd] = std::make_shared<TcpConnection>(currLooper, connfd);
     connpool[connfd]->setConnectCallBack(conncb);
     connpool[connfd]->setCloseCallBack(closecb);
@@ -123,7 +123,7 @@ void TcpServer::onAccept()
 void TcpServer::clear()
 {
     for (std::size_t i = 0; i < followers->size(); ++i) {
-        int evfd = followers->getEvfdByIndex(i);
+        int evfd = followers->getEventLoopByIndex(i)->getEvfd();
         this->tell(evfd, EV_EXIT);
     }
 }

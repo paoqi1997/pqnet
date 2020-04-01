@@ -16,8 +16,8 @@ public:
     ~EventLoopThreadPool();
     void start();
     std::size_t size() const { return evThreadPool.size(); }
-    int getEvfdByIndex(std::size_t index);
-    EventLoop* getNextLoop();
+    EventLoop* getEventLoopByIndex(std::size_t index);
+    EventLoop* getNextEventLoop();
 private:
     std::size_t currIndex;
     std::size_t evThreadCount;
