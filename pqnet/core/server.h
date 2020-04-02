@@ -30,9 +30,9 @@ public:
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
+    void init();
     void onAccept();
     void clearFollowers();
-    void tell(int evfd, std::uint64_t msg);
     void removeConnection(const TcpConnPtr& conn) { connpool.erase(conn->getFd()); }
 private:
     connectCallBack conncb;
@@ -41,7 +41,6 @@ private:
     writeCompletedCallBack wccb;
     Ip4Addr addr;
     std::map<int, TcpConnPtr> connpool;
-    int listenfd;
     std::unique_ptr<Trigger> listenTrigger;
     std::unique_ptr<EventLoop> leader;
     std::unique_ptr<EventLoopThreadPool> followers;
