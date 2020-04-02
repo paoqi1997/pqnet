@@ -1,13 +1,12 @@
-#include "eventloop.h"
-
 #include <cerrno>
+#include <cstdint>
 #include <cstring>
 
 #include <sys/eventfd.h>
 #include <unistd.h>
 
 #include "../util/logger.h"
-#include "../util/types.h"
+#include "eventloop.h"
 
 using namespace pqnet;
 

@@ -6,10 +6,6 @@
 namespace pqnet
 {
 
-// Event Codes
-#define EV_CONN 0x01
-#define EV_EXIT 0x02
-
 // used by listen(2)
 #define BACKLOG 16
 // used by TimeStamp

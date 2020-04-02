@@ -1,5 +1,3 @@
-#include "server.h"
-
 #include <cerrno>
 #include <cstring>
 
@@ -7,9 +5,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "socket.h"
 #include "../util/logger.h"
-#include "../util/types.h"
+#include "server.h"
+#include "socket.h"
 
 using namespace pqnet;
 using namespace std::placeholders;

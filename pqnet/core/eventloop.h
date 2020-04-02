@@ -1,7 +1,6 @@
 #ifndef PQNET_CORE_EVENTLOOP_H
 #define PQNET_CORE_EVENTLOOP_H
 
-#include <cstdint>
 #include <functional>
 #include <memory>
 #include <queue>

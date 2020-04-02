@@ -4,15 +4,11 @@
 #include <cstdint>
 #include <memory>
 
-#include <sys/epoll.h>
-
 #include "callback.h"
 #include "connection.h"
 #include "eventloop.h"
 #include "ipaddr.h"
 #include "trigger.h"
-
-#include "../util/types.h"
 
 namespace pqnet
 {

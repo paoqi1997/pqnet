@@ -1,11 +1,8 @@
-#include <cassert>
 #include <cerrno>
-#include <cstdio>
 #include <cstring>
 
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <unistd.h>
 
 #include "../util/logger.h"
 #include "client.h"
