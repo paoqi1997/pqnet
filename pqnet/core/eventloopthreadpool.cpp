@@ -1,11 +1,10 @@
-#include "eventloopthreadpool.h"
-
 #include <cerrno>
 #include <cstring>
 
 #include <pthread.h>
 
 #include "../util/logger.h"
+#include "eventloopthreadpool.h"
 
 using namespace pqnet;
 

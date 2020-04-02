@@ -1,6 +1,7 @@
+#include <algorithm>
 #include <cstring>
 
-#include <algorithm>
+#include <unistd.h>
 
 #include "buffer.h"
 

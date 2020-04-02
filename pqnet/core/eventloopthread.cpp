@@ -1,9 +1,8 @@
-#include "eventloopthread.h"
-
 #include <cerrno>
 #include <cstring>
 
 #include "../util/logger.h"
+#include "eventloopthread.h"
 
 using namespace pqnet;
 

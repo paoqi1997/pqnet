@@ -4,6 +4,7 @@ os:
 compiler:
   - gcc
 install:
+  - ls ~
   - pwd
   - cd pqnet && make
   - sudo make install
