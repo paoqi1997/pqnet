@@ -15,7 +15,8 @@ int main()
     cout << ts.Int16() << endl;
     cout << ts.Int19() << endl;
 
-    auto ts2 = pqnet::oneday({2020, 10, 1, 10, 30, 0});
+    auto myTuple = std::make_tuple(2020, 10, 1, 10, 30, 0);
+    auto ts2 = pqnet::oneday(myTuple);
     std::printf("TimeStamp2:oneday\n");
 
     cout << ts2.Int10() << endl;
