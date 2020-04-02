@@ -94,20 +94,34 @@ void EventLoop::cancel(TimerId id)
     tmqueue->delTimer(id);
 }
 
+void EventLoop::pushFunctor(const Functor& fn)
+{
+    fnqueue.push(fn);
+    this->wake();
+}
+
+void EventLoop::wake()
+{
+    TRACE("Fd: %d, Func: EventLoop::%s", epfd, __func__);
+    std::uint64_t msg = 1;
+    ssize_t n = write(evfd, &msg, sizeof(msg));
+    if (n == -1) {
+        ERROR(std::strerror(errno));
+    }
+}
+
 void EventLoop::handleRead()
 {
     TRACE("Fd: %d, Func: EventLoop::%s", epfd, __func__);
+    std::uint64_t msg = 1;
     ssize_t n = read(evfd, &msg, sizeof(msg));
     if (n == -1) {
         ERROR(std::strerror(errno));
     } else {
-        switch (msg) {
-        case EV_CONN:
-            this->popFn()();
-            break;
-        case EV_EXIT:
-            loopFlag = false;
-            break;
+        while (!fnqueue.empty()) {
+            auto fn = fnqueue.front();
+            fnqueue.pop();
+            fn();
         }
     }
 }

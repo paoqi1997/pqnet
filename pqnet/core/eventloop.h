@@ -30,13 +30,9 @@ public:
     TimerId runAfter(const timerCallBack& cb, void *arg, uint expiration);
     TimerId runEvery(const timerCallBack& cb, void *arg, uint expiration, uint interval);
     void cancel(TimerId id);
-    void pushFn(const Functor& fn) { fnQueue.push(fn); }
-    Functor popFn() {
-        auto fn = fnQueue.front();
-        fnQueue.pop();
-        return fn;
-    }
+    void pushFunctor(const Functor& fn);
 private:
+    void wake();
     void handleRead();
     struct epoll_event* begin() { return evpool.data(); }
     const struct epoll_event* begin() const { return evpool.data(); }
@@ -44,8 +40,7 @@ private:
     int epfd;
     int evfd;
     bool loopFlag;
-    std::uint64_t msg;
-    std::queue<Functor> fnQueue;
+    std::queue<Functor> fnqueue;
     std::unique_ptr<Trigger> evTrigger;
     std::unique_ptr<Trigger> tmTrigger;
     std::unique_ptr<TimerQueue> tmqueue;

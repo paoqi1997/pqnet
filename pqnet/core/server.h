@@ -31,7 +31,7 @@ public:
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
     void onAccept();
-    void clear();
+    void clearFollowers();
     void tell(int evfd, std::uint64_t msg);
     void removeConnection(const TcpConnPtr& conn) { connpool.erase(conn->getFd()); }
 private:

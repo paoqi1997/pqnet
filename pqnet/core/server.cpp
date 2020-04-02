@@ -78,10 +78,10 @@ TcpServer::~TcpServer()
         ERROR(std::strerror(errno));
     }
     for (auto& kv : connpool) {
-        // TODO: Destroy connections by followers
-        kv.second->connectDestroyed();
+        auto looper = kv.second->getEventLoop();
+        looper->pushFunctor(std::bind(&TcpConnection::connectDestroyed, kv.second));
     }
-    this->clear();
+    this->clearFollowers();
 }
 
 void TcpServer::start()
@@ -115,16 +115,15 @@ void TcpServer::onAccept()
     connpool[connfd]->setImplCloseCallBack(std::bind(&TcpServer::removeConnection, this, _1));
     connpool[connfd]->setMessageArrivedCallBack(macb);
     connpool[connfd]->setWriteCompletedCallBack(wccb);
-    currLooper->pushFn(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
-    this->tell(currLooper->getEvfd(), EV_CONN);
+    currLooper->pushFunctor(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
     TRACE("Connection %d in Looper %d.", connfd, currLooper->getFd());
 }
 
-void TcpServer::clear()
+void TcpServer::clearFollowers()
 {
     for (std::size_t i = 0; i < followers->size(); ++i) {
-        int evfd = followers->getEventLoopByIndex(i)->getEvfd();
-        this->tell(evfd, EV_EXIT);
+        auto looper = followers->getEventLoopByIndex(i);
+        looper->pushFunctor(std::bind(&EventLoop::quit, looper));
     }
 }
 
