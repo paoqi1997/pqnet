@@ -22,8 +22,7 @@ class TcpClient
 public:
     TcpClient(const char *servname, std::uint16_t port);
     ~TcpClient();
-    int getLoopFd() const { return looper->getFd(); }
-    void buildConn();
+    int getLooperFd() const { return looper->getFd(); }
     TcpConnPtr getConn() const { return conn; }
     void start();
     void shutdown() { looper->quit(); }
@@ -31,6 +30,9 @@ public:
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
+private:
+    void init();
+    void setCallBacks();
 private:
     connectCallBack conncb;
     closeCallBack closecb;

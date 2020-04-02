@@ -12,7 +12,7 @@ class TcpEchoClient
 {
 public:
     TcpEchoClient(const char *servname, std::uint16_t port)
-        : cli(servname, port), inTrigger(cli.getLoopFd(), fileno(stdin))
+        : cli(servname, port), inTrigger(cli.getLooperFd(), fileno(stdin))
     {
         inTrigger.addToLoop();
         inTrigger.likeReading();
