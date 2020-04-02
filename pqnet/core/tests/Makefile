@@ -1,8 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -Wall
-INCS = -I../../..
-
-CXXFLAGS += ${INCS}
+CXXFLAGS = -g -Wall -std=c++11 -I../../..
 
 ROOT_DIR = ../..
 CORE_DIR = ${ROOT_DIR}/core

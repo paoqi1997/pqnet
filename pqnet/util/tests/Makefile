@@ -1,9 +1,6 @@
 CXX = g++
-CXXFLAGS = -g -Wall
-INCS = -I../../..
+CXXFLAGS = -g -Wall -std=c++11 -I../../..
 LIBS = -pthread
-
-CXXFLAGS += ${INCS}
 
 ROOT_DIR = ../..
 UTIL_DIR = ${ROOT_DIR}/util
