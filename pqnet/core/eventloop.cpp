@@ -101,7 +101,7 @@ void EventLoop::pushFunctor(const Functor& fn)
 
 void EventLoop::wake()
 {
-    DEBUG("Fd: %d, Func: EventLoop::%s", epfd, __func__);
+    DEBUG("LooperFd: %d, Func: EventLoop::%s", epfd, __func__);
     std::uint64_t msg = 1;
     ssize_t n = write(evfd, &msg, sizeof(msg));
     if (n == -1) {
@@ -111,7 +111,7 @@ void EventLoop::wake()
 
 void EventLoop::handleRead()
 {
-    DEBUG("Fd: %d, Func: EventLoop::%s", epfd, __func__);
+    DEBUG("LooperFd: %d, Func: EventLoop::%s", epfd, __func__);
     std::uint64_t msg = 1;
     ssize_t n = read(evfd, &msg, sizeof(msg));
     if (n == -1) {

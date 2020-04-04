@@ -6,6 +6,9 @@
 #include <pqnet/util/logger.h>
 #include <pqnet/util/signal.h>
 
+using std::cin;
+using std::cout;
+using std::endl;
 using namespace std::placeholders;
 
 class TcpEchoClient
@@ -34,26 +37,28 @@ public:
         cli.shutdown();
     }
     void handleStdIn() {
-        INFO("Fd: %d, Func: TcpEchoClient::%s", cli.getConn()->getFd(), __func__);
-        std::cin >> msg;
+        INFO("FileFd: %d, Func: TcpEchoClient::%s", fileno(stdin), __func__);
+        cin >> msg;
         cli.getConn()->send(msg.c_str(), msg.length());
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
-        INFO("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
+        INFO("ConnFd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
-        INFO("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
+        INFO("ConnFd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
         cli.shutdown();
     }
     void onMsgArrived(const pqnet::TcpConnPtr& conn) {
-        INFO("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
-        msg = conn->getInputBuffer()->get(128);
+        INFO("ConnFd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
+        msg = conn->getInputBuffer()->get(BUFFERSIZE);
         if (msg == "quit") {
             cli.shutdown();
         } else {
-            std::cout << msg << std::endl;
+            cout << msg << endl;
         }
     }
+private:
+    static const std::size_t BUFFERSIZE = 128;
 private:
     std::string msg;
     pqnet::TcpClient cli;
@@ -66,12 +71,12 @@ int main()
     TcpEchoClient echocli("127.0.0.1", 12488);
     auto SIGINT_HANDLER = [&]{
         echocli.shutdown();
-        std::cout << std::endl;
-        std::cout << "Captures the signal: SIGINT(2)." << std::endl;
+        cout << endl;
+        cout << "Captures the signal: SIGINT(2)." << endl;
     };
     auto SIGTERM_HANDLER = [&]{
         echocli.shutdown();
-        std::cout << "Captures the signal: SIGTERM(15)." << std::endl;
+        cout << "Captures the signal: SIGTERM(15)." << endl;
     };
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);

@@ -41,6 +41,7 @@ void TcpClient::init()
     if (connect(sockfd, addrptr, sizeof(struct sockaddr_in)) == -1) {
         ERROR(std::strerror(errno));
     }
+    DEBUG("ConnFd: %d, Connect to %s", sockfd, addr.toString().c_str());
     if (!setNonBlock(sockfd, true)) {
         ERROR(std::strerror(errno));
     }

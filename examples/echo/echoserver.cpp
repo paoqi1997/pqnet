@@ -4,6 +4,8 @@
 #include <pqnet/util/logger.h>
 #include <pqnet/util/signal.h>
 
+using std::cout;
+using std::endl;
 using namespace std::placeholders;
 
 class TcpEchoServer
@@ -26,16 +28,18 @@ public:
         serv.shutdown();
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
-        INFO("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
+        INFO("ConnFd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
-        INFO("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
+        INFO("ConnFd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
     }
     void onMsgArrived(const pqnet::TcpConnPtr& conn) {
-        INFO("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
-        std::string msg = conn->getInputBuffer()->get(128);
+        INFO("ConnFd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
+        std::string msg = conn->getInputBuffer()->get(BUFFERSIZE);
         conn->send(msg.c_str(), msg.length());
     }
+private:
+    static const std::size_t BUFFERSIZE = 128;
 private:
     pqnet::TcpServer serv;
 };
@@ -46,12 +50,12 @@ int main()
     TcpEchoServer echoserv(12488);
     auto SIGINT_HANDLER = [&]{
         echoserv.shutdown();
-        std::cout << std::endl;
-        std::cout << "Captures the signal: SIGINT(2)." << std::endl;
+        cout << endl;
+        cout << "Captures the signal: SIGINT(2)." << endl;
     };
     auto SIGTERM_HANDLER = [&]{
         echoserv.shutdown();
-        std::cout << "Captures the signal: SIGTERM(15)." << std::endl;
+        cout << "Captures the signal: SIGTERM(15)." << endl;
     };
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);

@@ -18,7 +18,7 @@ TcpConnection::TcpConnection(EventLoop *_looper, int fd)
 
 void TcpConnection::connectEstablished()
 {
-    DEBUG("Fd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
     tg->addToLoop();
     tg->likeReading();
     if (conncb) {
@@ -29,7 +29,7 @@ void TcpConnection::connectEstablished()
 
 void TcpConnection::connectDestroyed()
 {
-    DEBUG("Fd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
     tg->removeFromLoop();
     if (close(tg->getFd()) != 0) {
         ERROR(std::strerror(errno));
@@ -73,7 +73,7 @@ void TcpConnection::send(const char *data, std::size_t len)
 
 void TcpConnection::handleRead()
 {
-    DEBUG("Fd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
     ssize_t n = inputBuffer.readFrom(tg->getFd(), inputBuffer.writableBytes());
     if (n > 0) {
         if (macb) {

@@ -70,6 +70,7 @@ void TcpServer::init()
     if (listen(listenfd, BACKLOG) == -1) {
         ERROR(std::strerror(errno));
     }
+    DEBUG("ListenFd: %d, Listen to %s", listenfd, addr.toString().c_str());
     // For ListenFd
     listenTrigger->setEpfd(leader->getFd());
     listenTrigger->setFd(listenfd);
@@ -80,7 +81,7 @@ void TcpServer::init()
 
 void TcpServer::onAccept()
 {
-    DEBUG("Fd: %d, Func: TcpServer::%s", leader->getFd(), __func__);
+    DEBUG("LooperFd: %d, Func: TcpServer::%s", leader->getFd(), __func__);
     struct sockaddr_in cliaddr;
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
     socklen_t clilen = sizeof(struct sockaddr_in);
