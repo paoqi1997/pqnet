@@ -34,19 +34,19 @@ public:
         cli.shutdown();
     }
     void handleStdIn() {
-        TRACE("Fd: %d, Func: TcpEchoClient::%s", cli.getConn()->getFd(), __func__);
+        INFO("Fd: %d, Func: TcpEchoClient::%s", cli.getConn()->getFd(), __func__);
         std::cin >> msg;
         cli.getConn()->send(msg.c_str(), msg.length());
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
-        TRACE("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
+        INFO("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
-        TRACE("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
+        INFO("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
         cli.shutdown();
     }
     void onMsgArrived(const pqnet::TcpConnPtr& conn) {
-        TRACE("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
+        INFO("Fd: %d, Func: TcpEchoClient::%s", conn->getFd(), __func__);
         msg = conn->getInputBuffer()->get(128);
         if (msg == "quit") {
             cli.shutdown();

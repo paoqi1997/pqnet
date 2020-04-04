@@ -26,13 +26,13 @@ public:
         serv.shutdown();
     }
     void onConnect(const pqnet::TcpConnPtr& conn) {
-        TRACE("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
+        INFO("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
-        TRACE("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
+        INFO("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
     }
     void onMsgArrived(const pqnet::TcpConnPtr& conn) {
-        TRACE("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
+        INFO("Fd: %d, Func: TcpEchoServer::%s", conn->getFd(), __func__);
         std::string msg = conn->getInputBuffer()->get(128);
         conn->send(msg.c_str(), msg.length());
     }

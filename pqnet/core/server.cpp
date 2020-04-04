@@ -80,7 +80,7 @@ void TcpServer::init()
 
 void TcpServer::onAccept()
 {
-    TRACE("Fd: %d, Func: TcpServer::%s", leader->getFd(), __func__);
+    DEBUG("Fd: %d, Func: TcpServer::%s", leader->getFd(), __func__);
     struct sockaddr_in cliaddr;
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
     socklen_t clilen = sizeof(struct sockaddr_in);
@@ -99,7 +99,7 @@ void TcpServer::onAccept()
     connpool[connfd]->setMessageArrivedCallBack(macb);
     connpool[connfd]->setWriteCompletedCallBack(wccb);
     currLooper->pushFunctor(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
-    TRACE("Connection %d in Looper %d.", connfd, currLooper->getFd());
+    DEBUG("Connection %d in Looper %d.", connfd, currLooper->getFd());
 }
 
 void TcpServer::clearFollowers()

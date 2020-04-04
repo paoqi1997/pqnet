@@ -54,7 +54,7 @@ void EventLoop::loop()
         if (cnt == -1) {
             loopFlag = false;
             if (errno == EINTR) {
-                TRACE(MSG_EPOLL_WAIT_EINTR);
+                DEBUG(MSG_EPOLL_WAIT_EINTR);
             } else {
                 ERROR(std::strerror(errno));
             }
@@ -101,7 +101,7 @@ void EventLoop::pushFunctor(const Functor& fn)
 
 void EventLoop::wake()
 {
-    TRACE("Fd: %d, Func: EventLoop::%s", epfd, __func__);
+    DEBUG("Fd: %d, Func: EventLoop::%s", epfd, __func__);
     std::uint64_t msg = 1;
     ssize_t n = write(evfd, &msg, sizeof(msg));
     if (n == -1) {
@@ -111,7 +111,7 @@ void EventLoop::wake()
 
 void EventLoop::handleRead()
 {
-    TRACE("Fd: %d, Func: EventLoop::%s", epfd, __func__);
+    DEBUG("Fd: %d, Func: EventLoop::%s", epfd, __func__);
     std::uint64_t msg = 1;
     ssize_t n = read(evfd, &msg, sizeof(msg));
     if (n == -1) {
