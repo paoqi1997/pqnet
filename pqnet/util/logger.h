@@ -8,50 +8,43 @@
 namespace pqnet
 {
 
-#define TRACE(fmt, ...)                                                          \
-{                                                                                \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::TRACE, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+#define DEBUG(fmt, ...)                                                        \
+{                                                                              \
+    auto logger = pqnet::Logger::getLogger();                                  \
+    logger->log(pqnet::Logger::DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
 }
 
-#define DEBUG(fmt, ...)                                                          \
-{                                                                                \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+#define INFO(fmt, ...)                                                         \
+{                                                                              \
+    auto logger = pqnet::Logger::getLogger();                                  \
+    logger->log(pqnet::Logger::INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
 }
 
-#define INFO(fmt, ...)                                                           \
-{                                                                                \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);    \
+#define WARN(fmt, ...)                                                         \
+{                                                                              \
+    auto logger = pqnet::Logger::getLogger();                                  \
+    logger->log(pqnet::Logger::WARN, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
 }
 
-#define WARNING(fmt, ...)                                                        \
-{                                                                                \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::WARNING, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
+#define ERROR(fmt, ...)                                                        \
+{                                                                              \
+    auto logger = pqnet::Logger::getLogger();                                  \
+    logger->log(pqnet::Logger::ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
 }
 
-#define ERROR(fmt, ...)                                                          \
-{                                                                                \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
-}
-
-#define FATAL(fmt, ...)                                                          \
-{                                                                                \
-    auto logger = pqnet::Logger::getLogger();                                    \
-    logger->log(pqnet::Logger::FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+#define FATAL(fmt, ...)                                                        \
+{                                                                              \
+    auto logger = pqnet::Logger::getLogger();                                  \
+    logger->log(pqnet::Logger::FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
 }
 
 class Logger
 {
 public:
     enum LogLevel {
-        TRACE,
         DEBUG,
         INFO,
-        WARNING,
+        WARN,
         ERROR,
         FATAL
     };

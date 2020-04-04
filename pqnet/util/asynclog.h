@@ -13,46 +13,39 @@
 namespace pqnet
 {
 
-#define AL_TRACE(fmt, ...)                                                          \
-{                                                                                   \
-    auto al = pqnet::AsyncLog::getAsyncLog();                                       \
-    pthread_t id = pthread_self();                                                  \
-    al->addLog(pqnet::Logger::TRACE, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+#define AL_DEBUG(fmt, ...)                                                        \
+{                                                                                 \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                     \
+    pthread_t id = pthread_self();                                                \
+    al->addLog(pqnet::Logger::DEBUG, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
 }
 
-#define AL_DEBUG(fmt, ...)                                                          \
-{                                                                                   \
-    auto al = pqnet::AsyncLog::getAsyncLog();                                       \
-    pthread_t id = pthread_self();                                                  \
-    al->addLog(pqnet::Logger::DEBUG, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+#define AL_INFO(fmt, ...)                                                         \
+{                                                                                 \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                     \
+    pthread_t id = pthread_self();                                                \
+    al->addLog(pqnet::Logger::INFO, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
 }
 
-#define AL_INFO(fmt, ...)                                                           \
-{                                                                                   \
-    auto al = pqnet::AsyncLog::getAsyncLog();                                       \
-    pthread_t id = pthread_self();                                                  \
-    al->addLog(pqnet::Logger::INFO, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);    \
+#define AL_WARN(fmt, ...)                                                         \
+{                                                                                 \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                     \
+    pthread_t id = pthread_self();                                                \
+    al->addLog(pqnet::Logger::WARN, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
 }
 
-#define AL_WARNING(fmt, ...)                                                        \
-{                                                                                   \
-    auto al = pqnet::AsyncLog::getAsyncLog();                                       \
-    pthread_t id = pthread_self();                                                  \
-    al->addLog(pqnet::Logger::WARNING, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
+#define AL_ERROR(fmt, ...)                                                        \
+{                                                                                 \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                     \
+    pthread_t id = pthread_self();                                                \
+    al->addLog(pqnet::Logger::ERROR, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
 }
 
-#define AL_ERROR(fmt, ...)                                                          \
-{                                                                                   \
-    auto al = pqnet::AsyncLog::getAsyncLog();                                       \
-    pthread_t id = pthread_self();                                                  \
-    al->addLog(pqnet::Logger::ERROR, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
-}
-
-#define AL_FATAL(fmt, ...)                                                          \
-{                                                                                   \
-    auto al = pqnet::AsyncLog::getAsyncLog();                                       \
-    pthread_t id = pthread_self();                                                  \
-    al->addLog(pqnet::Logger::FATAL, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__);   \
+#define AL_FATAL(fmt, ...)                                                        \
+{                                                                                 \
+    auto al = pqnet::AsyncLog::getAsyncLog();                                     \
+    pthread_t id = pthread_self();                                                \
+    al->addLog(pqnet::Logger::FATAL, id, __FILE__, __LINE__, fmt, ##__VA_ARGS__); \
 }
 
 struct Log
