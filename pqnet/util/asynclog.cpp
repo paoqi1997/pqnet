@@ -78,22 +78,22 @@ void AsyncLog::consume(Log log)
         const char *msg = log.msg.c_str();
         switch (log.level) {
         case Logger::TRACE:
-            std::fprintf(lf, "[Trace] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+            std::fprintf(lf, "[Trace  ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
             break;
         case Logger::DEBUG:
-            std::fprintf(lf, "[Debug] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+            std::fprintf(lf, "[Debug  ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
             break;
         case Logger::INFO:
-            std::fprintf(lf, "[Info] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+            std::fprintf(lf, "[Info   ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
             break;
         case Logger::WARNING:
             std::fprintf(lf, "[Warning] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
             break;
         case Logger::ERROR:
-            std::fprintf(lf, "[Error] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+            std::fprintf(lf, "[Error  ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
             break;
         case Logger::FATAL:
-            std::fprintf(lf, "[Fatal] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+            std::fprintf(lf, "[Fatal  ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
             break;
         }
     }

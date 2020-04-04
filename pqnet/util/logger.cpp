@@ -83,22 +83,22 @@ void Logger::log(LogLevel _level, const char *sourcefile, int line, const char *
         const char *time = now().toDefault();
         switch (_level) {
         case Logger::TRACE:
-            std::fprintf(lf, "[Trace] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+            std::fprintf(lf, "[Trace  ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
             break;
         case Logger::DEBUG:
-            std::fprintf(lf, "[Debug] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+            std::fprintf(lf, "[Debug  ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
             break;
         case Logger::INFO:
-            std::fprintf(lf, "[Info] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+            std::fprintf(lf, "[Info   ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
             break;
         case Logger::WARNING:
             std::fprintf(lf, "[Warning] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
             break;
         case Logger::ERROR:
-            std::fprintf(lf, "[Error] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+            std::fprintf(lf, "[Error  ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
             break;
         case Logger::FATAL:
-            std::fprintf(lf, "[Fatal] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+            std::fprintf(lf, "[Fatal  ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
             break;
         }
     }
