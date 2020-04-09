@@ -85,22 +85,26 @@ void TcpServer::onAccept()
     struct sockaddr_in cliaddr;
     auto addrptr = reinterpret_cast<struct sockaddr*>(&cliaddr);
     socklen_t clilen = sizeof(struct sockaddr_in);
-    int connfd = accept(listenTrigger->getFd(), addrptr, &clilen);
-    if (connfd == -1) {
+    int connfd;
+    while ((connfd = accept(listenTrigger->getFd(), addrptr, &clilen)) != -1) {
+        if (!setNonBlock(connfd, true)) {
+            ERROR(std::strerror(errno));
+        }
+        auto currLooper = followers->getNextEventLoop();
+        connpool[connfd] = std::make_shared<TcpConnection>(currLooper, connfd);
+        connpool[connfd]->setConnectCallBack(conncb);
+        connpool[connfd]->setCloseCallBack(closecb);
+        connpool[connfd]->setImplCloseCallBack(std::bind(&TcpServer::removeConnection, this, _1));
+        connpool[connfd]->setMessageArrivedCallBack(macb);
+        connpool[connfd]->setWriteCompletedCallBack(wccb);
+        currLooper->pushFunctor(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
+        DEBUG("Connection %d in Looper %d.", connfd, currLooper->getFd());
+    }
+    if (errno == EAGAIN) {
+        DEBUG(MSG_ACCEPT_EAGAIN);
+    } else {
         ERROR(std::strerror(errno));
     }
-    if (!setNonBlock(connfd, true)) {
-        ERROR(std::strerror(errno));
-    }
-    auto currLooper = followers->getNextEventLoop();
-    connpool[connfd] = std::make_shared<TcpConnection>(currLooper, connfd);
-    connpool[connfd]->setConnectCallBack(conncb);
-    connpool[connfd]->setCloseCallBack(closecb);
-    connpool[connfd]->setImplCloseCallBack(std::bind(&TcpServer::removeConnection, this, _1));
-    connpool[connfd]->setMessageArrivedCallBack(macb);
-    connpool[connfd]->setWriteCompletedCallBack(wccb);
-    currLooper->pushFunctor(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
-    DEBUG("Connection %d in Looper %d.", connfd, currLooper->getFd());
 }
 
 void TcpServer::clearFollowers()

@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "../util/logger.h"
+#include "../util/types.h"
 #include "eventloop.h"
 
 using namespace pqnet;

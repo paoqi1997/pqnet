@@ -12,7 +12,8 @@ namespace pqnet
 #define BUFSIZE 32
 
 // Messages
-#define MSG_EPOLL_WAIT_EINTR "The Loop was interrupted by a signal handler."
+#define MSG_ACCEPT_EAGAIN    "The socket is marked nonblocking and no connections are present to be accepted."
+#define MSG_EPOLL_WAIT_EINTR "The call was interrupted by a signal handler."
 
 // Constants
 #define    TRUE  1
@@ -28,7 +29,7 @@ namespace pqnet
 
 using pn_thread_func_t = void*(*)(void*);
 
-using pn_task_func_t = void(*)(void*);
+using pn_task_func_t   = void(*)(void*);
 
 using pn_signal_func_t = std::function<void()>;
 

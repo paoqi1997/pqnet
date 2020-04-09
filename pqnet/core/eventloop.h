@@ -8,6 +8,7 @@
 
 #include <sys/epoll.h>
 
+#include "../util/timestamp.h"
 #include "timerqueue.h"
 #include "trigger.h"
 
