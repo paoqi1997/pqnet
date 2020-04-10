@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -Wall -I../..
+CXXFLAGS = -g -Wall -std=c++11 -I../..
 LIBS = -pthread
 
 ROOT_DIR = ../../pqnet
