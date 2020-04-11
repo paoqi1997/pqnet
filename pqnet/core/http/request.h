@@ -12,10 +12,8 @@ class HttpRequest
 public:
     HttpRequest(const std::string& req);
 private:
-    void parseRequestLine();
-    static const char *CRLF;
+    void parseRequestLine(const std::string& reqLine);
 private:
-    std::string line;
     std::string method;
     std::string uri;
     std::string version;

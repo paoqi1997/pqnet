@@ -6,6 +6,7 @@
 
 #include <pqnet/core/server.h>
 #include <pqnet/core/http/request.h>
+#include <pqnet/core/http/response.h>
 #include <pqnet/util/logger.h>
 #include <pqnet/util/signal.h>
 
@@ -48,9 +49,12 @@ public:
     void onRequest(const pqnet::TcpConnPtr& conn) {
         INFO("ConnFd: %d, Func: HttpServer::%s", conn->getFd(), __func__);
         std::string req = conn->getInputBuffer()->get(BUFFERSIZE);
-        pqnet::HttpRequest httpreq(req);
+        // Request
+        pqnet::HttpRequest oHttpReq(req);
         std::printf("RequestCnt: %lu\n", ++reqcnt);
-        std::string rep = "HTTP/1.1 200 OK\r\n\r\n";
+        // Response
+        pqnet::HttpResponse oHttpRep;
+        std::string rep = oHttpRep.getResponse();
         conn->send(rep.c_str(), rep.length());
         shutdownWrite(conn->getFd());
     }

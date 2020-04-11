@@ -27,10 +27,19 @@ namespace pqnet
 #define K1E6 (1000 * 1000)
 #define K1E9 (1000 * 1000 * 1000)
 
+// HTTP
+#define   LF "\n"
+#define CRLF "\r\n"
+
+#define HTTP_VERSION_1_0 "HTTP/1.0"
+#define HTTP_VERSION_1_1 "HTTP/1.1"
+#define HTTP_VERSION_2_0 "HTTP/2.0"
+
+#define HTTP_STATUS_CODE_200 "200 OK"
+#define HTTP_STATUS_CODE_404 "404 Not Found"
+
 using pn_thread_func_t = void*(*)(void*);
-
 using pn_task_func_t   = void(*)(void*);
-
 using pn_signal_func_t = std::function<void()>;
 
 } // namespace pqnet
