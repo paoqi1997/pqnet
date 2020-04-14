@@ -3,7 +3,10 @@
 
 #include <string>
 
-namespace pqnet::http
+namespace pqnet
+{
+
+namespace http
 {
 
 class HttpResponse
@@ -14,6 +17,8 @@ public:
 private:
     std::string rep;
 };
+
+} // namespace http
 
 } // namespace pqnet
 

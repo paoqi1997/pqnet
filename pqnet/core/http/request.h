@@ -4,7 +4,10 @@
 #include <map>
 #include <string>
 
-namespace pqnet::http
+namespace pqnet
+{
+
+namespace http
 {
 
 class HttpRequest
@@ -20,6 +23,8 @@ private:
     std::map<std::string, std::string> headers;
     std::string body;
 };
+
+} // namespace http
 
 } // namespace pqnet
 
