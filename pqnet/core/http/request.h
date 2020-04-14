@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-namespace pqnet
+namespace pqnet::http
 {
 
 class HttpRequest

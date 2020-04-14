@@ -2,7 +2,7 @@
 #include "../../util/types.h"
 #include "request.h"
 
-using namespace pqnet;
+using namespace pqnet::http;
 
 HttpRequest::HttpRequest(const std::string& req)
 {

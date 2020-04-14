@@ -1,7 +1,7 @@
 #include "../../util/types.h"
 #include "response.h"
 
-using namespace pqnet;
+using namespace pqnet::http;
 
 HttpResponse::HttpResponse(std::size_t httpcode)
 {

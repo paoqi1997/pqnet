@@ -43,10 +43,10 @@ public:
         INFO("ConnFd: %d, Func: HttpServer::%s", conn->getFd(), __func__);
         std::string req = conn->getInputBuffer()->get(BUFFERSIZE);
         // Request
-        pqnet::HttpRequest oHttpReq(req);
+        pqnet::http::HttpRequest oHttpReq(req);
         std::printf("RequestCnt: %lu\n", ++reqcnt);
         // Response
-        pqnet::HttpResponse oHttpRep;
+        pqnet::http::HttpResponse oHttpRep;
         std::string rep = oHttpRep.getResponse();
         conn->send(rep.c_str(), rep.length());
         if (pqnet::shutdownWrite(conn->getFd()) == -1) {
