@@ -3,14 +3,19 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #include <sys/socket.h>
 
-#include "socket.h"
 #include "../util/types.h"
+#include "socket.h"
 
 using namespace pqnet;
 
 int pqnet::new_socket()
 {
     return socket(AF_INET, SOCK_STREAM, 0);
+}
+
+int pqnet::shutdownWrite(int sockfd)
+{
+    return shutdown(sockfd, SHUT_WR);
 }
 
 int pqnet::isNonBlock(int sockfd)

@@ -1,10 +1,10 @@
+#include <cerrno>
 #include <cstdio>
+#include <cstring>
 #include <iostream>
-#include <vector>
-
-#include <sys/socket.h>
 
 #include <pqnet/core/server.h>
+#include <pqnet/core/socket.h>
 #include <pqnet/core/http/request.h>
 #include <pqnet/core/http/response.h>
 #include <pqnet/util/logger.h>
@@ -13,13 +13,6 @@
 using std::cout;
 using std::endl;
 using namespace std::placeholders;
-
-void shutdownWrite(int sockfd)
-{
-    if (shutdown(sockfd, SHUT_WR) == -1) {
-        ERROR(std::strerror(errno));
-    }
-}
 
 class HttpServer
 {
@@ -56,7 +49,9 @@ public:
         pqnet::HttpResponse oHttpRep;
         std::string rep = oHttpRep.getResponse();
         conn->send(rep.c_str(), rep.length());
-        shutdownWrite(conn->getFd());
+        if (pqnet::shutdownWrite(conn->getFd()) == -1) {
+            ERROR(std::strerror(errno));
+        }
     }
 private:
     static const std::size_t BUFFERSIZE = 1024;
