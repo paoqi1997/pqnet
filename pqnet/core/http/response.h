@@ -13,6 +13,7 @@ class HttpResponse
 {
 public:
     HttpResponse(std::size_t httpcode = 200);
+    void writeBody(const std::string& body);
     const std::string& getResponse() const;
 private:
     std::string rep;

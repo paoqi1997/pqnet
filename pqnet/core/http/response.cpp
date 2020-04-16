@@ -13,6 +13,11 @@ HttpResponse::HttpResponse(std::size_t httpcode)
     rep.append(CRLF);
 }
 
+void HttpResponse::writeBody(const std::string& body)
+{
+    rep.append("<html><title>Title</title><body><a>HAHA</a></body></html>").append(CRLF);
+}
+
 const std::string& HttpResponse::getResponse() const
 {
     return rep;

@@ -7,6 +7,7 @@
 #include <pqnet/core/socket.h>
 #include <pqnet/core/http/request.h>
 #include <pqnet/core/http/response.h>
+#include <pqnet/core/http/router.h>
 #include <pqnet/util/logger.h>
 #include <pqnet/util/signal.h>
 
@@ -47,6 +48,9 @@ public:
         std::printf("RequestCnt: %lu\n", ++reqcnt);
         // Response
         pqnet::http::HttpResponse oHttpRep;
+        // Router
+        auto hd = router.getHandler("/");
+        hd(oHttpReq, oHttpRep);
         std::string rep = oHttpRep.getResponse();
         conn->send(rep.c_str(), rep.length());
         if (pqnet::shutdownWrite(conn->getFd()) == -1) {
@@ -58,6 +62,7 @@ private:
 private:
     std::size_t reqcnt;
     pqnet::TcpServer serv;
+    pqnet::http::HttpRouter router;
 };
 
 int main()
