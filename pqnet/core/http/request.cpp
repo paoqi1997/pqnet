@@ -1,4 +1,3 @@
-#include "../../util/logger.h"
 #include "../../util/types.h"
 #include "request.h"
 

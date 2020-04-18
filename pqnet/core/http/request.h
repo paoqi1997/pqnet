@@ -22,6 +22,8 @@ public:
     void addHeader(const std::string& key, const std::string& value) {
         headers[key] = value;
     }
+    const std::string& getMethod() const { return method; }
+    const std::string& getUri() const { return uri; }
     std::string getRequest() const;
 private:
     void parseRequestLine(const std::string& reqLine);

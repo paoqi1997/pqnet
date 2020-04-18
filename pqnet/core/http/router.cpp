@@ -1,33 +1,16 @@
-#include "../../util/types.h"
 #include "router.h"
 
 using namespace pqnet::http;
 
 HttpRouter::HttpRouter()
 {
-    routingTable["/"] = std::make_pair("GET", [](const HttpRequest& req, HttpResponse& rep){
-        // Body
-        std::string body;
-        body.append(
-            "<!DOCTYPE html>\n"
-            "<html>\n"
-            "<head>\n"
-            "    <title>index.html</title>\n"
-            "</head>\n"
-            "<body>\n"
-            "    <a>TEST</a>\n"
-            "</body>\n"
-            "</html>\n"
-        );
-        rep.appendToBody(body);
-    });
+
 }
 
-const httpHandler& HttpRouter::getHandler(const std::string& uri)
+void HttpRouter::serve(const HttpRequest& req, HttpResponse& rep)
 {
+    std::string uri = req.getUri();
     if (routingTable.find(uri) != routingTable.end()) {
-        return routingTable[uri].second;
-    } else {
-        return routingTable["/"].second;
+        routingTable[uri](req, rep);
     }
 }

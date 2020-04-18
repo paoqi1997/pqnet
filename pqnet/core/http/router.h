@@ -4,7 +4,6 @@
 #include <functional>
 #include <map>
 #include <string>
-#include <utility>
 
 #include "request.h"
 #include "response.h"
@@ -21,11 +20,12 @@ class HttpRouter
 {
 public:
     HttpRouter();
-    const httpHandler& getHandler(const std::string& uri);
-    void route(const std::string& method, const std::string& uri, const httpHandler& hd);
+    void addHandler(const std::string& uri, const httpHandler& hd) {
+        routingTable[uri] = hd;
+    }
+    void serve(const HttpRequest& req, HttpResponse& rep);
 private:
-    // kv: <uri, <method, httpHandler>>
-    std::map<std::string, std::pair<std::string, httpHandler>> routingTable;
+    std::map<std::string, httpHandler> routingTable;
 };
 
 } // namespace http
