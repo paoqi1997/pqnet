@@ -13,7 +13,16 @@ namespace http
 class HttpRequest
 {
 public:
+    enum Part {
+        REQUEST_LINE,
+        HEADERS,
+        BODY
+    };
     HttpRequest(const std::string& sReq);
+    void addHeader(const std::string& key, const std::string& value) {
+        headers[key] = value;
+    }
+    std::string getRequest() const;
 private:
     void parseRequestLine(const std::string& reqLine);
 private:

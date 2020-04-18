@@ -16,6 +16,9 @@ class HttpResponse
 {
 public:
     HttpResponse(std::size_t statusCode = 200);
+    void addHeader(const std::string& key, const std::string& value) {
+        headers[key] = value;
+    }
     void appendToBody(const std::string& sBody);
     std::string getResponse() const;
 private:
