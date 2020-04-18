@@ -17,9 +17,9 @@ HttpRouter::HttpRouter()
             "<body>\n"
             "    <a>TEST</a>\n"
             "</body>\n"
-            "</html>"
+            "</html>\n"
         );
-        rep.writeBody(body);
+        rep.appendToBody(body);
     });
 }
 

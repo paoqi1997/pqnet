@@ -13,7 +13,7 @@ namespace http
 class HttpRequest
 {
 public:
-    HttpRequest(const std::string& req);
+    HttpRequest(const std::string& sReq);
 private:
     void parseRequestLine(const std::string& reqLine);
 private:

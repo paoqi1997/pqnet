@@ -3,22 +3,36 @@
 
 using namespace pqnet::http;
 
-HttpResponse::HttpResponse(std::size_t httpcode)
+const char* pqnet::http::getStatusInfo(std::size_t statusCode)
 {
-    // Status-Line
-    if (httpcode == 200) {
-        rep.append(HTTP_VERSION_1_1).append(" ").append(HTTP_STATUS_CODE_200).append(CRLF);
+    switch (statusCode) {
+    case 200:
+        return HTTP_STATUS_CODE_200;
+    case 404:
+        return HTTP_STATUS_CODE_404;
+    default:
+        return nullptr;
     }
-    // Headers
+}
+
+HttpResponse::HttpResponse(std::size_t statusCode) : version(HTTP_VERSION_1_1)
+{
+    statusInfo = getStatusInfo(statusCode);
+}
+
+void HttpResponse::appendToBody(const std::string& sBody)
+{
+    body.append(sBody);
+}
+
+std::string HttpResponse::getResponse() const
+{
+    std::string rep;
+    rep.append(version).append(" ").append(statusInfo).append(CRLF);
+    for (auto& header : headers) {
+        rep.append(header.first).append(": ").append(header.second).append(CRLF);
+    }
     rep.append(CRLF);
-}
-
-void HttpResponse::writeBody(const std::string& body)
-{
     rep.append(body);
-}
-
-const std::string& HttpResponse::getResponse() const
-{
     return rep;
 }

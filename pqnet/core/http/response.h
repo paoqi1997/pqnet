@@ -1,6 +1,7 @@
 #ifndef PQNET_CORE_HTTP_RESPONSE_H
 #define PQNET_CORE_HTTP_RESPONSE_H
 
+#include <map>
 #include <string>
 
 namespace pqnet
@@ -9,14 +10,20 @@ namespace pqnet
 namespace http
 {
 
+const char* getStatusInfo(std::size_t statusCode);
+
 class HttpResponse
 {
 public:
-    HttpResponse(std::size_t httpcode = 200);
-    void writeBody(const std::string& body);
-    const std::string& getResponse() const;
+    HttpResponse(std::size_t statusCode = 200);
+    void appendToBody(const std::string& sBody);
+    std::string getResponse() const;
 private:
-    std::string rep;
+    std::string version;
+    // Status Code and Reason Phrase
+    std::string statusInfo;
+    std::map<std::string, std::string> headers;
+    std::string body;
 };
 
 } // namespace http
