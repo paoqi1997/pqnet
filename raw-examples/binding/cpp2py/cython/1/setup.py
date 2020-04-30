@@ -10,5 +10,7 @@ from Cython.Build import cythonize
 Sep = '\\' if system() == 'Windows' else '/'
 
 if __name__ == '__main__':
-    # python3 setup.py build_ext --inplace
-    setup(ext_modules=cythonize('%s%s%s'%(sys.path[0], Sep, 'mypy.pyx')))
+    sFilePath = '{Dir}{Sep}{FileName}'.format(
+        Dir=sys.path[0], Sep=Sep, FileName='mypy.pyx'
+    )
+    setup(ext_modules=cythonize(sFilePath))
