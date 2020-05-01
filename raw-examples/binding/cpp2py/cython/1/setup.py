@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 
-import sys
-from platform import system
-
-from setuptools import setup
+from setuptools import Extension, setup
 from Cython.Build import cythonize
 
-# Separator
-Sep = '\\' if system() == 'Windows' else '/'
+lstModule = [
+    Extension(
+        name="c_foo",
+        sources=["c_foo.pyx"]
+    ),
+    Extension(
+        name="c_math",
+        sources=["c_math.pyx"]
+    )
+]
 
 if __name__ == '__main__':
-    sFilePath = '{Dir}{Sep}{FileName}'.format(
-        Dir=sys.path[0], Sep=Sep, FileName='mypy.pyx'
-    )
-    setup(ext_modules=cythonize(sFilePath))
+    setup(ext_modules=cythonize(lstModule))
