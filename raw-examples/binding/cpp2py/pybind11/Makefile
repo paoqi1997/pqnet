@@ -1,8 +1,6 @@
 CXX = g++
-CXXFLAGS = -g -Wall -fPIC
-INCS = -I/usr/include/python3.6
-
-CXXFLAGS += ${INCS}
+CXXFLAGS := -g -Wall
+CXXFLAGS += -I/usr/include/python3.6m
 
 NAME = mypy
 SRCS = ${NAME}.cpp
@@ -14,7 +12,7 @@ DLLS = ${NAME}.so
 build_all: ${DLLS}
 
 ${OBJS}: ${SRCS}
-	${CXX} ${CXXFLAGS} -c $<
+	${CXX} ${CXXFLAGS} -fPIC -c $<
 
 ${DLLS}: ${OBJS}
 	${CXX} ${CXXFLAGS} -shared $^ -o $@

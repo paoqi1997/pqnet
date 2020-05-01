@@ -59,7 +59,7 @@ PyMethodDef ObjectMethods[] = {
 };
 
 PyMemberDef ObjectMembers[] = {
-    {"FLAG", T_BOOL, offsetof(Object, flag), 0, nullptr},
+    {(char*)"FLAG", T_BOOL, offsetof(Object, flag), 0, nullptr},
     {nullptr}
 };
 
