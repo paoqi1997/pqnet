@@ -2,10 +2,10 @@
 from libcpp.string cimport string
 
 cdef extern from "object.h" namespace "mypy":
-    int add(int x, int y)
-    cdef cppclass CppObject:
-        CppObject() except +
+    int _add(int x, int y)
+    cdef cppclass CObject:
+        CObject() except +
         string getName()
-        int getMoney()
+        int getSum()
         void setName(const string& name)
-        void setMoney(int money)
+        void setSum(int sum)

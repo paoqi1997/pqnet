@@ -1,9 +1,7 @@
 CXX = g++
-CXXFLAGS = -g -Wall
-INCS = -I/usr/include/python3.6
+CXXFLAGS := -g -Wall
+CXXFLAGS += -I/usr/include/python3.6m
 LIBS = -lpython3.6m
-
-CXXFLAGS += ${INCS}
 
 BINS = py2cpp
 

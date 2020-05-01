@@ -7,23 +7,23 @@
 namespace mypy
 {
 
-inline int add(int x, int y)
+inline int _add(int x, int y)
 {
     return x + y;
 }
 
-class CppObject
+class CObject
 {
 public:
-    CppObject() : money(0) { std::cout << "CppObject::CppObject" << std::endl; }
-    ~CppObject() { std::cout << "CppObject::~CppObject" << std::endl; }
+    CObject() { std::cout << "CObject::CObject" << std::endl; }
+    ~CObject() { std::cout << "CObject::~CObject" << std::endl; }
     std::string getName() const { return name; }
-    int getMoney() const { return money; }
-    void setName(std::string& _name) { name = _name; }
-    void setMoney(int _money) { money = _money; }
+    int getSum() const { return sum; }
+    void setName(const std::string& _name) { name = _name; }
+    void setSum(int _sum) { sum = _sum; }
 private:
     std::string name;
-    int money;
+    int sum;
 };
 
 } // namespace mypy

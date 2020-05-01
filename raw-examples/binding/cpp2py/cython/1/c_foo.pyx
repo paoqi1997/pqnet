@@ -2,6 +2,6 @@
 def add(x, y):
     return x + y
 
-from libc.math cimport sin
-cpdef double foo_sin(double x):
-    return sin(x)
+from libc cimport math
+cpdef double sin(double x):
+    return math.sin(x)
