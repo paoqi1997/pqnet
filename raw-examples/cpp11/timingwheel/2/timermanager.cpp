@@ -98,10 +98,12 @@ void TimerManager::addTimerNode(TimerNode *node)
         std::size_t idx = (endtime >> (TVR_BITS + 2 * TVN_BITS)) & TVN_MASK; // (endtime >> 20) & 2^6-1
         slot = &tw4[idx];
     }
+    // IDE: Visual Studio 2017
+    //     uint expiration = expire
     // if expiration >= 2^26:
-    //     then expiration is in: [-(2^32 - 2^26), -1] or [2^26, (2^32) - 1]
+    //     then expire is in: [-(2^32 - 2^26), -1] or [2^26, (2^32) - 1]
     // if static_cast<signed long>(expiration) < 0:
-    //     then expiration is in: [-(2^31), -1] or [2^31, (2^32) - 1]
+    //     then expire is in: [-(2^31), -1] or [2^31, (2^32) - 1]
     else if (static_cast<signed long>(expiration) < 0) {
         std::size_t idx = jiffies & TVR_MASK;                                // jiffies & 2^8-1
         slot = &tw1[idx];
