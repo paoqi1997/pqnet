@@ -13,32 +13,47 @@ CORE_OBJS = ${CORE_SRCS:.cpp=.o}
 UTIL_SRCS = ${shell find ${UTIL_DIR} -path ${UTIL_DIR}/tests -prune -o -name '*.cpp' -print}
 UTIL_OBJS = ${UTIL_SRCS:.cpp=.o}
 
-OBJS := ${CORE_OBJS}
-OBJS += ${UTIL_OBJS}
+STATIC_OBJS := ${CORE_OBJS}
+STATIC_OBJS += ${UTIL_OBJS}
 
-LIB = libpqnet.a
+SHARED_OBJS = ${STATIC_OBJS:.o=.oo}
+
+STATIC_LIB = libpqnet.a
+SHARED_LIB = libpqnet.so.0.1.0
 
 .PHONY: build_all
 
-build_all: ${LIB}
+build_all: ${STATIC_LIB} ${SHARED_LIB}
 
-${LIB}: ${OBJS}
-	ar -rcs ${LIB} ${OBJS}
+${STATIC_LIB}: ${STATIC_OBJS}
+	ar -rcs ${STATIC_LIB} ${STATIC_OBJS}
+
+${SHARED_LIB}: ${SHARED_OBJS}
+	${CXX} ${CXXFLAGS} -shared $^ -o $@
+	ln -s ${SHARED_LIB} libpqnet.so
+	ln -s ${SHARED_LIB} libpqnet.so.0
 
 %.o: %.cpp
 	${CXX} ${CXXFLAGS} -c $< -o $@
+
+%.oo: %.cpp
+	${CXX} ${CXXFLAGS} -fPIC -c $< -o $@
 
 install:
 	mkdir -p ${INSTALL_INC_DIR}/core
 	mkdir -p ${INSTALL_INC_DIR}/util
 	cp ${CORE_DIR}/*.h ${INSTALL_INC_DIR}/core
 	cp ${UTIL_DIR}/*.h ${INSTALL_INC_DIR}/util
-	cp ${LIB} ${INSTALL_LIB_DIR}
+	cp ${STATIC_LIB} ${SHARED_LIB} ${INSTALL_LIB_DIR}
+	ln -s ${SHARED_LIB} ${INSTALL_LIB_DIR}/libpqnet.so
+	ln -s ${SHARED_LIB} ${INSTALL_LIB_DIR}/libpqnet.so.0
 
 uninstall:
-	rm -rf ${INSTALL_INC_DIR} ${INSTALL_LIB_DIR}/${LIB}
+	rm -rf ${INSTALL_LIB_DIR}/libpqnet.* ${INSTALL_INC_DIR}
 
 .PHONY: clean
 
 clean:
-	rm ${LIB} ${OBJS}
+	rm libpqnet.*
+	rm ${STATIC_OBJS}
+	rm ${SHARED_OBJS}
