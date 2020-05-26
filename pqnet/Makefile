@@ -41,8 +41,10 @@ ${SHARED_LIB}: ${SHARED_OBJS}
 
 install:
 	mkdir -p ${INSTALL_INC_DIR}/core
+	mkdir -p ${INSTALL_INC_DIR}/core/http
 	mkdir -p ${INSTALL_INC_DIR}/util
 	cp ${CORE_DIR}/*.h ${INSTALL_INC_DIR}/core
+	cp ${CORE_DIR}/http/*.h ${INSTALL_INC_DIR}/core/http
 	cp ${UTIL_DIR}/*.h ${INSTALL_INC_DIR}/util
 	cp ${STATIC_LIB} ${SHARED_LIB} ${INSTALL_LIB_DIR}
 	ln -s ${SHARED_LIB} ${INSTALL_LIB_DIR}/libpqnet.so
