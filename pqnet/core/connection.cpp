@@ -58,8 +58,8 @@ void TcpConnection::send(const char *data, std::size_t len)
                 }
             }
         } else {
-            flag = false;
             ERROR(std::strerror(errno));
+            flag = false;
         }
     }
     if (flag && remain > 0) {
