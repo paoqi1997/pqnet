@@ -66,6 +66,14 @@ private:
     TimerNode *node;
 };
 
+/**
+ * 另外一种实现方式是引入LinkNode，
+ * TimerNode作为元素节点，LinkNode作为位置节点，
+ * TimerNode拥有两个类型为LinkNode*的成员，分别为htNode和twNode，
+ * 对应HashTable和TimingWheel中的节点，
+ * LinkNode本身亦持有指向TimerNode的指针，
+ * 通过建立起HashTable与TimingWheel之间的映射，以支持时间复杂度为O(n)的随机删除/查找操作。
+ */
 class TimerManager
 {
 public:
