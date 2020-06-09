@@ -1,4 +1,4 @@
-# Records for pqnet
+# Records of pqnet
 
 记录开发 pqnet 的过程中遇到的一些比较奇怪的错误或异常。
 
