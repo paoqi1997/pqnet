@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.4)
 project (iocp)
 
-set (CLI_SRCS client.cpp)
+set (CLI_SRCS ../client.cpp)
 set (SERV_SRCS server.cpp)
 
 if (WIN32)
