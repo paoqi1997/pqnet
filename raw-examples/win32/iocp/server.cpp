@@ -23,10 +23,12 @@ struct io_context
 };
 
 std::size_t getNumberOfProcessors();
-void routine(HANDLE handle);
+void routine(HANDLE handle, std::size_t id);
 
-int main()
+int main(int argc, char *argv[])
 {
+    bool testFlag = argc != 2 ? false : std::atoi(argv[1]);
+
     WSADATA wsaData;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
@@ -67,10 +69,10 @@ int main()
 
     std::vector<std::thread> threads;
     for (std::size_t i = 0; i < nThreads; ++i) {
-        threads.emplace_back(routine, hIOCP);
+        threads.emplace_back(routine, hIOCP, i + 1);
     }
 
-    for (;;) {
+    while (!testFlag) {
         SOCKET connfd = accept(listenfd, nullptr, nullptr);
 
         printf("Connection %d coming...\n", int(connfd));
@@ -103,6 +105,10 @@ int main()
         }
     }
 
+    for (std::size_t i = 0; i < nThreads; ++i) {
+        PostQueuedCompletionStatus(hIOCP, 0, SOCKET_ERROR, nullptr);
+    }
+
     for (auto& t : threads) {
         t.join();
     }
@@ -121,26 +127,35 @@ std::size_t getNumberOfProcessors()
     return sysinfo.dwNumberOfProcessors;
 }
 
-void routine(HANDLE handle)
+void routine(HANDLE handle, std::size_t id)
 {
     HANDLE hIOCP = handle;
     DWORD ioSize = 0;
-    void *lpCompletionKey = nullptr;
+    ULONG_PTR completionKey;
     LPOVERLAPPED lpoverlapped = nullptr;
 
     for (;;) {
         BOOL succ = GetQueuedCompletionStatus(
-            hIOCP, &ioSize, reinterpret_cast<PULONG_PTR>(&lpCompletionKey), &lpoverlapped, INFINITE
+            hIOCP, &ioSize, &completionKey, &lpoverlapped, INFINITE
         );
 
         auto io_ctx = reinterpret_cast<io_context*>(lpoverlapped);
 
-        if (ioSize == 0) {
-            printf("Connection %d closing...\n", int(io_ctx->sockfd));
-            closesocket(io_ctx->sockfd);
-            delete io_ctx;
-            continue;
+        if (!succ) {
+            if (ioSize == 0) {
+                printf("Connection %d closing...\n", int(io_ctx->sockfd));
+                closesocket(io_ctx->sockfd);
+                delete io_ctx;
+                continue;
+            } else {
+                printf("GetQueuedCompletionStatus failed with error: %d\n", WSAGetLastError());
+                break;
+            }
+        } else if (completionKey == SOCKET_ERROR) {
+            printf("Thread %zu exited.\n", id);
+            break;
         }
+
         // 读操作完成
         if (io_ctx->opType == IO_READ) {
             std::memset(&io_ctx->overlapped, 0, sizeof(io_ctx->overlapped));
