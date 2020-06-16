@@ -26,7 +26,7 @@ ThreadPool::ThreadPool(std::size_t threadNumber, pn_thread_func_t func)
 ThreadPool::~ThreadPool()
 {
     cond.notifyAll();
-    for (auto &t : pool) {
+    for (auto& t : pool) {
         if (pthread_join(t->getId(), nullptr) != 0) {
             ERROR(std::strerror(errno));
         }
@@ -36,7 +36,7 @@ ThreadPool::~ThreadPool()
 void ThreadPool::run()
 {
     running = true;
-    for (auto &t : pool) {
+    for (auto& t : pool) {
         t->run();
     }
 }

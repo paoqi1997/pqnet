@@ -6,6 +6,8 @@
 
 #include <winsock2.h>
 
+unsigned int PORT = 12488;
+
 enum io_operation {
     IO_READ,
     IO_WRITE
@@ -32,7 +34,7 @@ int main()
         return 1;
     }
 
-    SOCKET listenfd = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
+    SOCKET listenfd = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
     if (listenfd == INVALID_SOCKET) {
         printf("WSASocket failed with error: %d\n", WSAGetLastError());
         WSACleanup();
@@ -42,7 +44,7 @@ int main()
     sockaddr_in servaddr;
     std::memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(12488);
+    servaddr.sin_port = htons(PORT);
     servaddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
     if (bind(listenfd, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr)) == -1) {
@@ -88,6 +90,7 @@ int main()
             io_ctx->opType = IO_READ;
 
             DWORD flags = 0;
+            // 接着是读操作，投递WSARecv请求
             int iResult = WSARecv(
                 connfd, &io_ctx->wsabuf, 1, &recvBytes, &flags, &io_ctx->overlapped, nullptr
             );
@@ -96,12 +99,15 @@ int main()
                 closesocket(connfd);
                 delete io_ctx;
                 break;
-            } else {
-                printf("MainRecv: %s\n", io_ctx->buf);
             }
         }
     }
 
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    CloseHandle(hIOCP);
     closesocket(listenfd);
     WSACleanup();
 
@@ -135,16 +141,18 @@ void routine(HANDLE handle)
             delete io_ctx;
             continue;
         }
+        // 读操作完成
         if (io_ctx->opType == IO_READ) {
             std::memset(&io_ctx->overlapped, 0, sizeof(io_ctx->overlapped));
-            DWORD readBytes = DWORD(std::strlen(io_ctx->buf) + 1);
+            DWORD sendBytes = DWORD(std::strlen(io_ctx->buf) + 1);
             io_ctx->wsabuf.buf = io_ctx->buf;
-            io_ctx->wsabuf.len = readBytes;
+            io_ctx->wsabuf.len = sendBytes;
             io_ctx->opType = IO_WRITE;
 
             DWORD flags = 0;
+            // 接着是写操作，投递WSASend请求
             int iResult = WSASend(
-                io_ctx->sockfd, &io_ctx->wsabuf, 1, &readBytes, flags, &io_ctx->overlapped, nullptr
+                io_ctx->sockfd, &io_ctx->wsabuf, 1, &sendBytes, flags, &io_ctx->overlapped, nullptr
             );
             if (iResult == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING) {
                 printf("WSASend failed with error: %d\n", WSAGetLastError());
@@ -153,9 +161,9 @@ void routine(HANDLE handle)
                 continue;
             }
 
-            printf("Send: %s\n", io_ctx->buf);
-            std::memset(io_ctx->buf, 0, sizeof(io_ctx->buf));
+            printf("Recv: %s\n", io_ctx->buf);
         }
+        // 写操作完成
         else if (io_ctx->opType == IO_WRITE) {
             std::memset(&io_ctx->overlapped, 0, sizeof(io_ctx->overlapped));
             DWORD recvBytes = sizeof(io_ctx->buf);
@@ -164,6 +172,7 @@ void routine(HANDLE handle)
             io_ctx->opType = IO_READ;
 
             DWORD flags = 0;
+            // 接着是读操作，投递WSARecv请求
             int iResult = WSARecv(
                 io_ctx->sockfd, &io_ctx->wsabuf, 1, &recvBytes, &flags, &io_ctx->overlapped, nullptr
             );
@@ -173,8 +182,6 @@ void routine(HANDLE handle)
                 delete io_ctx;
                 continue;
             }
-
-            printf("Recv: %s\n", io_ctx->buf);
         }
     }
 }
