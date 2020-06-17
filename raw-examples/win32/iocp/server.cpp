@@ -36,9 +36,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // WSASocketW
     SOCKET listenfd = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
     if (listenfd == INVALID_SOCKET) {
-        printf("WSASocket failed with error: %d\n", WSAGetLastError());
+        printf("WSASocketW failed with error: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
@@ -49,6 +50,7 @@ int main(int argc, char *argv[])
     servaddr.sin_port = htons(PORT);
     servaddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
+    // bind
     if (bind(listenfd, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr)) == -1) {
         printf("bind failed with error: %d\n", WSAGetLastError());
         closesocket(listenfd);
@@ -56,6 +58,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // listen
     if (listen(listenfd, SOMAXCONN) == -1) {
         printf("listen failed with error: %d\n", WSAGetLastError());
         closesocket(listenfd);
@@ -73,6 +76,7 @@ int main(int argc, char *argv[])
     }
 
     while (!testFlag) {
+        // accept
         SOCKET connfd = accept(listenfd, nullptr, nullptr);
 
         printf("Connection %d coming...\n", int(connfd));

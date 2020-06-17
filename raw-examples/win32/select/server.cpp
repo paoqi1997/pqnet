@@ -80,8 +80,8 @@ int main()
             if (!FD_ISSET(sockfd, &tmpSet)) {
                 continue;
             }
-            /// Listenfd
             if (sockfd == listenfd) {
+                // accept
                 SOCKET connfd = accept(listenfd, nullptr, nullptr);
                 if (connfd == INVALID_SOCKET) {
                     printf("accept failed with error: %d\n", WSAGetLastError());
@@ -95,7 +95,6 @@ int main()
                 printf("Connection %d coming...\n", connfd);
                 continue;
             }
-            /// Clients
             SOCKET connfd = sockfd;
             // recv
             iResult = recv(connfd, buf, sizeof(buf), 0);
