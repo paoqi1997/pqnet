@@ -13,19 +13,27 @@ std::uint64_t now()
     return tp.time_since_epoch().count();
 }
 
+/**
+ * TimerNode
+ */
 TimerNode::TimerNode()
-    : timercb(nullptr), arg(nullptr), interval(0), endtime(0), prev(nullptr), next(nullptr)
+    : timercb(nullptr), arg(nullptr), interval(0), endtime(0), htNode(nullptr), twNode(nullptr)
 {
 
 }
 
-TimerNode::TimerNode(const timerCallBack& cb, void *_arg, uint _interval, std::uint64_t _endtime)
-    : timercb(cb), arg(_arg), interval(_interval), endtime(_endtime), prev(nullptr), next(nullptr)
+TimerNode::TimerNode
+(const std::string& _sID, const timerCallBack& cb, void *_arg, uint _interval, std::uint64_t _endtime)
+    : sID(_sID), timercb(cb), arg(_arg),
+      interval(_interval), endtime(_endtime), htNode(nullptr), twNode(nullptr)
 {
 
 }
 
-void TimerNode::unlink()
+/**
+ * LinkNode
+ */
+LinkNode::~LinkNode()
 {
     if (prev != nullptr) {
         prev->next = next;
@@ -35,7 +43,10 @@ void TimerNode::unlink()
     }
 }
 
-List::List() : head(new TimerNode()), tail(new TimerNode())
+/**
+ * List
+ */
+List::List() : head(new LinkNode()), tail(new LinkNode())
 {
     head->next = tail;
     tail->prev = head;
@@ -54,26 +65,62 @@ List::~List()
     head = tail = nullptr;
 }
 
-void List::push_back(TimerNode *node)
+LinkNode* List::push_back(TimerNode *tNode)
 {
+    auto node = new LinkNode(tNode);
     auto p = tail->prev;
+
     // prev部分
     tail->prev = node;
     node->prev = p;
     // next部分
     p->next = node;
     node->next = tail;
+
+    return node;
 }
 
-TimerId TimerManager::addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval)
+/**
+ * HashTable
+ */
+LinkNode* HashTable::push_back(TimerNode *tNode)
+{
+    std::size_t idx = hash(tNode->sID) % BUCKET_MASK;
+    return buckets[idx].push_back(tNode);
+}
+
+void HashTable::erase(const std::string& sID)
+{
+    std::size_t nID = hash(sID);
+    std::size_t idx = nID % BUCKET_MASK;
+    List *bucket = &buckets[idx];
+    auto p = bucket->begin();
+    while (p != bucket->end()) {
+        auto q = p->next;
+        auto node = p->element;
+        if (nID == hash(node->sID) && sID == node->sID) {
+            delete node->twNode;
+            delete node->htNode;
+            delete node;
+        }
+        p = q;
+    }
+}
+
+/**
+ * TimerManager
+ */
+TimerId TimerManager::addTimer
+(const std::string& sID, const timerCallBack& cb, void *arg, uint expiration, uint interval)
 {
     std::uint64_t endtime = jiffies + expiration * 1000;
-    auto node = new TimerNode(cb, arg, interval, endtime);
-    addTimerNode(node);
+    auto node = new TimerNode(sID, cb, arg, interval, endtime);
+    node->twNode = addTimerNode(node);
+    node->htNode = htable.push_back(node);
     return TimerId(node);
 }
 
-void TimerManager::addTimerNode(TimerNode *node)
+LinkNode* TimerManager::addTimerNode(TimerNode *node)
 {
     std::uint64_t endtime = node->endtime;
     uint expiration = endtime - jiffies;
@@ -112,13 +159,13 @@ void TimerManager::addTimerNode(TimerNode *node)
         std::size_t idx = (endtime >> (TVR_BITS + 3 * TVN_BITS)) & TVN_MASK; // (endtime >> 26) & 2^6-1
         slot = &tw5[idx];
     }
-    slot->push_back(node);
+    return slot->push_back(node);
 }
 
 void TimerManager::delTimer(TimerId tid)
 {
     rmNode = tid.getPtr();
-    delete rmNode;
+    htable.erase(rmNode->sID);
 }
 
 void TimerManager::handle()
@@ -133,15 +180,19 @@ void TimerManager::handle()
         auto p = slot->begin();
         while (p != slot->end()) {
             auto q = p->next;
-            p->run();
-            if (p != rmNode) {
-                if (p->isPeriodic()) {
-                    rmNode = nullptr;
-                    p->endtime = jiffies + p->interval * 1000;
-                    p->unlink();
-                    addTimerNode(p);
-                } else {
+            auto node = p->element;
+            node->run();
+            if (node == rmNode) {
+                rmNode = nullptr;
+            } else {
+                if (node->isPeriodic()) {
+                    node->endtime = jiffies + node->interval * 1000;
                     delete p;
+                    node->twNode = addTimerNode(node);
+                } else {
+                    delete node->twNode;
+                    delete node->htNode;
+                    delete node;
                 }
             }
             p = q;
@@ -157,8 +208,9 @@ std::size_t TimerManager::cascade(List *tw, std::size_t n)
     auto p = slot->begin();
     while (p != slot->end()) {
         auto q = p->next;
-        p->unlink();
-        addTimerNode(p);
+        auto node = p->element;
+        delete p;
+        node->twNode = addTimerNode(node);
         p = q;
     }
     return idx;

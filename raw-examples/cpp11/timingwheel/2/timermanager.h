@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <string>
 
 /**
  * 内存较小时可将其置为1
@@ -19,6 +20,10 @@
 #define TVN_MASK (TVN_SIZE - 1)
 #define TVR_MASK (TVR_SIZE - 1)
 
+#define BUCKET_BITS (CONFIG_BASE_SMALL ? 6 : 8)
+#define BUCKET_SIZE (1 << BUCKET_BITS)
+#define BUCKET_MASK (BUCKET_SIZE - 1)
+
 using uint = unsigned int;
 using timerCallBack = std::function<void(void*)>;
 
@@ -27,20 +32,34 @@ using timerCallBack = std::function<void(void*)>;
  */
 std::uint64_t now();
 
+struct LinkNode;
+
 struct TimerNode
 {
     TimerNode();
-    TimerNode(const timerCallBack& cb, void *_arg, uint _interval, std::uint64_t _endtime);
-    ~TimerNode() { unlink(); }
+    TimerNode(
+        const std::string& _sID, const timerCallBack& cb, void *_arg,
+        uint _interval, std::uint64_t _endtime
+    );
     void run() { timercb(arg); }
-    void unlink();
     bool isPeriodic() const { return interval > 0; }
+    std::string sID;
     timerCallBack timercb;
     void *arg;
     uint interval;
     std::uint64_t endtime;
-    TimerNode *prev;
-    TimerNode *next;
+    LinkNode *htNode;
+    LinkNode *twNode;
+};
+
+struct LinkNode
+{
+    LinkNode() : prev(nullptr), next(nullptr), element(nullptr) {}
+    LinkNode(TimerNode *_element) : prev(nullptr), next(nullptr), element(_element) {}
+    ~LinkNode();
+    LinkNode *prev;
+    LinkNode *next;
+    TimerNode *element;
 };
 
 class List
@@ -48,12 +67,23 @@ class List
 public:
     List();
     ~List();
-    void push_back(TimerNode *node);
-    TimerNode* begin() { return head->next; }
-    TimerNode* end() { return tail; }
+    LinkNode* push_back(TimerNode *tNode);
+    LinkNode* begin() { return head->next; }
+    LinkNode* end() { return tail; }
 private:
-    TimerNode *head;
-    TimerNode *tail;
+    LinkNode *head;
+    LinkNode *tail;
+};
+
+class HashTable
+{
+public:
+    HashTable() = default;
+    LinkNode* push_back(TimerNode *tNode);
+    void erase(const std::string& sID);
+private:
+    std::hash<std::string> hash;
+    List buckets[BUCKET_SIZE];
 };
 
 class TimerId
@@ -79,15 +109,19 @@ class TimerManager
 public:
     TimerManager() : rmNode(nullptr), jiffies(now()) {}
     // Millisecond Level
-    TimerId addTimer(const timerCallBack& cb, void *arg, uint expiration, uint interval = 0);
+    TimerId addTimer(
+        const std::string& sID, const timerCallBack& cb, void *arg,
+        uint expiration, uint interval = 0
+    );
     void delTimer(TimerId tid);
     void handle();
 private:
-    void addTimerNode(TimerNode *node);
+    LinkNode* addTimerNode(TimerNode *node);
     std::size_t cascade(List *tw, std::size_t n);
 private:
     TimerNode *rmNode;
     std::uint64_t jiffies;
+    HashTable htable;
     List tw1[TVR_SIZE];
     List tw2[TVN_SIZE];
     List tw3[TVN_SIZE];

@@ -31,8 +31,8 @@ int main()
     };
     printCurrTime();
     std::cout << "Start Timing!" << std::endl;
-    tm.addTimer(cb, const_cast<char*>("Timer!"), 6000);
-    myID = tm.addTimer(cb, const_cast<char*>("Ticker!"), 3000, 1000);
+    tm.addTimer("Timer", cb, const_cast<char*>("Timer!"), 6000);
+    myID = tm.addTimer("Ticker", cb, const_cast<char*>("Ticker!"), 3000, 1000);
     for (;;) {
         std::this_thread::sleep_for(std::chrono::milliseconds(tick));
         tm.handle();
