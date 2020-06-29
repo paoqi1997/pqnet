@@ -26,22 +26,22 @@ TimerNode::TimerNode(
 
 LinkNode<TimerNode*>* HashTable::push_back(TimerNode *tNode)
 {
-    std::size_t idx = hash(tNode->sID) % BUCKET_MASK;
+    std::size_t idx = hash(tNode->sID) & BUCKET_MASK;
     return buckets[idx].push_back(tNode);
 }
 
 void HashTable::erase(const std::string& sID)
 {
     std::size_t nID = hash(sID);
-    std::size_t idx = nID % BUCKET_MASK;
+    std::size_t idx = nID & BUCKET_MASK;
     List<TimerNode*> *bucket = &buckets[idx];
     auto p = bucket->begin();
     while (p != bucket->end()) {
         auto q = p->next;
         auto node = p->element;
         if (nID == hash(node->sID) && sID == node->sID) {
-            delete node->twNode;
             delete node->htNode;
+            delete node->twNode;
             delete node;
         }
         p = q;
@@ -55,8 +55,8 @@ TimerId TimerManager::addTimer(
 {
     std::uint64_t endtime = jiffies + expiration * 1000;
     auto node = new TimerNode(sID, cb, arg, interval, endtime);
-    node->twNode = addTimerNode(node);
     node->htNode = htable.push_back(node);
+    node->twNode = addTimerNode(node);
     return TimerId(node);
 }
 
@@ -130,8 +130,8 @@ void TimerManager::handle()
                     delete p;
                     node->twNode = addTimerNode(node);
                 } else {
-                    delete node->twNode;
                     delete node->htNode;
+                    delete node->twNode;
                     delete node;
                 }
             }
