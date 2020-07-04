@@ -23,7 +23,7 @@ ipaddr_test: ipaddr_test.o ${CORE_DIR}/endian.o ${CORE_DIR}/ipaddr.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 timerqueue_test: timerqueue_test.o ${CORE_DIR}/eventloop.o \
-	${CORE_DIR}/timer.o ${CORE_DIR}/timerqueue.o ${CORE_DIR}/trigger.o ${UTIL_OBJS}
+	${CORE_DIR}/timerqueue.o ${CORE_DIR}/trigger.o ${UTIL_OBJS}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 .PHONY: clean

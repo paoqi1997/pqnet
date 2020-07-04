@@ -10,13 +10,16 @@ namespace pqnet
 {
 
 using TimerId = std::uint64_t;
-
 using timerCallBack = std::function<void(void*)>;
 
 class Timer
 {
 public:
-    Timer(const timerCallBack& cb, void *_arg, uint _interval);
+    Timer(const timerCallBack& cb, void *_arg, uint _interval)
+        : timercb(cb), arg(_arg), interval(_interval)
+    {
+        id = reinterpret_cast<TimerId>(this);
+    }
     void run() { timercb(arg); }
     TimerId Id() const { return id; }
     uint Interval() const { return interval; }
