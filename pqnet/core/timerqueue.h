@@ -18,8 +18,11 @@ public:
     TimerId addTimer(const timerCallBack& cb, void *arg, uint _expiration, uint _interval = 0);
     void delTimer(TimerId id);
     void handle();
+    uint getExpire() const;
 private:
     bool isRmHead() const { return rhTimerId != 0; }
+private:
+    static const uint Expire = 20; // 50Hz
 private:
     TimerId rhTimerId;
     std::set<std::pair<std::uint64_t, Timer>> tmqueue;

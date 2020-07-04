@@ -57,3 +57,15 @@ void TimerQueue::handle()
         }
     }
 }
+
+uint TimerQueue::getExpire() const
+{
+    if (!tmqueue.empty()) {
+        auto head = tmqueue.begin();
+        std::uint64_t endtime = head->first / 1000;
+        std::uint64_t currtime = now().Int13();
+        return endtime >= currtime ? endtime - currtime : Expire;
+    } else {
+        return Expire;
+    }
+}

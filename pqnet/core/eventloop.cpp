@@ -45,7 +45,9 @@ void EventLoop::loop()
 {
     loopFlag = true;
     while (loopFlag) {
-        int cnt = epoll_wait(epfd, this->begin(), static_cast<int>(evpool.size()), 20);
+        int cnt = epoll_wait(
+            epfd, this->begin(), static_cast<int>(evpool.size()), tmqueue->getExpire()
+        );
         tmqueue->handle();
         if (cnt == -1) {
             loopFlag = false;
