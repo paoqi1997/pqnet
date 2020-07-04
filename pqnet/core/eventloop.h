@@ -42,7 +42,6 @@ private:
     bool loopFlag;
     std::queue<Functor> fnqueue;
     std::unique_ptr<Trigger> evTrigger;
-    std::unique_ptr<Trigger> tmTrigger;
     std::unique_ptr<TimerQueue> tmqueue;
     std::vector<struct epoll_event> evpool;
 };

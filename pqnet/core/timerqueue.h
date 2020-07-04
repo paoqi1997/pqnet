@@ -13,18 +13,14 @@ namespace pqnet
 class TimerQueue
 {
 public:
-    TimerQueue();
-    ~TimerQueue();
-    int getFd() const { return tmfd; }
+    TimerQueue() : rhTimerId(0) {}
     // Millisecond Level
     TimerId addTimer(const timerCallBack& cb, void *arg, uint _expiration, uint _interval = 0);
     void delTimer(TimerId id);
     void handle();
 private:
-    void refresh();
     bool isRmHead() const { return rhTimerId != 0; }
 private:
-    int tmfd;
     TimerId rhTimerId;
     std::set<std::pair<std::uint64_t, Timer>> tmqueue;
 };

@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include <pqnet/core/eventloop.h>
-#include <pqnet/core/timerqueue.h>
 
 void printCurrTime() {
     std::system("date +\"%F %T\"");

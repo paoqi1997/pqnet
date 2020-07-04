@@ -12,7 +12,7 @@
 using namespace pqnet;
 
 EventLoop::EventLoop(int eventPoolSize)
-    : loopFlag(false), evTrigger(new Trigger()), tmTrigger(new Trigger()),
+    : loopFlag(false), evTrigger(new Trigger()),
       tmqueue(new TimerQueue()), evpool(eventPoolSize)
 {
     epfd = epoll_create(eventPoolSize);
@@ -29,12 +29,6 @@ EventLoop::EventLoop(int eventPoolSize)
     evTrigger->setReadHandler(std::bind(&EventLoop::handleRead, this));
     evTrigger->addToLoop();
     evTrigger->likeReading();
-    // For TmFd
-    tmTrigger->setEpfd(epfd);
-    tmTrigger->setFd(tmqueue->getFd());
-    tmTrigger->setReadHandler([this]{ tmqueue->handle(); });
-    tmTrigger->addToLoop();
-    tmTrigger->likeReading();
 }
 
 EventLoop::~EventLoop()
@@ -51,7 +45,8 @@ void EventLoop::loop()
 {
     loopFlag = true;
     while (loopFlag) {
-        int cnt = epoll_wait(epfd, this->begin(), static_cast<int>(evpool.size()), -1);
+        int cnt = epoll_wait(epfd, this->begin(), static_cast<int>(evpool.size()), 20);
+        tmqueue->handle();
         if (cnt == -1) {
             loopFlag = false;
             if (errno == EINTR) {

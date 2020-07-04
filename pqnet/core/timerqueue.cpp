@@ -1,62 +1,13 @@
-#include <cerrno>
-#include <cstring>
-
-#include <sys/timerfd.h>
-#include <unistd.h>
-
-#include "../util/logger.h"
 #include "../util/timestamp.h"
 #include "timerqueue.h"
 
 using namespace pqnet;
 
-TimerQueue::TimerQueue() : rhTimerId(0)
-{
-    tmfd = timerfd_create(CLOCK_REALTIME, TFD_NONBLOCK);
-    if (tmfd == -1) {
-        ERROR(std::strerror(errno));
-    }
-}
-
-TimerQueue::~TimerQueue()
-{
-    if (close(tmfd) == -1) {
-        ERROR(std::strerror(errno));
-    }
-}
-
 TimerId TimerQueue::addTimer(const timerCallBack& cb, void *arg, uint _expiration, uint _interval)
 {
     Timer timer(cb, arg, _interval);
     // _expiration为0时将其调整为0.1ms
-    auto expiration = _expiration > 0 ? ms2SecAndNsec(_expiration) : us2SecAndNsec(100);
-    auto interval = ms2SecAndNsec(_interval);
     std::uint64_t endtime = now().Int16() + (_expiration > 0 ? _expiration * 1000 : 100);
-    if (tmqueue.empty()) {
-        // 队列为空
-        struct itimerspec its;
-        its.it_value.tv_sec = expiration.first;
-        its.it_value.tv_nsec = expiration.second;
-        its.it_interval.tv_sec = interval.first;
-        its.it_interval.tv_nsec = interval.second;
-        if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
-            ERROR(std::strerror(errno));
-        }
-    } else {
-        // 队列不为空
-        auto head = tmqueue.begin();
-        if (endtime < head->first) {
-            // 新加入的定时器最先到期
-            struct itimerspec its;
-            its.it_value.tv_sec = expiration.first;
-            its.it_value.tv_nsec = expiration.second;
-            its.it_interval.tv_sec = interval.first;
-            its.it_interval.tv_nsec = interval.second;
-            if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
-                ERROR(std::strerror(errno));
-            }
-        }
-    }
     // std::pair<iterator, bool>
     auto result = tmqueue.insert(std::make_pair(endtime, timer));
     auto it = result.first;
@@ -69,31 +20,6 @@ void TimerQueue::delTimer(TimerId id)
         if (it->second.Id() == id) {
             // 要删除的定时器最先到期
             if (it == tmqueue.begin()) {
-                if (tmqueue.size() == 1) {
-                    // 只有一个定时器
-                    struct itimerspec its;
-                    std::memset(&its, 0, sizeof(its));
-                    if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
-                        ERROR(std::strerror(errno));
-                    }
-                } else {
-                    // 存在两个定时器或以上
-                    auto _it = std::next(it, 1);
-                    // 更新到期时间
-                    uint _expiration = _it->first - now().Int16();
-                    auto expiration = us2SecAndNsec(_expiration);
-                    // 更新间隔
-                    uint _interval = _it->second.Interval();
-                    auto interval = ms2SecAndNsec(_interval);
-                    struct itimerspec its;
-                    its.it_value.tv_sec = expiration.first;
-                    its.it_value.tv_nsec = expiration.second;
-                    its.it_interval.tv_sec = interval.first;
-                    its.it_interval.tv_nsec = interval.second;
-                    if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
-                        ERROR(std::strerror(errno));
-                    }
-                }
                 rhTimerId = id;
             }
             tmqueue.erase(it);
@@ -104,7 +30,6 @@ void TimerQueue::delTimer(TimerId id)
 
 void TimerQueue::handle()
 {
-    this->refresh();
     std::uint64_t currtime = now().Int16();
     for (auto it = tmqueue.begin(); it != tmqueue.end(); ) {
         // 已到期
@@ -130,38 +55,5 @@ void TimerQueue::handle()
         } else {
             break;
         }
-    }
-    if (tmqueue.empty()) {
-        // 置空
-        struct itimerspec its;
-        std::memset(&its, 0, sizeof(its));
-        if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
-            ERROR(std::strerror(errno));
-        }
-    } else {
-        // 重新设置
-        auto head = tmqueue.begin();
-        // 更新到期时间
-        uint _expiration = head->first - currtime;
-        auto expiration = us2SecAndNsec(_expiration);
-        // 更新间隔
-        uint _interval = head->second.Interval();
-        auto interval = ms2SecAndNsec(_interval);
-        struct itimerspec its;
-        its.it_value.tv_sec = expiration.first;
-        its.it_value.tv_nsec = expiration.second;
-        its.it_interval.tv_sec = interval.first;
-        its.it_interval.tv_nsec = interval.second;
-        if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
-            ERROR(std::strerror(errno));
-        }
-    }
-}
-
-void TimerQueue::refresh()
-{
-    std::uint64_t msg;
-    if (read(tmfd, &msg, sizeof(std::uint64_t)) == -1) {
-        ERROR(std::strerror(errno));
     }
 }
