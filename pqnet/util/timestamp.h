@@ -6,8 +6,6 @@
 #include <tuple>
 #include <utility>
 
-#include <sys/time.h>
-
 #include "types.h"
 
 namespace pqnet
@@ -25,24 +23,25 @@ struct TimeStamp
     /**
      * 返回TimeStamp对应的那一秒内的毫秒偏移量
      */
-    uint Millisecond() const { return tv.tv_usec / K1E3; }
+    uint Millisecond() const { return usec / K1E3; }
     /**
      * 返回TimeStamp对应的那一秒内的微秒偏移量
      */
-    uint Microsecond() const { return tv.tv_usec; }
+    uint Microsecond() const { return usec; }
     /**
      * 返回TimeStamp对应的那一秒内的纳秒偏移量
      */
-    uint Nanosecond() const { return tv.tv_usec * K1E3; }
-    std::uint64_t Int10() const { return tv.tv_sec; }
-    std::uint64_t Int13() const { return tv.tv_sec * K1E3 + tv.tv_usec / K1E3; }
-    std::uint64_t Int16() const { return tv.tv_sec * K1E6 + tv.tv_usec; }
-    std::uint64_t Int19() const { return tv.tv_sec * K1E9 + tv.tv_usec * K1E3; }
+    uint Nanosecond() const { return usec * K1E3; }
+    std::uint64_t Int10() const { return sec; }
+    std::uint64_t Int13() const { return sec * K1E3 + usec / K1E3; }
+    std::uint64_t Int16() const { return sec * K1E6 + usec; }
+    std::uint64_t Int19() const { return sec * K1E9 + usec * K1E3; }
     const char* toDate();
     const char* toClock();
     const char* toDefault();
     const char* toFmtStr(const char *format);
-    struct timeval tv;
+    std::time_t sec;
+    std::time_t usec;
     std::tm group;
     char buf[BUFSIZE];
 };

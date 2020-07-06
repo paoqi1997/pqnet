@@ -1,6 +1,12 @@
+#include <chrono>
 #include <cstdio>
 
 #include "timestamp.h"
+
+using std::chrono::system_clock;
+using std::chrono::time_point;
+using std::chrono::time_point_cast;
+using us_type = std::chrono::microseconds;
 
 using namespace pqnet;
 
@@ -19,7 +25,7 @@ const char* TimeStamp::toClock()
 const char* TimeStamp::toDefault()
 {
     std::snprintf(buf, sizeof(buf), "%d-%02d-%02d %02d:%02d:%02d:%06ld",
-        group.tm_year + 1900, group.tm_mon + 1, group.tm_mday, group.tm_hour, group.tm_min, group.tm_sec, tv.tv_usec);
+        group.tm_year + 1900, group.tm_mon + 1, group.tm_mday, group.tm_hour, group.tm_min, group.tm_sec, usec);
     return buf;
 }
 
@@ -35,8 +41,12 @@ const char* TimeStamp::toFmtStr(const char *format)
 TimeStamp pqnet::now()
 {
     struct TimeStamp ts;
-    gettimeofday(&ts.tv, nullptr);
-    ts.group = *std::localtime(&ts.tv.tv_sec);
+
+    time_point<system_clock, us_type> tp = time_point_cast<us_type>(system_clock::now());
+    auto tv = tp.time_since_epoch().count();
+
+    ts.sec = tv / K1E6, ts.usec = tv % K1E6;
+    ts.group = *std::localtime(&ts.sec);
     return ts;
 }
 
@@ -49,8 +59,8 @@ TimeStamp pqnet::oneday(const tm_t& box)
     ts.group.tm_hour = std::get<3>(box);
     ts.group.tm_min  = std::get<4>(box);
     ts.group.tm_sec  = std::get<5>(box);
-    ts.tv.tv_sec = std::mktime(&ts.group);
-    ts.tv.tv_usec = 0;
+    ts.sec = std::mktime(&ts.group);
+    ts.usec = 0;
     return ts;
 }
 
