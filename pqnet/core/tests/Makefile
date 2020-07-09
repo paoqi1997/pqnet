@@ -3,8 +3,10 @@ CXXFLAGS = -g -Wall -std=c++11 -I../../..
 
 ROOT_DIR = ../..
 CORE_DIR = ${ROOT_DIR}/core
+PLAT_DIR = ${ROOT_DIR}/platform
 UTIL_DIR = ${ROOT_DIR}/util
 
+PLAT_OBJS = ${PLAT_DIR}/base.o
 UTIL_OBJS = ${UTIL_DIR}/logger.o ${UTIL_DIR}/timestamp.o
 
 BINS = buffer_test endian_test ipaddr_test timerqueue_test
@@ -23,7 +25,7 @@ ipaddr_test: ipaddr_test.o ${CORE_DIR}/endian.o ${CORE_DIR}/ipaddr.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 timerqueue_test: timerqueue_test.o ${CORE_DIR}/eventloop.o \
-	${CORE_DIR}/timerqueue.o ${CORE_DIR}/trigger.o ${UTIL_OBJS}
+	${CORE_DIR}/timerqueue.o ${CORE_DIR}/trigger.o ${PLAT_OBJS} ${UTIL_OBJS}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 .PHONY: clean

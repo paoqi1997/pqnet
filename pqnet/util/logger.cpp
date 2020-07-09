@@ -1,17 +1,10 @@
 #include <cerrno>
 #include <cstdarg>
-#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
 
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
-
+#include "../platform/base.h"
 #include "logger.h"
 #include "timestamp.h"
 #include "types.h"
@@ -24,30 +17,10 @@ Logger::Garbo Logger::garbo;
 Logger::Logger() : level(Logger::INFO), dir("./log/"), currdate(now().toDate()), tofile(false)
 {
     lf = stdout;
-#ifdef WIN32
-    wchar_t wbuf[BUFSIZE];
-    std::mbstowcs(wbuf, dir.c_str(), dir.length() + 1);
-    if (!CreateDirectoryW(wbuf, nullptr)) {
-        switch (GetLastError()) {
-        case ERROR_ALREADY_EXISTS:
-            ERROR("The specified directory already exists.");
-            break;
-        case ERROR_PATH_NOT_FOUND:
-            ERROR("One or more intermediate directories do not exist.");
-            break;
-        }
+    int res = makeDir(dir);
+    if (res != 0) {
+        ERROR(getErrorMsg(res));
     }
-#else
-    if (access(dir.c_str(), F_OK) != 0) {
-        if (errno == ENOENT) {
-            if (mkdir(dir.c_str(), 0777) != 0) {
-                ERROR(std::strerror(errno));
-            }
-        } else {
-            ERROR(std::strerror(errno));
-        }
-    }
-#endif
 }
 
 void Logger::checkLogName()

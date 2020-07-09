@@ -7,40 +7,13 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "../platform/base.h"
 #include "../util/logger.h"
 #include "server.h"
 #include "socket.h"
 
 using namespace pqnet;
 using namespace std::placeholders;
-
-namespace {
-std::size_t nProcessors = 0;
-} // unnamed namespace
-
-std::size_t getNumberOfProcessors()
-{
-    if (nProcessors == 0) {
-        const char *sFileName = "/proc/cpuinfo";
-        std::ifstream is(sFileName);
-        if (!is.is_open()) {
-            ERROR("Failed to open %s.\n", sFileName);
-            nProcessors = 1;
-        } else {
-            std::string line;
-            while (!is.eof()) {
-                std::getline(is, line);
-                if (line.find("processor") != std::string::npos) {
-                    ++nProcessors;
-                }
-            }
-        }
-        if (is.is_open()) {
-            is.close();
-        }
-    }
-    return nProcessors;
-}
 
 TcpServer::TcpServer(std::uint16_t port)
     : addr(port), listenTrigger(new Trigger()),

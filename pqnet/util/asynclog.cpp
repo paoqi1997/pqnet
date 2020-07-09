@@ -1,19 +1,12 @@
 #include <cerrno>
 #include <cstdarg>
-#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
 
 #include <pthread.h>
 
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
-
+#include "../platform/base.h"
 #include "asynclog.h"
 #include "timestamp.h"
 #include "types.h"
@@ -29,28 +22,9 @@ AsyncLog::AsyncLog()
       currdate(now().toDate()), tofile(false), running(true)
 {
     lf = stdout;
-#ifdef WIN32
-    wchar_t wbuf[BUFSIZE];
-    std::mbstowcs(wbuf, dir.c_str(), dir.length() + 1);
-    if (!CreateDirectoryW(wbuf, nullptr)) {
-        switch (GetLastError()) {
-        case ERROR_ALREADY_EXISTS:
-            ERROR("The specified directory already exists.");
-            break;
-        case ERROR_PATH_NOT_FOUND:
-            ERROR("One or more intermediate directories do not exist.");
-            break;
-        }
-    }
-#else
-    if (access(dir.c_str(), F_OK) != 0) {
-        if (mkdir(dir.c_str(), 0777) != 0) {
-            ERROR(std::strerror(errno));
-        }
-    }
-#endif
-    if (pthread_create(&id, nullptr, routine, this) != 0) {
-        ERROR(std::strerror(errno));
+    int res = makeDir(dir);
+    if (res != 0) {
+        ERROR(getErrorMsg(res));
     }
 }
 
