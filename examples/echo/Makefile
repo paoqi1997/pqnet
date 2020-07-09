@@ -29,4 +29,5 @@ echoserver: echoserver.o ${CORE_OBJS} ${PLAT_OBJS} ${UTIL_OBJS}
 .PHONY: clean
 
 clean:
-	rm ${BINS} *.o ${CORE_OBJS} ${UTIL_OBJS}
+	rm ${BINS} *.o
+	rm ${CORE_OBJS} ${PLAT_OBJS} ${UTIL_OBJS}

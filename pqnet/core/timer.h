@@ -4,8 +4,6 @@
 #include <cstdint>
 #include <functional>
 
-#include "../util/timestamp.h"
-
 namespace pqnet
 {
 

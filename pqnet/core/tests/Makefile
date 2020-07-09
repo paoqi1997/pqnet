@@ -3,11 +3,7 @@ CXXFLAGS = -g -Wall -std=c++11 -I../../..
 
 ROOT_DIR = ../..
 CORE_DIR = ${ROOT_DIR}/core
-PLAT_DIR = ${ROOT_DIR}/platform
 UTIL_DIR = ${ROOT_DIR}/util
-
-PLAT_OBJS = ${PLAT_DIR}/base.o
-UTIL_OBJS = ${UTIL_DIR}/logger.o ${UTIL_DIR}/timestamp.o
 
 BINS = buffer_test endian_test ipaddr_test timerqueue_test
 
@@ -21,14 +17,13 @@ buffer_test: buffer_test.o ${CORE_DIR}/buffer.o
 endian_test: endian_test.o ${CORE_DIR}/endian.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
-ipaddr_test: ipaddr_test.o ${CORE_DIR}/endian.o ${CORE_DIR}/ipaddr.o
+ipaddr_test: ipaddr_test.o ${CORE_DIR}/ipaddr.o ${CORE_DIR}/endian.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
-timerqueue_test: timerqueue_test.o ${CORE_DIR}/eventloop.o \
-	${CORE_DIR}/timerqueue.o ${CORE_DIR}/trigger.o ${PLAT_OBJS} ${UTIL_OBJS}
+timerqueue_test: timerqueue_test.o ${CORE_DIR}/timerqueue.o ${UTIL_DIR}/timestamp.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 .PHONY: clean
 
 clean:
-	rm ${BINS} *.o ${CORE_DIR}/*.o ${UTIL_OBJS}
+	rm ${BINS} *.o ${CORE_DIR}/*.o ${UTIL_DIR}/*.o

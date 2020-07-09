@@ -36,4 +36,4 @@ timestamp_test: timestamp_test.o ${PLAT_OBJS} ${UTIL_OBJS}
 .PHONY: clean
 
 clean:
-	rm ${BINS} *.o ${UTIL_OBJS}
+	rm ${BINS} *.o ${PLAT_OBJS} ${UTIL_OBJS}
