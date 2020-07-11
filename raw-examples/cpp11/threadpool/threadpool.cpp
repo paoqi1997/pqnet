@@ -8,7 +8,7 @@ ThreadPool::ThreadPool(std::size_t threadNumber) : running(false), tn(threadNumb
 ThreadPool::~ThreadPool()
 {
     cond.notify_all();
-    for (auto &t : pool) {
+    for (auto& t : pool) {
         if (t->joinable()) {
             t->join();
         }
@@ -25,33 +25,13 @@ void ThreadPool::run()
                 if (true) {
                     std::unique_lock<std::mutex> lk(mtx);
                     cond.wait(lk, [this]{ return !this->isRunning() || !this->isIdle(); });
-                    if (!this->isRunning()) {
+                    if (!this->isRunning() && this->isIdle()) {
                         break;
                     }
                     task = this->take();
                 }
-                task.run();
+                task();
             }
         }));
     }
-}
-
-void ThreadPool::addTask(Task task)
-{
-    if (tn == 0) {
-        task.run();
-    } else {
-        if (true) {
-            std::lock_guard<std::mutex> lk(mtx);
-            taskqueue.push(task);
-        }
-        cond.notify_one();
-    }
-}
-
-Task ThreadPool::take()
-{
-    Task task = taskqueue.front();
-    taskqueue.pop();
-    return task;
 }
