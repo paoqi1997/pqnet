@@ -19,10 +19,13 @@ public:
     ThreadPool(std::size_t threadNumber);
     ~ThreadPool();
     void run();
-    void shutdown() { running = false; }
+    void shutdown() { running = addable = false; }
     template <typename F, typename... Args>
     auto addTask(F&& f, Args&&... args) -> std::future<decltype(f(args...))>
     {
+        if (!addable)
+            return;
+
         using ResType = decltype(f(args...));
 
         auto task = std::make_shared<std::packaged_task<ResType()>>(
@@ -54,6 +57,7 @@ private:
 private:
     std::size_t tn;
     std::atomic<bool> running;
+    std::atomic<bool> addable;
     std::mutex mtx;
     std::condition_variable cond;
     std::queue<Task> taskqueue;
