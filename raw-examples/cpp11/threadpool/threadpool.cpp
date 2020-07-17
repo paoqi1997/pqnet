@@ -1,7 +1,7 @@
 #include "threadpool.h"
 
 ThreadPool::ThreadPool(std::size_t threadNumber)
-    : running(false), addable(true), tn(threadNumber)
+    : tn(threadNumber), running(false), addable(true)
 {
 
 }

@@ -25,7 +25,7 @@ void pqnet::waitSig()
     }
 }
 
-void pqnet::addSignal(int signum, pn_signal_func_t func)
+void pqnet::addSignal(int signum, const pn_signal_func_t& func)
 {
     sigbox[signum] = func;
 }

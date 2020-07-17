@@ -6,15 +6,17 @@
 #include <pqnet/util/signal.h>
 #include <pqnet/util/threadpool.h>
 
-void* func(void *arg) {
-    const char *name = "pqnet";
+void func(const char *name) {
     AL_INFO("Hello %s!", name);
-    return nullptr;
 }
 
 int main()
 {
-    pqnet::ThreadPool pool(2, func);
+    pqnet::ThreadPool pool(2);
+    for (int i = 0; i < 10; ++i) {
+        pool.addTask(func, "pqnet");
+    }
+
     auto SIGINT_HANDLER = [&]{
         pool.shutdown();
         std::cout << std::endl;
@@ -27,6 +29,7 @@ int main()
     pqnet::addSignal(SIGINT, SIGINT_HANDLER);
     pqnet::addSignal(SIGTERM, SIGTERM_HANDLER);
     pqnet::waitSig();
+
     pool.run();
     for (;;) {
         if (!pool.isRunning() && pool.isIdle()) {
@@ -35,5 +38,6 @@ int main()
             sleep(1);
         }
     }
+
     return 0;
 }

@@ -1,10 +1,9 @@
 #include <cerrno>
 #include <cstdarg>
 #include <cstring>
+#include <sstream>
 #include <string>
 #include <vector>
-
-#include <pthread.h>
 
 #include "../platform/base.h"
 #include "asynclog.h"
@@ -13,13 +12,27 @@
 
 using namespace pqnet;
 
-Mutex AsyncLog::mtx;
+std::mutex AsyncLog::mtx;
 AsyncLog *AsyncLog::instance = nullptr;
 AsyncLog::Garbo AsyncLog::garbo;
 
 AsyncLog::AsyncLog()
     : level(Logger::INFO), dir("./log/"),
-      currdate(now().toDate()), tofile(false), running(true)
+      currdate(now().toDate()), tofile(false), running(true),
+      thd(new std::thread([this]{
+        for (;;) {
+            Log log;
+            if (true) {
+                std::unique_lock<std::mutex> lk(mtx);
+                cond.wait(lk, [this]{ return !this->isRunning() || !this->isIdle(); });
+                if (!this->isRunning() && this->isIdle()) {
+                    break;
+                }
+                log = this->take();
+            }
+            this->consume(log);
+        }
+      }))
 {
     lf = stdout;
     int res = makeDir(dir);
@@ -31,29 +44,10 @@ AsyncLog::AsyncLog()
 AsyncLog::~AsyncLog()
 {
     running = false;
-    cond.notify();
-    if (pthread_join(id, nullptr) != 0) {
-        ERROR(std::strerror(errno));
+    cond.notify_one();
+    if (thd->joinable()) {
+        thd->join();
     }
-}
-
-void* AsyncLog::routine(void *arg)
-{
-    auto self = static_cast<AsyncLog*>(arg);
-    for (;;) {
-        self->cond.lock();
-        while (self->isRunning() && self->isIdle()) {
-            self->cond.wait();
-        }
-        if (!self->isRunning()) {
-            self->cond.unlock();
-            break;
-        }
-        Log log = self->take();
-        self->cond.unlock();
-        self->consume(log);
-    }
-    return nullptr;
 }
 
 Log AsyncLog::take()
@@ -67,8 +61,10 @@ void AsyncLog::consume(Log log)
 {
     this->checkLogName();
     if (log.level >= level) {
+        std::ostringstream oss;
+        oss << log.id;
+        std::size_t id = std::stoll(oss.str());
         const char *time = now().toDefault();
-        pthread_t id = log.id;
         const char *sourcefile = log.sourcefile;
         int line = log.line;
         const char *msg = log.msg.c_str();
@@ -131,7 +127,8 @@ void AsyncLog::setOutput(Logger::Output output)
     }
 }
 
-void AsyncLog::addLog(Logger::LogLevel _level, pthread_t _id, const char *sourcefile, int line, const char *fmt, ...)
+void AsyncLog::addLog(
+    Logger::LogLevel _level, std::thread::id _id, const char *sourcefile, int line, const char *fmt, ...)
 {
     std::va_list args1, args2;
     va_start(args1, fmt);
@@ -142,8 +139,9 @@ void AsyncLog::addLog(Logger::LogLevel _level, pthread_t _id, const char *source
     std::vsprintf(buf.data(), fmt, args2);
     va_end(args2);
     Log log{ _level, _id, sourcefile, line, std::string(buf.data()) };
-    cond.lock();
-    logqueue.push(log);
-    cond.unlock();
-    cond.notify();
+    if (true) {
+        std::lock_guard<std::mutex> lk(mtx);
+        logqueue.push(log);
+    }
+    cond.notify_one();
 }

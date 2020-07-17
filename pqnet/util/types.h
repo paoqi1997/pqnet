@@ -1,8 +1,6 @@
 #ifndef PQNET_UTIL_TYPES_H
 #define PQNET_UTIL_TYPES_H
 
-#include <functional>
-
 namespace pqnet
 {
 
@@ -37,11 +35,6 @@ namespace pqnet
 
 #define HTTP_STATUS_CODE_200 "200 OK"
 #define HTTP_STATUS_CODE_404 "404 Not Found"
-
-// FuncT
-using pn_thread_func_t = void*(*)(void*);
-using pn_task_func_t   = void(*)(void*);
-using pn_signal_func_t = std::function<void()>;
 
 } // namespace pqnet
 

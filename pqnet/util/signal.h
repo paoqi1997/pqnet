@@ -2,15 +2,16 @@
 #define PQNET_UTIL_SIGNAL_H
 
 #include <csignal>
-
-#include "types.h"
+#include <functional>
 
 namespace pqnet
 {
 
+using pn_signal_func_t = std::function<void()>;
+
 void waitSig();
 // Add or Update signal(s)
-void addSignal(int signum, pn_signal_func_t func);
+void addSignal(int signum, const pn_signal_func_t& func);
 // Delete signal(s)
 void delSignal(int signum);
 
