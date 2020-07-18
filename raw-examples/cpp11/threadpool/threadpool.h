@@ -23,10 +23,10 @@ public:
     template <typename F, typename... Args>
     auto addTask(F&& f, Args&&... args) -> std::future<decltype(f(args...))>
     {
-        if (!addable)
-            return;
-
         using ResType = decltype(f(args...));
+
+        if (!addable)
+            return std::future<ResType>();
 
         auto task = std::make_shared<std::packaged_task<ResType()>>(
             std::bind(std::forward<F>(f), std::forward<Args>(args)...)

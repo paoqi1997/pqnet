@@ -3,6 +3,7 @@
 #include <cstring>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "../platform/base.h"
@@ -18,27 +19,31 @@ AsyncLog::Garbo AsyncLog::garbo;
 
 AsyncLog::AsyncLog()
     : level(Logger::INFO), dir("./log/"),
-      currdate(now().toDate()), tofile(false), running(true),
-      thd(new std::thread([this]{
-        for (;;) {
-            Log log;
-            if (true) {
-                std::unique_lock<std::mutex> lk(mtx);
-                cond.wait(lk, [this]{ return !this->isRunning() || !this->isIdle(); });
-                if (!this->isRunning() && this->isIdle()) {
-                    break;
-                }
-                log = this->take();
-            }
-            this->consume(log);
-        }
-      }))
+      currdate(now().toDate()), tofile(false), running(true)
 {
     lf = stdout;
     int res = makeDir(dir);
     if (res != 0) {
         ERROR(getErrorMsg(res));
     }
+
+    std::unique_ptr<std::thread> tmpthd(
+        new std::thread([this]{
+            for (;;) {
+                Log log;
+                if (true) {
+                    std::unique_lock<std::mutex> lk(mtx);
+                    cond.wait(lk, [this]{ return !this->isRunning() || !this->isIdle(); });
+                    if (!this->isRunning() && this->isIdle()) {
+                        break;
+                    }
+                    log = this->take();
+                }
+                this->consume(log);
+            }
+        })
+    );
+    thd = std::move(tmpthd);
 }
 
 AsyncLog::~AsyncLog()
