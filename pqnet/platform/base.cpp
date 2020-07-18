@@ -90,7 +90,7 @@ int pqnet::makeDir(const std::string& dirname)
     return 0;
 }
 
-std::uint64_t tid2u64(std::thread::id tid)
+std::uint64_t pqnet::tid2u64(std::thread::id tid)
 {
     std::ostringstream oss;
     oss << tid;
