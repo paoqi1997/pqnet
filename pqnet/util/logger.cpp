@@ -66,7 +66,13 @@ void Logger::setTarget(Target _target)
 
 void Logger::log(LogLevel _level, const char *sourcefile, int line, const char *fmt, ...)
 {
-    this->checkLogName();
+    if (_level < level)
+        return;
+
+    checkLogName();
+
+    const char *time = now().toDefault();
+
     std::va_list args1, args2;
     va_start(args1, fmt);
     va_copy(args2, args1);
@@ -75,24 +81,22 @@ void Logger::log(LogLevel _level, const char *sourcefile, int line, const char *
     std::vector<char> buf(size + 1);
     std::vsprintf(buf.data(), fmt, args2);
     va_end(args2);
-    if (_level >= level) {
-        const char *time = now().toDefault();
-        switch (_level) {
-        case Logger::DEBUG:
-            std::fprintf(lf, "[DEBUG] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
-            break;
-        case Logger::INFO:
-            std::fprintf(lf, "[INFO ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
-            break;
-        case Logger::WARN:
-            std::fprintf(lf, "[WARN ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
-            break;
-        case Logger::ERROR:
-            std::fprintf(lf, "[ERROR] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
-            break;
-        case Logger::FATAL:
-            std::fprintf(lf, "[FATAL] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
-            break;
-        }
+
+    switch (_level) {
+    case Logger::DEBUG:
+        std::fprintf(lf, "[DEBUG] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+        break;
+    case Logger::INFO:
+        std::fprintf(lf, "[INFO ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+        break;
+    case Logger::WARN:
+        std::fprintf(lf, "[WARN ] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+        break;
+    case Logger::ERROR:
+        std::fprintf(lf, "[ERROR] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+        break;
+    case Logger::FATAL:
+        std::fprintf(lf, "[FATAL] %s %s:%d: %s\n", time, sourcefile, line, buf.data());
+        break;
     }
 }

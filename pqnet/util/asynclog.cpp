@@ -104,39 +104,43 @@ void AsyncLog::addLog(
     std::vector<char> buf(size + 1);
     std::vsprintf(buf.data(), fmt, args2);
     va_end(args2);
-    Log log{ _level, tid, sourcefile, line, std::string(buf.data()) };
+
     if (true) {
         std::lock_guard<std::mutex> lk(mtx);
-        logqueue.push(log);
+        logqueue.emplace(_level, tid, sourcefile, line, buf.data());
     }
+
     cond.notify_one();
 }
 
 void AsyncLog::consume(Log log)
 {
-    this->checkLogName();
-    if (log.level >= level) {
-        const char *time = now().toDefault();
-        std::size_t id = tid2u64(log.id);
-        const char *sourcefile = log.sourcefile;
-        int line = log.line;
-        const char *msg = log.msg.c_str();
-        switch (log.level) {
-        case Logger::DEBUG:
-            std::fprintf(lf, "[DEBUG] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
-            break;
-        case Logger::INFO:
-            std::fprintf(lf, "[INFO ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
-            break;
-        case Logger::WARN:
-            std::fprintf(lf, "[WARN ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
-            break;
-        case Logger::ERROR:
-            std::fprintf(lf, "[ERROR] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
-            break;
-        case Logger::FATAL:
-            std::fprintf(lf, "[FATAL] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
-            break;
-        }
+    if (log.level < level)
+        return;
+
+    checkLogName();
+
+    const char *time = now().toDefault();
+    std::size_t id = tid2u64(log.id);
+    const char *sourcefile = log.sourcefile;
+    int line = log.line;
+    const char *msg = log.msg.c_str();
+
+    switch (log.level) {
+    case Logger::DEBUG:
+        std::fprintf(lf, "[DEBUG] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+        break;
+    case Logger::INFO:
+        std::fprintf(lf, "[INFO ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+        break;
+    case Logger::WARN:
+        std::fprintf(lf, "[WARN ] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+        break;
+    case Logger::ERROR:
+        std::fprintf(lf, "[ERROR] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+        break;
+    case Logger::FATAL:
+        std::fprintf(lf, "[FATAL] %s ThreadID:%ld %s:%d: %s\n", time, id, sourcefile, line, msg);
+        break;
     }
 }

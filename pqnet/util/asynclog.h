@@ -52,6 +52,13 @@ namespace pqnet
 
 struct Log
 {
+    Log() {}
+    Log(
+        Logger::LogLevel _level, std::thread::id tid,
+        const char *_sourcefile, int _line, const char *_msg
+    )
+        : level(_level), id(tid),
+          sourcefile(_sourcefile), line(_line), msg(_msg) {}
     Logger::LogLevel level;
     std::thread::id id;
     const char *sourcefile;
