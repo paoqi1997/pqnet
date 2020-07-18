@@ -91,7 +91,7 @@ private:
 
 int main()
 {
-    pqnet::Logger::getLogger()->setLogLevel(pqnet::Logger::DEBUG);
+    pqnet::Logger::getInstance()->setLogLevel(pqnet::Logger::DEBUG);
     HttpServer httpserv(8080);
     auto SIGINT_HANDLER = [&]{
         httpserv.shutdown();

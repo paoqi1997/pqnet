@@ -46,7 +46,7 @@ private:
 
 int main()
 {
-    pqnet::Logger::getLogger()->setLogLevel(pqnet::Logger::DEBUG);
+    pqnet::Logger::getInstance()->setLogLevel(pqnet::Logger::DEBUG);
     TcpEchoServer echoserv(12488);
     auto SIGINT_HANDLER = [&]{
         echoserv.shutdown();

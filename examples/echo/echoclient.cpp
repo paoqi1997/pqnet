@@ -67,7 +67,7 @@ private:
 
 int main()
 {
-    pqnet::Logger::getLogger()->setLogLevel(pqnet::Logger::DEBUG);
+    pqnet::Logger::getInstance()->setLogLevel(pqnet::Logger::DEBUG);
     TcpEchoClient echocli("127.0.0.1", 12488);
     auto SIGINT_HANDLER = [&]{
         echocli.shutdown();
