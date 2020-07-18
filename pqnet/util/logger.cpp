@@ -14,7 +14,9 @@ using namespace pqnet;
 Logger *Logger::instance = nullptr;
 Logger::Garbo Logger::garbo;
 
-Logger::Logger() : level(Logger::INFO), dir("./log/"), currdate(now().toDate()), tofile(false)
+Logger::Logger()
+    : level(INFO), target(CONSOLE),
+      dir("./log/"), currdate(now().toDate())
 {
     lf = stdout;
     int res = makeDir(dir);
@@ -25,7 +27,7 @@ Logger::Logger() : level(Logger::INFO), dir("./log/"), currdate(now().toDate()),
 
 void Logger::checkLogName()
 {
-    if (tofile) {
+    if (target == FILE) {
         const char *date = now().toDate();
         if (std::strcmp(currdate.c_str(), date) != 0) {
             if (std::fclose(lf) != 0) {
@@ -39,24 +41,24 @@ void Logger::checkLogName()
     }
 }
 
-void Logger::setOutput(Output output)
+void Logger::setTarget(Target _target)
 {
-    switch (output) {
-    case Logger::FILE:
-        if (!tofile) {
+    switch (_target) {
+    case FILE:
+        if (target == CONSOLE) {
             std::string lfname = dir;
             lfname += currdate + ".log";
             lf = std::fopen(lfname.c_str(), "a");
-            tofile = !tofile;
+            target = _target;
         }
         break;
-    case Logger::CONSOLE:
-        if (tofile) {
+    case CONSOLE:
+        if (target == FILE) {
             if (std::fclose(lf) != 0) {
                 ERROR(std::strerror(errno));
             }
             lf = stdout;
-            tofile = !tofile;
+            target = _target;
         }
         break;
     }

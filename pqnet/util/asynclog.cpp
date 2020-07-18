@@ -1,7 +1,6 @@
 #include <cerrno>
 #include <cstdarg>
 #include <cstring>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,8 +17,8 @@ AsyncLog *AsyncLog::instance = nullptr;
 AsyncLog::Garbo AsyncLog::garbo;
 
 AsyncLog::AsyncLog()
-    : level(Logger::INFO), dir("./log/"),
-      currdate(now().toDate()), tofile(false), running(true)
+    : level(Logger::INFO), target(Logger::CONSOLE),
+      dir("./log/"), currdate(now().toDate()), running(true)
 {
     lf = stdout;
     int res = makeDir(dir);
@@ -55,11 +54,62 @@ AsyncLog::~AsyncLog()
     }
 }
 
-Log AsyncLog::take()
+void AsyncLog::checkLogName()
 {
-    Log log = logqueue.front();
-    logqueue.pop();
-    return log;
+    if (target == Logger::FILE) {
+        const char *date = now().toDate();
+        if (std::strcmp(currdate.c_str(), date) != 0) {
+            if (std::fclose(lf) != 0) {
+                ERROR(std::strerror(errno));
+            }
+            currdate = date;
+            std::string lfname = dir;
+            lfname += currdate + ".log";
+            lf = std::fopen(lfname.c_str(), "a");
+        }
+    }
+}
+
+void AsyncLog::setTarget(Logger::Target _target)
+{
+    switch (_target) {
+    case Logger::FILE:
+        if (target == Logger::CONSOLE) {
+            std::string lfname = dir;
+            lfname += currdate + ".log";
+            lf = std::fopen(lfname.c_str(), "a");
+            target = _target;
+        }
+        break;
+    case Logger::CONSOLE:
+        if (target == Logger::FILE) {
+            if (std::fclose(lf) != 0) {
+                ERROR(std::strerror(errno));
+            }
+            lf = stdout;
+            target = _target;
+        }
+        break;
+    }
+}
+
+void AsyncLog::addLog(
+    Logger::LogLevel _level, std::thread::id tid, const char *sourcefile, int line, const char *fmt, ...)
+{
+    std::va_list args1, args2;
+    va_start(args1, fmt);
+    va_copy(args2, args1);
+    int size = std::vsnprintf(nullptr, 0, fmt, args1);
+    va_end(args1);
+    std::vector<char> buf(size + 1);
+    std::vsprintf(buf.data(), fmt, args2);
+    va_end(args2);
+    Log log{ _level, tid, sourcefile, line, std::string(buf.data()) };
+    if (true) {
+        std::lock_guard<std::mutex> lk(mtx);
+        logqueue.push(log);
+    }
+    cond.notify_one();
 }
 
 void AsyncLog::consume(Log log)
@@ -89,62 +139,4 @@ void AsyncLog::consume(Log log)
             break;
         }
     }
-}
-
-void AsyncLog::checkLogName()
-{
-    if (tofile) {
-        const char *date = now().toDate();
-        if (std::strcmp(currdate.c_str(), date) != 0) {
-            if (std::fclose(lf) != 0) {
-                ERROR(std::strerror(errno));
-            }
-            currdate = date;
-            std::string lfname = dir;
-            lfname += currdate + ".log";
-            lf = std::fopen(lfname.c_str(), "a");
-        }
-    }
-}
-
-void AsyncLog::setOutput(Logger::Output output)
-{
-    switch (output) {
-    case Logger::FILE:
-        if (!tofile) {
-            std::string lfname = dir;
-            lfname += currdate + ".log";
-            lf = std::fopen(lfname.c_str(), "a");
-            tofile = !tofile;
-        }
-        break;
-    case Logger::CONSOLE:
-        if (tofile) {
-            if (std::fclose(lf) != 0) {
-                ERROR(std::strerror(errno));
-            }
-            lf = stdout;
-            tofile = !tofile;
-        }
-        break;
-    }
-}
-
-void AsyncLog::addLog(
-    Logger::LogLevel _level, std::thread::id _id, const char *sourcefile, int line, const char *fmt, ...)
-{
-    std::va_list args1, args2;
-    va_start(args1, fmt);
-    va_copy(args2, args1);
-    int size = std::vsnprintf(nullptr, 0, fmt, args1);
-    va_end(args1);
-    std::vector<char> buf(size + 1);
-    std::vsprintf(buf.data(), fmt, args2);
-    va_end(args2);
-    Log log{ _level, _id, sourcefile, line, std::string(buf.data()) };
-    if (true) {
-        std::lock_guard<std::mutex> lk(mtx);
-        logqueue.push(log);
-    }
-    cond.notify_one();
 }
