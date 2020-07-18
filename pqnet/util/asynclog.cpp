@@ -61,10 +61,8 @@ void AsyncLog::consume(Log log)
 {
     this->checkLogName();
     if (log.level >= level) {
-        std::ostringstream oss;
-        oss << log.id;
-        std::size_t id = std::stoll(oss.str());
         const char *time = now().toDefault();
+        std::size_t id = tid2u64(log.id);
         const char *sourcefile = log.sourcefile;
         int line = log.line;
         const char *msg = log.msg.c_str();

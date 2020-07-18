@@ -1,7 +1,6 @@
-#include <cerrno>
-#include <cstring>
+#include <utility>
 
-#include "../util/logger.h"
+#include "../platform/base.h"
 #include "eventloopthread.h"
 
 using namespace pqnet;
@@ -13,14 +12,23 @@ EventLoopThread::EventLoopThread()
 
 void EventLoopThread::start()
 {
-    if (pthread_create(&id, nullptr, routine, &looper) != 0) {
-        ERROR(std::strerror(errno));
+    std::unique_ptr<std::thread> tmpthd(
+        new std::thread([this]{
+            looper.loop();
+        })
+    );
+
+    thd = std::move(tmpthd);
+}
+
+void EventLoopThread::join()
+{
+    if (thd->joinable()) {
+        thd->join();
     }
 }
 
-void* EventLoopThread::routine(void *arg)
+std::size_t EventLoopThread::getId() const
 {
-    auto lp = static_cast<EventLoop*>(arg);
-    lp->loop();
-    return nullptr;
+    return tid2u64(thd->get_id());
 }

@@ -1,7 +1,8 @@
 #ifndef PQNET_CORE_EVENTLOOP_THREAD_H
 #define PQNET_CORE_EVENTLOOP_THREAD_H
 
-#include <pthread.h>
+#include <memory>
+#include <thread>
 
 #include "eventloop.h"
 
@@ -12,13 +13,13 @@ class EventLoopThread
 {
 public:
     EventLoopThread();
-    pthread_t getId() const { return id; }
-    EventLoop* getEventLoop() { return &looper; }
     void start();
-    static void* routine(void *arg);
+    void join();
+    std::size_t getId() const;
+    EventLoop* getEventLoop() { return &looper; }
 private:
-    pthread_t id;
     EventLoop looper;
+    std::unique_ptr<std::thread> thd;
 };
 
 } // namespace pqnet

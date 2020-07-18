@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <sstream>
 
 #ifdef WIN32
 #include <windows.h>
@@ -87,4 +88,11 @@ int pqnet::makeDir(const std::string& dirname)
     }
 #endif
     return 0;
+}
+
+std::uint64_t tid2u64(std::thread::id tid)
+{
+    std::ostringstream oss;
+    oss << tid;
+    return std::stoull(oss.str());
 }
