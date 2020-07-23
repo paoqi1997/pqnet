@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "../util/types.h"
+#include "../util/defines.h"
 
 namespace pqnet
 {

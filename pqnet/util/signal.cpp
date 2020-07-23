@@ -9,7 +9,7 @@ using namespace pqnet;
 
 namespace {
 
-std::map<int, pn_signal_func_t> sigbox;
+std::map<int, signalCallBack> sigbox;
 void sighandler(int signum) {
     sigbox[signum]();
 }
@@ -25,7 +25,7 @@ void pqnet::waitSig()
     }
 }
 
-void pqnet::addSignal(int signum, const pn_signal_func_t& func)
+void pqnet::addSignal(int signum, const signalCallBack& func)
 {
     sigbox[signum] = func;
 }

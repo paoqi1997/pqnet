@@ -1,5 +1,5 @@
-#ifndef PQNET_UTIL_TYPES_H
-#define PQNET_UTIL_TYPES_H
+#ifndef PQNET_UTIL_DEFINES_H
+#define PQNET_UTIL_DEFINES_H
 
 namespace pqnet
 {
@@ -38,4 +38,4 @@ namespace pqnet
 
 } // namespace pqnet
 
-#endif // PQNET_UTIL_TYPES_H
+#endif // PQNET_UTIL_DEFINES_H

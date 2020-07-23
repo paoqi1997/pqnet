@@ -5,8 +5,8 @@
 #include <sys/eventfd.h>
 #include <unistd.h>
 
+#include "../util/defines.h"
 #include "../util/logger.h"
-#include "../util/types.h"
 #include "eventloop.h"
 
 using namespace pqnet;

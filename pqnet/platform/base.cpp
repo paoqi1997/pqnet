@@ -11,7 +11,7 @@
 #include <unistd.h>   // for access()
 #endif
 
-#include "../util/types.h"
+#include "../util/defines.h"
 #include "base.h"
 
 using namespace pqnet;

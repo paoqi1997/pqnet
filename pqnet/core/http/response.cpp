@@ -1,4 +1,4 @@
-#include "../../util/types.h"
+#include "../../util/defines.h"
 #include "response.h"
 
 using namespace pqnet::http;

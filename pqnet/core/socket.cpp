@@ -3,7 +3,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #include <sys/socket.h>
 
-#include "../util/types.h"
+#include "../util/defines.h"
 #include "socket.h"
 
 using namespace pqnet;

@@ -7,11 +7,11 @@
 namespace pqnet
 {
 
-using pn_signal_func_t = std::function<void()>;
+using signalCallBack = std::function<void()>;
 
 void waitSig();
 // Add or Update signal(s)
-void addSignal(int signum, const pn_signal_func_t& func);
+void addSignal(int signum, const signalCallBack& func);
 // Delete signal(s)
 void delSignal(int signum);
 

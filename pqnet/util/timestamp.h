@@ -6,7 +6,7 @@
 #include <tuple>
 #include <utility>
 
-#include "types.h"
+#include "defines.h"
 
 namespace pqnet
 {

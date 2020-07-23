@@ -5,9 +5,9 @@
 #include <vector>
 
 #include "../platform/base.h"
+#include "defines.h"
 #include "logger.h"
 #include "timestamp.h"
-#include "types.h"
 
 using namespace pqnet;
 
