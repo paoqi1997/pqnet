@@ -19,12 +19,12 @@ TcpConnection::TcpConnection(EventLoop *_looper, int fd)
 void TcpConnection::connectEstablished()
 {
     DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    connected = true;
     tg->addToLoop();
     tg->likeReading();
     if (conncb) {
         conncb(shared_from_this());
     }
-    connected = true;
 }
 
 void TcpConnection::connectDestroyed()
@@ -34,13 +34,13 @@ void TcpConnection::connectDestroyed()
     if (close(tg->getFd()) != 0) {
         ERROR(std::strerror(errno));
     }
+    connected = false;
     if (closecb) {
         closecb(shared_from_this());
     }
     if (iccb) {
         iccb(shared_from_this());
     }
-    connected = false;
 }
 
 void TcpConnection::send(const char *data, std::size_t len)
