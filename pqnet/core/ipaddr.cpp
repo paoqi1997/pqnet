@@ -30,6 +30,11 @@ Ip4Addr::Ip4Addr(const char *hostname, std::uint16_t port)
     }
 }
 
+Ip4Addr::Ip4Addr(struct sockaddr *address)
+{
+    addr = *reinterpret_cast<struct sockaddr_in*>(address);
+}
+
 std::string Ip4Addr::ip() const
 {
     std::vector<char> buf(INET_ADDRSTRLEN);

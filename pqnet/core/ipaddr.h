@@ -5,6 +5,7 @@
 #include <string>
 
 #include <netinet/in.h>
+#include <sys/socket.h>
 
 namespace pqnet
 {
@@ -14,6 +15,7 @@ class Ip4Addr
 public:
     Ip4Addr(std::uint16_t port);
     Ip4Addr(const char *hostname, std::uint16_t port);
+    Ip4Addr(struct sockaddr *address);
     std::string ip() const;
     std::uint16_t port() const;
     std::uint32_t ipInt() const;
