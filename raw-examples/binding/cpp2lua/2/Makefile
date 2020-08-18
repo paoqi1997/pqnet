@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -Wall -fPIC
+CXXFLAGS = -g -Wall
 LIBS = -llua
 
 NAME = mylua
@@ -12,7 +12,7 @@ DLLS = ${NAME}.so
 build_all: ${DLLS}
 
 ${OBJS}: ${SRCS}
-	${CXX} ${CXXFLAGS} -c $< ${LIBS}
+	${CXX} ${CXXFLAGS} -fPIC -c $< ${LIBS}
 
 ${DLLS}: ${OBJS}
 	${CXX} ${CXXFLAGS} -shared $^ -o $@
