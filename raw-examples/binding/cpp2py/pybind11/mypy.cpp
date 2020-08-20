@@ -1,8 +1,12 @@
 #include <pybind11/pybind11.h>
 
-namespace mypy {
+#include "mypy.h"
 
-int py_add(int i, int j) {
+namespace mypy
+{
+
+int add(int i, int j)
+{
     return i + j;
 }
 
@@ -10,5 +14,13 @@ int py_add(int i, int j) {
 
 PYBIND11_MODULE(mypy, m) {
     m.doc() = "mypy module";
-    m.def("add", mypy::py_add, "A function which adds two numbers");
+    m.def("add", mypy::add, "A function which adds two numbers");
+    m.attr("DEEP_DARK_FANTASY") = 2077;
+    pybind11::class_<Object>(m, "Object")
+        .def(pybind11::init<>())
+        .def("getName", &Object::getName)
+        .def("getSum", &Object::getSum)
+        .def("setName", &Object::setName)
+        .def("setSum", &Object::setSum)
+        .def_property("FLAG", &Object::getFlag, &Object::setFlag);
 }

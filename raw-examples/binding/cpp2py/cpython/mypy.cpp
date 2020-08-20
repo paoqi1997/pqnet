@@ -107,7 +107,7 @@ PyTypeObject ObjectType = {
 namespace mypy
 {
 
-PyObject* py_add(PyObject *self, PyObject *args)
+PyObject* add(PyObject *self, PyObject *args)
 {
     int x, y;
     if (!PyArg_ParseTuple(args, "ii", &x, &y)) {
@@ -120,7 +120,7 @@ PyObject* py_add(PyObject *self, PyObject *args)
 } // namespace mypy
 
 PyMethodDef PyMethods[] = {
-    {"add", mypy::py_add, METH_VARARGS, nullptr/* Method Doc */},
+    {"add", mypy::add, METH_VARARGS, nullptr/* Method Doc */},
     {nullptr, nullptr, 0, nullptr}
 };
 
