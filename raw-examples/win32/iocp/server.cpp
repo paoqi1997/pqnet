@@ -66,8 +66,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::size_t nProcessors = getNumberOfProcessors();
-    std::size_t nThreads = nProcessors * 2;
+    std::size_t nThreads = getNumberOfProcessors();
     HANDLE hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, DWORD(nThreads));
 
     std::vector<std::thread> threads;

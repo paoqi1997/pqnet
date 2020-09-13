@@ -17,14 +17,14 @@ using namespace std::placeholders;
 
 TcpServer::TcpServer(std::uint16_t port)
     : addr(port), listenTrigger(new Trigger()),
-      leader(new EventLoop()), followers(new EventLoopThreadPool(getNumberOfProcessors() * 2))
+      leader(new EventLoop()), followers(new EventLoopThreadPool(getNumberOfProcessors()))
 {
     this->init();
 }
 
 TcpServer::TcpServer(const char *servname, std::uint16_t port)
     : addr(servname, port), listenTrigger(new Trigger()),
-      leader(new EventLoop()), followers(new EventLoopThreadPool(getNumberOfProcessors() * 2))
+      leader(new EventLoop()), followers(new EventLoopThreadPool(getNumberOfProcessors()))
 {
     this->init();
 }
