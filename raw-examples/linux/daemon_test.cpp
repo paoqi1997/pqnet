@@ -2,6 +2,7 @@
 #include <chrono>
 #include <csignal>
 #include <cstring>
+#include <ctime>
 #include <iostream>
 #include <thread>
 
@@ -12,6 +13,18 @@
 
 using std::cout;
 using std::endl;
+
+char buf[32];
+
+const char* getCurrTime() {
+    std::time_t time = std::time(nullptr);
+    std::tm *group = std::localtime(&time);
+    if (std::strftime(buf, sizeof(buf), "%F %T", group) != 0) {
+        return buf;
+    } else {
+        return nullptr;
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -31,8 +44,8 @@ int main(int argc, char *argv[])
 
     std::signal(SIGHUP, SIG_IGN);
 
-    // ~022
-    umask(S_IWGRP | S_IWOTH);
+    // ~002
+    umask(S_IWOTH);
 
     pid = fork();
     if (pid == -1) {
@@ -43,7 +56,7 @@ int main(int argc, char *argv[])
         _exit(0);
     }
 
-    // 0666 & ~022 = 0644
+    // 0666 & ~002 = 0664
     int fd = open("./daemon.log", O_CREAT | O_WRONLY, 0666);
     if (fd == -1) {
         cout << std::strerror(errno) << endl;
@@ -70,8 +83,8 @@ int main(int argc, char *argv[])
     }
 
     for (;;) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        cout << "Hello daemon!\n";
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        cout << getCurrTime() << " Hello daemon!\n";
         // Flush stdout stream buffer so it goes to correct file.
         std::fflush(stdout);
     }

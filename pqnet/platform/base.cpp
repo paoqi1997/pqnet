@@ -79,7 +79,7 @@ int pqnet::makeDir(const std::string& dirname)
 #else
     if (access(dirname.c_str(), F_OK) != 0) {
         if (errno == ENOENT) {
-            if (mkdir(dirname.c_str(), 0777) != 0) {
+            if (mkdir(dirname.c_str(), 0775) != 0) {
                 return errno;
             }
         } else {

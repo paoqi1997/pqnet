@@ -17,9 +17,9 @@ case $1 in
         ;;
     'status')
         if [ -n "$pid" ]; then
-            echo 'Running!'
+            echo 'running'
         else
-            echo 'Stopped!'
+            echo 'stopped'
         fi
         ;;
     *)
