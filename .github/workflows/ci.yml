@@ -6,17 +6,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: before_install
-        run:
-          - export ROOT=`pwd`
+        run: |
+          export ROOT=`pwd`
 
       - name: install
-        run:
-          - cd $ROOT/pqnet && make
-          - sudo make install
+        run: |
+          cd $ROOT/pqnet && make
+          sudo make install
 
       - name: after_install
-        run:
-          - cd $ROOT/pqnet/util/tests && make
-          - cd $ROOT/pqnet/core/tests && make
-          - cd $ROOT/examples/echo && make -f uselib.mk
-          - cd $ROOT/examples/http && make
+        run: |
+          cd $ROOT/pqnet/util/tests && make
+          cd $ROOT/pqnet/core/tests && make
+          cd $ROOT/examples/echo && make -f uselib.mk
+          cd $ROOT/examples/http && make
