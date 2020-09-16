@@ -7,18 +7,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: before_install
-        run: |
-          export ROOT=`pwd`
-
       - name: install
         run: |
-          cd $ROOT/pqnet && make
+          cd ${GITHUB_WORKSPACE}/pqnet && make
           sudo make install
 
       - name: after_install
         run: |
-          cd $ROOT/pqnet/util/tests && make
-          cd $ROOT/pqnet/core/tests && make
-          cd $ROOT/examples/echo && make -f uselib.mk
-          cd $ROOT/examples/http && make
+          cd ${GITHUB_WORKSPACE}/pqnet/util/tests && make
+          cd ${GITHUB_WORKSPACE}/pqnet/core/tests && make
+          cd ${GITHUB_WORKSPACE}/examples/echo && make -f uselib.mk
+          cd ${GITHUB_WORKSPACE}/examples/http && make
