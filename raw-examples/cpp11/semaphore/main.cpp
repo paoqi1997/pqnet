@@ -36,12 +36,7 @@ void func3() {
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2) {
-        std::printf("Usage: app <useSem>\n");
-        return 1;
-    }
-
-    useSem = std::atoi(argv[1]);
+    useSem = argc != 2 ? false : std::atoi(argv[1]);
 
     std::thread t1(func1);
     std::thread t2(func2);
