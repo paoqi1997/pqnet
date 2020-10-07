@@ -63,6 +63,7 @@ void EventLoop::loop()
                 tg->handleEvent();
             }
         }
+        runFunctors();
     }
 }
 
@@ -91,9 +92,26 @@ void EventLoop::cancel(TimerId id)
     tmqueue->delTimer(id);
 }
 
+void EventLoop::runFunctors()
+{
+    std::vector<Functor> funcs;
+
+    if (true) {
+        std::lock_guard<std::mutex> lk(mtx);
+        funcs.swap(functors);
+    }
+
+    for (auto& func : funcs) {
+        func();
+    }
+}
+
 void EventLoop::pushFunctor(const Functor& fn)
 {
-    fnqueue.push(fn);
+    if (true) {
+        std::lock_guard<std::mutex> lk(mtx);
+        functors.push_back(fn);
+    }
     this->wake();
 }
 
@@ -114,11 +132,5 @@ void EventLoop::handleRead()
     ssize_t n = read(evfd, &msg, sizeof(msg));
     if (n == -1) {
         ERROR(std::strerror(errno));
-    } else {
-        while (!fnqueue.empty()) {
-            auto fn = fnqueue.front();
-            fnqueue.pop();
-            fn();
-        }
     }
 }

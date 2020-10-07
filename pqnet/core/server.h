@@ -31,7 +31,8 @@ private:
     void init();
     void onAccept();
     void clearFollowers();
-    void removeConnection(const TcpConnPtr& conn) { connpool.erase(conn->getFd()); }
+    void removeConnection(const TcpConnPtr& conn);
+    void removeConnectionInLoop(const TcpConnPtr& conn);
 private:
     connectCallBack conncb;
     closeCallBack closecb;

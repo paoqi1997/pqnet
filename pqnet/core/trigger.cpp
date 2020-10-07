@@ -6,18 +6,21 @@
 
 using namespace pqnet;
 
-Trigger::Trigger() : epfd(-1), fd(-1), events(EPOLLET)
+Trigger::Trigger()
+    : epfd(-1), fd(-1), handling(false), events(EPOLLET)
 {
 
 }
 
-Trigger::Trigger(int _epfd, int _fd) : epfd(_epfd), fd(_fd), events(EPOLLET)
+Trigger::Trigger(int _epfd, int _fd)
+    : epfd(_epfd), fd(_fd), handling(false), events(EPOLLET)
 {
 
 }
 
 void Trigger::handleEvent()
 {
+    handling = true;
     if (revents & EPOLLIN) {
         if (readhd) {
             readhd();
@@ -28,6 +31,7 @@ void Trigger::handleEvent()
             writehd();
         }
     }
+    handling = false;
 }
 
 void Trigger::updateEvents(int op)

@@ -97,7 +97,9 @@ void TcpServer::onAccept()
         connpool[connfd] = std::make_shared<TcpConnection>(currLooper, connfd);
         connpool[connfd]->setConnectCallBack(conncb);
         connpool[connfd]->setCloseCallBack(closecb);
-        connpool[connfd]->setImplCloseCallBack(std::bind(&TcpServer::removeConnection, this, _1));
+        connpool[connfd]->setRemoveConnCallBack(
+            std::bind(&TcpServer::removeConnection, this, _1)
+        );
         connpool[connfd]->setMessageArrivedCallBack(macb);
         connpool[connfd]->setWriteCompletedCallBack(wccb);
         currLooper->pushFunctor(std::bind(&TcpConnection::connectEstablished, connpool[connfd]));
@@ -115,5 +117,19 @@ void TcpServer::clearFollowers()
     for (std::size_t i = 0; i < followers->size(); ++i) {
         auto looper = followers->getEventLoopByIndex(i);
         looper->pushFunctor(std::bind(&EventLoop::quit, looper));
+    }
+}
+
+void TcpServer::removeConnection(const TcpConnPtr& conn)
+{
+    leader->pushFunctor(std::bind(&TcpServer::removeConnectionInLoop, this, conn));
+}
+
+void TcpServer::removeConnectionInLoop(const TcpConnPtr& conn)
+{
+    if (conn->isHandling()) {
+        leader->pushFunctor(std::bind(&TcpServer::removeConnectionInLoop, this, conn));
+    } else {
+        connpool.erase(conn->getFd());
     }
 }

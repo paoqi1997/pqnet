@@ -18,6 +18,7 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 public:
     TcpConnection(EventLoop *_looper, int fd);
     int getFd() const { return tg->getFd(); }
+    bool isHandling() { return tg->isHandling(); }
     EventLoop* getEventLoop() { return looper; }
     Buffer* getInputBuffer() { return &inputBuffer; }
     Buffer* getOutputBuffer() { return &outputBuffer; }
@@ -27,7 +28,7 @@ public:
     void send(const char *data, std::size_t len);
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
-    void setImplCloseCallBack(const implCloseCallBack& cb) { iccb = cb; }
+    void setRemoveConnCallBack(const removeConnCallBack& cb) { rmcb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
@@ -35,7 +36,7 @@ private:
     void handleWrite();
     connectCallBack conncb;
     closeCallBack closecb;
-    implCloseCallBack iccb;
+    removeConnCallBack rmcb;
     messageArrivedCallBack macb;
     writeCompletedCallBack wccb;
     Buffer inputBuffer;

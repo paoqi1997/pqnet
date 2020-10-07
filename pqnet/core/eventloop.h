@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <memory>
-#include <queue>
+#include <mutex>
 #include <vector>
 
 #include <sys/epoll.h>
@@ -30,6 +30,7 @@ public:
     TimerId runAfter(const timerCallBack& cb, void *arg, uint expiration);
     TimerId runEvery(const timerCallBack& cb, void *arg, uint expiration, uint interval);
     void cancel(TimerId id);
+    void runFunctors();
     void pushFunctor(const Functor& fn);
 private:
     void wake();
@@ -40,7 +41,8 @@ private:
     int epfd;
     int evfd;
     bool loopFlag;
-    std::queue<Functor> fnqueue;
+    std::mutex mtx;
+    std::vector<Functor> functors;
     std::unique_ptr<Trigger> evTrigger;
     std::unique_ptr<TimerQueue> tmqueue;
     std::vector<struct epoll_event> evpool;

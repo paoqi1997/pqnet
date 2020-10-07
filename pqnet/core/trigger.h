@@ -19,6 +19,7 @@ public:
     int getFd() const { return fd; }
     void setEpfd(int _epfd) { epfd = _epfd; }
     void setFd(int _fd) { fd = _fd; }
+    bool isHandling() { return handling; }
     void addToLoop() { updateEvents(EPOLL_CTL_ADD); }
     void removeFromLoop() { updateEvents(EPOLL_CTL_DEL); }
     void setRevents(std::uint32_t _revents) { revents = _revents; }
@@ -36,6 +37,7 @@ private:
 private:
     int epfd;
     int fd;
+    bool handling;
     std::uint32_t events;
     std::uint32_t revents;
     readHandler readhd;
