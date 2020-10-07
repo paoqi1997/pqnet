@@ -18,7 +18,7 @@ TcpClient::TcpClient(const char *servname, std::uint16_t port)
 
 TcpClient::~TcpClient()
 {
-    if (conn->isConnected()) {
+    if (conn->getStatus() == TcpConnection::CONNECTED) {
         conn->connectDestroyed();
     }
 }

@@ -16,6 +16,12 @@ namespace pqnet
 class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 {
 public:
+    enum Status {
+        DISCONNECTED,
+        CONNECTING,
+        CONNECTED,
+        DISCONNECTING
+    };
     TcpConnection(EventLoop *_looper, int fd);
     int getFd() const { return tg->getFd(); }
     EventLoop* getEventLoop() { return looper; }
@@ -23,7 +29,7 @@ public:
     Buffer* getOutputBuffer() { return &outputBuffer; }
     void connectEstablished();
     void connectDestroyed();
-    bool isConnected() const { return connected; }
+    Status getStatus() const { return status; }
     void send(const char *data, std::size_t len);
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
@@ -41,7 +47,7 @@ private:
     writeCompletedCallBack wccb;
     Buffer inputBuffer;
     Buffer outputBuffer;
-    bool connected;
+    Status status;
     EventLoop *looper;
     std::unique_ptr<Trigger> tg;
 };

@@ -10,7 +10,7 @@
 using namespace pqnet;
 
 TcpConnection::TcpConnection(EventLoop *_looper, int fd)
-    : looper(_looper), tg(new Trigger(_looper->getFd(), fd))
+    : status(CONNECTING), looper(_looper), tg(new Trigger(_looper->getFd(), fd))
 {
     tg->setReadHandler(std::bind(&TcpConnection::handleRead, this));
     tg->setWriteHandler(std::bind(&TcpConnection::handleWrite, this));
@@ -19,7 +19,7 @@ TcpConnection::TcpConnection(EventLoop *_looper, int fd)
 void TcpConnection::connectEstablished()
 {
     DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
-    connected = true;
+    status = CONNECTED;
     tg->addToLoop();
     tg->likeReading();
     if (conncb) {
@@ -34,7 +34,7 @@ void TcpConnection::connectDestroyed()
     if (close(tg->getFd()) != 0) {
         ERROR(std::strerror(errno));
     }
-    connected = false;
+    status = DISCONNECTED;
     if (closecb) {
         closecb(shared_from_this());
     }
@@ -101,6 +101,7 @@ void TcpConnection::handleWrite()
 void TcpConnection::handleClose()
 {
     DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    status = DISCONNECTING;
     if (rmcb) {
         rmcb(shared_from_this());
     }
