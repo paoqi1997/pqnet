@@ -18,7 +18,6 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 public:
     TcpConnection(EventLoop *_looper, int fd);
     int getFd() const { return tg->getFd(); }
-    bool isHandling() { return tg->isHandling(); }
     EventLoop* getEventLoop() { return looper; }
     Buffer* getInputBuffer() { return &inputBuffer; }
     Buffer* getOutputBuffer() { return &outputBuffer; }
@@ -34,6 +33,7 @@ public:
 private:
     void handleRead();
     void handleWrite();
+    void handleClose();
     connectCallBack conncb;
     closeCallBack closecb;
     removeConnCallBack rmcb;

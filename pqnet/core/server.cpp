@@ -127,9 +127,8 @@ void TcpServer::removeConnection(const TcpConnPtr& conn)
 
 void TcpServer::removeConnectionInLoop(const TcpConnPtr& conn)
 {
-    if (conn->isHandling()) {
-        leader->pushFunctor(std::bind(&TcpServer::removeConnectionInLoop, this, conn));
-    } else {
-        connpool.erase(conn->getFd());
-    }
+    connpool.erase(conn->getFd());
+    auto looper = conn->getEventLoop();
+    // 析构 conn 对象在 handleEvent 后执行
+    looper->pushFunctor(std::bind(&TcpConnection::connectDestroyed, conn));
 }

@@ -38,9 +38,6 @@ void TcpConnection::connectDestroyed()
     if (closecb) {
         closecb(shared_from_this());
     }
-    if (rmcb) {
-        rmcb(shared_from_this());
-    }
 }
 
 void TcpConnection::send(const char *data, std::size_t len)
@@ -80,7 +77,7 @@ void TcpConnection::handleRead()
             macb(shared_from_this());
         }
     } else if (n == 0) {
-        this->connectDestroyed();
+        this->handleClose();
     } else {
         ERROR(std::strerror(errno));
     }
@@ -98,5 +95,13 @@ void TcpConnection::handleWrite()
         }
     } else {
         ERROR(std::strerror(errno));
+    }
+}
+
+void TcpConnection::handleClose()
+{
+    DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    if (rmcb) {
+        rmcb(shared_from_this());
     }
 }
