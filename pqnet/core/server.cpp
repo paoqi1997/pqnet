@@ -106,7 +106,7 @@ void TcpServer::onAccept()
         DEBUG("Connection %d in Looper %d.", connfd, currLooper->getFd());
     }
     if (errno == EAGAIN) {
-        DEBUG(MSG_ACCEPT_EAGAIN);
+        WARN(MSG_ACCEPT_EAGAIN);
     } else {
         ERROR(std::strerror(errno));
     }

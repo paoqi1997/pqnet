@@ -21,7 +21,7 @@ int main()
     std::printf("Count1: %d\n", cdLatch.getCount());
     cdLatch.wait();
     std::printf("Count2: %d\n", cdLatch.getCount());
-    for (auto &t : pool) {
+    for (auto& t : pool) {
         if (t.joinable()) {
             t.join();
         }

@@ -55,6 +55,6 @@ void Trigger::updateEvents(int op)
                 ERROR(std::strerror(errno));
             }
             break;
-        };
+        }
     }
 }
