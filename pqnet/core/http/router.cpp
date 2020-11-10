@@ -7,10 +7,10 @@ HttpRouter::HttpRouter()
 
 }
 
-void HttpRouter::serve(const HttpRequest& req, HttpResponse& rep)
+void HttpRouter::serve(const HttpRequest& req, HttpResponse& resp)
 {
     std::string uri = req.getUri();
     if (routingTable.find(uri) != routingTable.end()) {
-        routingTable[uri](req, rep);
+        routingTable[uri](req, resp);
     }
 }

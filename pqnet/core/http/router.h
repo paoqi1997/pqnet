@@ -23,7 +23,7 @@ public:
     void addHandler(const std::string& uri, const httpHandler& hd) {
         routingTable[uri] = hd;
     }
-    void serve(const HttpRequest& req, HttpResponse& rep);
+    void serve(const HttpRequest& req, HttpResponse& resp);
 private:
     std::map<std::string, httpHandler> routingTable;
 };

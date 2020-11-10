@@ -27,15 +27,15 @@ void HttpResponse::appendToBody(const std::string& sBody)
 
 std::string HttpResponse::getResponse() const
 {
-    std::string rep;
+    std::string resp;
     // Status-Line
-    rep.append(version).append(" ").append(statusInfo).append(CRLF);
+    resp.append(version).append(" ").append(statusInfo).append(CRLF);
     // Headers
     for (auto& header : headers) {
-        rep.append(header.first).append(": ").append(header.second).append(CRLF);
+        resp.append(header.first).append(": ").append(header.second).append(CRLF);
     }
-    rep.append(CRLF);
+    resp.append(CRLF);
     // Body
-    rep.append(body);
-    return rep;
+    resp.append(body);
+    return resp;
 }

@@ -24,7 +24,7 @@ class HttpServer
 public:
     HttpServer(std::uint16_t port) : reqcnt(0), serv(port)
     {
-        router.addHandler("/", [](const HttpRequest& req, HttpResponse& rep){
+        router.addHandler("/", [](const HttpRequest& req, HttpResponse& resp){
             std::string body;
             body.append(
                 "<!DOCTYPE html>\n"
@@ -37,9 +37,9 @@ public:
                 "</body>\n"
                 "</html>\n"
             );
-            rep.addHeader("Content-Length", std::to_string(body.size()));
-            rep.addHeader("Content-Type", "text/html; charset=utf-8");
-            rep.appendToBody(body);
+            resp.addHeader("Content-Length", std::to_string(body.size()));
+            resp.addHeader("Content-Type", "text/html; charset=utf-8");
+            resp.appendToBody(body);
         });
     }
     void start() {
@@ -70,12 +70,12 @@ public:
         pqnet::http::HttpRequest oHttpReq(req);
         std::printf("RequestCnt: %lu\n", ++reqcnt);
         // Response
-        pqnet::http::HttpResponse oHttpRep;
+        pqnet::http::HttpResponse oHttpResp;
         // Router
-        router.serve(oHttpReq, oHttpRep);
+        router.serve(oHttpReq, oHttpResp);
         // Reply to Browser/Client
-        std::string rep = oHttpRep.getResponse();
-        conn->send(rep.c_str(), rep.length());
+        std::string resp = oHttpResp.getResponse();
+        conn->send(resp.c_str(), resp.length());
         // Close the Connection
         if (pqnet::shutdownWrite(conn->getFd()) == -1) {
             ERROR(std::strerror(errno));
