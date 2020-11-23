@@ -1,8 +1,3 @@
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include "util.h"
 
 int main()
@@ -13,7 +8,7 @@ int main()
         return 1;
     }
 
-    int semid = semget(SEM_KEY, 2, IPC_CREAT | 0666);
+    int semid = semget(SEM_KEY, 2, IPC_CREAT | 0600);
     if (semid == -1) {
         error("semget");
         return 1;
@@ -29,23 +24,24 @@ int main()
     unsigned short vals[2] = {0, 1};
     sem_arg.array = vals;
 
-    // 将该集合中所有的信号量值设置成 semun.array 指向的数组中的值
-    if (semctl(semid, 1024, SETALL, sem_arg) == -1) {
+    // SETVAL: 设置成员 semnum 的 semval 值，该值由 arg.val 指定
+    // SETALL: 将该集合中所有的信号量值设置成 arg.array 指向的数组中的值
+    if (semctl(semid, SEM_XYZ, SETALL, sem_arg) == -1) {
         error("semctl");
         return 1;
     }
 
     struct Msg *msg = static_cast<struct Msg*>(shmp);
     for (std::size_t i = 0; i <= 10; ++i) {
-        if (semop(semid, &sem_opt_wait2, 1) == -1) {
-            error("semop");
+        if (sem_p2(semid) == -1) {
+            error("sem_p2");
             return 1;
         }
         msg->num = i;
         std::sprintf(msg->buf, "shm: %zu", i);
         std::printf("[sendmsg] %s\n", msg->buf);
-        if (semop(semid, &sem_opt_wakeup1, 1) == -1) {
-            error("semop");
+        if (sem_v1(semid) == -1) {
+            error("sem_v1");
             return 1;
         }
         sleep(1);
@@ -58,6 +54,11 @@ int main()
 
     if (shmctl(shmid, IPC_RMID, nullptr) == -1 && errno != EINVAL) {
         error("shmctl");
+        return 1;
+    }
+
+    if (semctl(semid, SEM_XYZ, IPC_RMID, nullptr) == -1 && errno != EINVAL) {
+        error("semctl");
         return 1;
     }
 

@@ -1,8 +1,3 @@
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include "util.h"
 
 int main()
@@ -13,7 +8,7 @@ int main()
         return 1;
     }
 
-    int semid = semget(SEM_KEY, 0, IPC_CREAT | 0666);
+    int semid = semget(SEM_KEY, 0, IPC_CREAT | 0600);
     if (semid == -1) {
         error("semget");
         return 1;
@@ -27,13 +22,13 @@ int main()
 
     struct Msg *msg = static_cast<struct Msg*>(shmp);
     while (msg->num < 10) {
-        if (semop(semid, &sem_opt_wait1, 1) == -1) {
-            error("semop");
+        if (sem_p1(semid) == -1) {
+            error("sem_p1");
             return 1;
         }
         std::printf("[recvmsg] %s\n", msg->buf);
-        if (semop(semid, &sem_opt_wakeup2, 1) == -1) {
-            error("semop");
+        if (sem_v2(semid) == -1) {
+            error("sem_v2");
             return 1;
         }
         sleep(1);
@@ -46,6 +41,11 @@ int main()
 
     if (shmctl(shmid, IPC_RMID, nullptr) == -1) {
         error("shmctl");
+        return 1;
+    }
+
+    if (semctl(semid, SEM_XYZ, IPC_RMID, nullptr) == -1) {
+        error("semctl");
         return 1;
     }
 
