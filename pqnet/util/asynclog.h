@@ -79,7 +79,6 @@ public:
         return instance;
     }
     std::condition_variable& Cond() { return cond; }
-    void checkLogName();
     void setLogLevel(Logger::LogLevel _level) { level = _level; }
     void setTarget(Logger::Target _target);
     bool isRunning() const { return running; }
@@ -107,6 +106,7 @@ private:
 private:
     AsyncLog();
     ~AsyncLog();
+    void checkDate(const char *date);
     static std::mutex mtx;
     static AsyncLog *instance;
     // To delete the instance

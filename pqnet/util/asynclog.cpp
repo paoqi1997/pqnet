@@ -54,10 +54,9 @@ AsyncLog::~AsyncLog()
     }
 }
 
-void AsyncLog::checkLogName()
+void AsyncLog::checkDate(const char *date)
 {
     if (target == Logger::FILE) {
-        const char *date = now().toDate();
         if (std::strcmp(currdate.c_str(), date) != 0) {
             if (std::fclose(lf) != 0) {
                 ERROR(std::strerror(errno));
@@ -118,9 +117,10 @@ void AsyncLog::consume(Log log)
     if (log.level < level)
         return;
 
-    checkLogName();
+    TimeStamp ts = now();
+    checkDate(ts.toDate());
 
-    const char *time = now().toDefault();
+    const char *time = ts.toDefault();
     std::size_t id = tid2u64(log.id);
     const char *sourcefile = log.sourcefile;
     int line = log.line;

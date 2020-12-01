@@ -58,7 +58,6 @@ public:
         }
         return instance;
     }
-    void checkLogName();
     void setLogLevel(LogLevel _level) { level = _level; }
     void setTarget(Target _target);
     void log(LogLevel _level, const char *sourcefile, int line, const char *fmt, ...);
@@ -70,6 +69,7 @@ private:
     std::FILE *lf;
 private:
     Logger();
+    void checkDate(const char *date);
     static Logger *instance;
     // To delete the instance
     class Garbo

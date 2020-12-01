@@ -25,10 +25,9 @@ Logger::Logger()
     }
 }
 
-void Logger::checkLogName()
+void Logger::checkDate(const char *date)
 {
     if (target == FILE) {
-        const char *date = now().toDate();
         if (std::strcmp(currdate.c_str(), date) != 0) {
             if (std::fclose(lf) != 0) {
                 ERROR(std::strerror(errno));
@@ -69,9 +68,10 @@ void Logger::log(LogLevel _level, const char *sourcefile, int line, const char *
     if (_level < level)
         return;
 
-    checkLogName();
+    TimeStamp ts = now();
+    checkDate(ts.toDate());
 
-    const char *time = now().toDefault();
+    const char *time = ts.toDefault();
 
     std::va_list args1, args2;
     va_start(args1, fmt);
