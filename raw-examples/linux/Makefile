@@ -1,7 +1,12 @@
 CXX = g++
 CXXFLAGS = -g -Wall
+LIBS = -ldl
 
-BINS = daemon_test mmap_test timerfd_test ucontext_test
+BINS = daemon_test  \
+       dlopen_test  \
+       mmap_test    \
+       timerfd_test \
+       ucontext_test
 
 .PHONY: build_all
 
@@ -9,6 +14,9 @@ build_all: ${BINS}
 
 daemon_test: daemon_test.o
 	${CXX} ${CXXFLAGS} $^ -o $@
+
+dlopen_test: dlopen_test.o
+	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
 mmap_test: mmap_test.o
 	${CXX} ${CXXFLAGS} $^ -o $@
