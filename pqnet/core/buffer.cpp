@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 
+#include "../util/logger.h"
 #include "buffer.h"
 
 using namespace pqnet;
@@ -12,33 +13,32 @@ Buffer::Buffer(std::size_t size) : buf(size), readerIndex(0), writerIndex(0)
 
 }
 
+bool Buffer::doubleSize()
+{
+    std::size_t capacity = buf.capacity();
+    if (capacity < MAXSIZE) {
+        buf.resize(2 * capacity);
+        return true;
+    } else {
+        DEBUG("the size of the buffer is maximum.");
+        return false;
+    }
+}
+
+void Buffer::vacate()
+{
+    std::size_t rbs = this->readableBytes();
+    std::copy(this->beginRead(), this->beginWrite(), begin());
+    readerIndex = 0;
+    writerIndex = readerIndex + rbs;
+}
+
 void Buffer::makeSpace(std::size_t len)
 {
     if (len > writableBytes() + frontBytes()) {
-        buf.resize(writerIndex + len);
+        this->doubleSize();
     } else {
-        std::size_t rbs = this->readableBytes();
-        std::copy(this->beginRead(), this->beginWrite(), begin());
-        readerIndex = 0;
-        writerIndex = readerIndex + rbs;
-    }
-}
-
-bool Buffer::isReadable(std::size_t len) const
-{
-    if (len <= readableBytes()) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool Buffer::isWritable(std::size_t len) const
-{
-    if (len <= writableBytes()) {
-        return true;
-    } else {
-        return false;
+        this->vacate();
     }
 }
 
@@ -116,14 +116,24 @@ std::int64_t Buffer::getInt64()
 }
 
 // Host/Net -> Buffer
-ssize_t Buffer::readFrom(int fd, std::size_t len)
+ssize_t Buffer::readFrom(int fd)
 {
-    if (!isWritable(len)) {
-        this->makeSpace(len);
+    this->vacate();
+    if (!isWritable()) {
+        this->doubleSize();
     }
-    ssize_t num = read(fd, this->beginWrite(), len);
+
+    ssize_t num = read(fd, this->beginWrite(), writableBytes());
     if (num > 0) {
         writerIndex += num;
+        if (!isWritable()) {
+            if (doubleSize()) {
+                ssize_t n = readFrom(fd);
+                if (n > 0) {
+                    num += n;
+                }
+            }
+        }
     }
     return num;
 }

@@ -71,7 +71,7 @@ void TcpConnection::send(const char *data, std::size_t len)
 void TcpConnection::handleRead()
 {
     DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
-    ssize_t n = inputBuffer.readFrom(tg->getFd(), inputBuffer.writableBytes());
+    ssize_t n = inputBuffer.readFrom(tg->getFd());
     if (n > 0) {
         if (macb) {
             macb(shared_from_this());
