@@ -18,3 +18,4 @@ jobs:
           cd ${GITHUB_WORKSPACE}/pqnet/core/tests && make
           cd ${GITHUB_WORKSPACE}/examples/echo && make -f uselib.mk
           cd ${GITHUB_WORKSPACE}/examples/http && make
+          cd ${GITHUB_WORKSPACE}/examples/rand64k && make

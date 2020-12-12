@@ -13,3 +13,4 @@ script:
   - cd $ROOT/pqnet/core/tests && make
   - cd $ROOT/examples/echo && make -f uselib.mk
   - cd $ROOT/examples/http && make
+  - cd $ROOT/examples/rand64k && make
