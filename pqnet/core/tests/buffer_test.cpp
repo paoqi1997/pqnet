@@ -22,7 +22,7 @@ int main()
     output(buffer);
 
     auto f = std::fopen("/proc/version", "r");
-    buffer.readFrom(fileno(f), 192);
+    buffer.readFrom(fileno(f));
     output(buffer);
     if (std::fclose(f) != 0) {
         std::exit(EXIT_FAILURE);
