@@ -3,6 +3,7 @@ CXXFLAGS = -g -Wall -std=c++11 -I../../..
 
 ROOT_DIR = ../..
 CORE_DIR = ${ROOT_DIR}/core
+PLAT_DIR = ${ROOT_DIR}/platform
 UTIL_DIR = ${ROOT_DIR}/util
 
 BINS = buffer_test endian_test ipaddr_test timerqueue_test
@@ -11,7 +12,7 @@ BINS = buffer_test endian_test ipaddr_test timerqueue_test
 
 build_all: ${BINS}
 
-buffer_test: buffer_test.o ${CORE_DIR}/buffer.o
+buffer_test: buffer_test.o ${CORE_DIR}/buffer.o ${PLAT_DIR}/base.o ${UTIL_DIR}/logger.o ${UTIL_DIR}/timestamp.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 endian_test: endian_test.o ${CORE_DIR}/endian.o
