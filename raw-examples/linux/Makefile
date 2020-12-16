@@ -5,6 +5,7 @@ LIBS = -ldl
 BINS = daemon_test  \
        dlopen_test  \
        mmap_test    \
+       syscall_test \
        timerfd_test \
        ucontext_test
 
@@ -19,6 +20,9 @@ dlopen_test: dlopen_test.o
 	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
 mmap_test: mmap_test.o
+	${CXX} ${CXXFLAGS} $^ -o $@
+
+syscall_test: syscall_test.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 timerfd_test: timerfd_test.o
