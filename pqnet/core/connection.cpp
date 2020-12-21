@@ -30,14 +30,14 @@ void TcpConnection::connectEstablished()
 void TcpConnection::connectDestroyed()
 {
     DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    if (status == CONNECTED && closecb) {
+        closecb(shared_from_this());
+    }
     tg->removeFromLoop();
     if (close(tg->getFd()) != 0) {
         ERROR(std::strerror(errno));
     }
     status = DISCONNECTED;
-    if (closecb) {
-        closecb(shared_from_this());
-    }
 }
 
 void TcpConnection::send(const char *data, std::size_t len)
@@ -101,6 +101,9 @@ void TcpConnection::handleWrite()
 void TcpConnection::handleClose()
 {
     DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    if (status == CONNECTED && closecb) {
+        closecb(shared_from_this());
+    }
     status = DISCONNECTING;
     if (rmcb) {
         rmcb(shared_from_this());

@@ -26,6 +26,7 @@ TcpClient::~TcpClient()
 void TcpClient::start()
 {
     setCallBacks();
+    conn->connectEstablished();
     looper->loop();
 }
 
@@ -60,5 +61,4 @@ void TcpClient::setCallBacks()
     conn->setCloseCallBack(closecb);
     conn->setMessageArrivedCallBack(macb);
     conn->setWriteCompletedCallBack(wccb);
-    conn->connectEstablished();
 }
