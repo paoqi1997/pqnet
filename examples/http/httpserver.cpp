@@ -5,7 +5,6 @@
 #include <string>
 
 #include <pqnet/core/server.h>
-#include <pqnet/core/socket.h>
 #include <pqnet/core/http/request.h>
 #include <pqnet/core/http/response.h>
 #include <pqnet/core/http/router.h>
@@ -77,9 +76,7 @@ public:
         std::string resp = oHttpResp.getResponse();
         conn->send(resp.c_str(), resp.length());
         // Close the Connection
-        if (pqnet::shutdownWrite(conn->getFd()) == -1) {
-            ERROR(std::strerror(errno));
-        }
+        conn->shutdown();
     }
 private:
     static const std::size_t BUFFERSIZE = 1024;

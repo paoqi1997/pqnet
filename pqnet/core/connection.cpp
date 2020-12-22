@@ -6,6 +6,7 @@
 
 #include "../util/logger.h"
 #include "connection.h"
+#include "socket.h"
 
 using namespace pqnet;
 
@@ -65,6 +66,20 @@ void TcpConnection::send(const char *data, std::size_t len)
             // for TcpConnection::handleWrite
             tg->likeWriting();
         }
+    }
+}
+
+void TcpConnection::shutdown()
+{
+    if (status == CONNECTED) {
+        looper->pushFunctor(std::bind(&TcpConnection::shutdownInLoop, this));
+    }
+}
+
+void TcpConnection::shutdownInLoop()
+{
+    if (!tg->isLikeWriting()) {
+        shutdownWrite(tg->getFd());
     }
 }
 

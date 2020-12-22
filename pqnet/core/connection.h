@@ -31,12 +31,14 @@ public:
     void connectDestroyed();
     Status getStatus() const { return status; }
     void send(const char *data, std::size_t len);
+    void shutdown();
     void setConnectCallBack(const connectCallBack& cb) { conncb = cb; }
     void setCloseCallBack(const closeCallBack& cb) { closecb = cb; }
     void setRemoveConnCallBack(const removeConnCallBack& cb) { rmcb = cb; }
     void setMessageArrivedCallBack(const messageArrivedCallBack& cb) { macb = cb; }
     void setWriteCompletedCallBack(const writeCompletedCallBack& cb) { wccb = cb; }
 private:
+    void shutdownInLoop();
     void handleRead();
     void handleWrite();
     void handleClose();
