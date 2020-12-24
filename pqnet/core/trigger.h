@@ -31,6 +31,7 @@ public:
     bool isLikeWriting() { return events & EPOLLOUT; }
     void setReadHandler(const readHandler& hd) { readhd = hd; }
     void setWriteHandler(const writeHandler& hd) { writehd = hd; }
+    void setErrorHandler(const errorHandler& hd) { errorhd = hd; }
 private:
     void updateEvents(int op);
 private:
@@ -40,6 +41,7 @@ private:
     std::uint32_t revents;
     readHandler readhd;
     writeHandler writehd;
+    errorHandler errorhd;
 };
 
 } // namespace pqnet

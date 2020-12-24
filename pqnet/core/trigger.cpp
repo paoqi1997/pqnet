@@ -18,6 +18,11 @@ Trigger::Trigger(int _epfd, int _fd) : epfd(_epfd), fd(_fd), events(EPOLLET)
 
 void Trigger::handleEvent()
 {
+    if (revents & EPOLLERR) {
+        if (errorhd) {
+            errorhd();
+        }
+    }
     if (revents & EPOLLIN) {
         if (readhd) {
             readhd();

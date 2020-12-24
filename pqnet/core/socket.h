@@ -6,6 +6,7 @@ namespace pqnet
 
 int new_socket();
 int shutdownWrite(int sockfd);
+int getSocketError(int sockfd);
 
 int isNonBlock(int sockfd);
 int isReuseAddr(int sockfd);

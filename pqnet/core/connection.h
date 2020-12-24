@@ -42,6 +42,7 @@ private:
     void handleRead();
     void handleWrite();
     void handleClose();
+    void handleError();
     connectCallBack conncb;
     closeCallBack closecb;
     removeConnCallBack rmcb;

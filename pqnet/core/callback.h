@@ -9,6 +9,7 @@ namespace pqnet
 
 using  readHandler = std::function<void()>;
 using writeHandler = std::function<void()>;
+using errorHandler = std::function<void()>;
 
 class TcpConnection;
 using TcpConnPtr = std::shared_ptr<TcpConnection>;

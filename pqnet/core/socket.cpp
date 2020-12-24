@@ -1,3 +1,5 @@
+#include <cerrno>
+
 #include <fcntl.h>
 #include <netinet/in.h>  // for IPPROTO_TCP
 #include <netinet/tcp.h> // for TCP_NODELAY
@@ -16,6 +18,16 @@ int pqnet::new_socket()
 int pqnet::shutdownWrite(int sockfd)
 {
     return shutdown(sockfd, SHUT_WR);
+}
+
+int pqnet::getSocketError(int sockfd)
+{
+    int opt;
+    socklen_t optlen = sizeof(opt);
+    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &opt, &optlen) == -1) {
+        return errno;
+    }
+    return opt;
 }
 
 int pqnet::isNonBlock(int sockfd)

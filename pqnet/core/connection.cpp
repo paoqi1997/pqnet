@@ -16,6 +16,7 @@ TcpConnection::TcpConnection(EventLoop *_looper, int fd)
 {
     tg->setReadHandler(std::bind(&TcpConnection::handleRead, this));
     tg->setWriteHandler(std::bind(&TcpConnection::handleWrite, this));
+    tg->setErrorHandler(std::bind(&TcpConnection::handleError, this));
 }
 
 void TcpConnection::connectEstablished()
@@ -126,4 +127,10 @@ void TcpConnection::handleClose()
     if (rmcb) {
         rmcb(shared_from_this());
     }
+}
+
+void TcpConnection::handleError()
+{
+    DEBUG("ConnFd: %d, Func: TcpConnection::%s", tg->getFd(), __func__);
+    ERROR(std::strerror(getSocketError(tg->getFd())));
 }
