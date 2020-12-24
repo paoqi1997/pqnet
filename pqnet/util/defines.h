@@ -10,8 +10,9 @@ namespace pqnet
 #define BUFSIZE 32
 
 // Messages
-#define MSG_ACCEPT_EAGAIN    "The socket is marked nonblocking and no connections are present to be accepted."
-#define MSG_EPOLL_WAIT_EINTR "The call was interrupted by a signal handler."
+#define MSG_ACCEPT_EAGAIN       "The socket is marked nonblocking and no connections are present to be accepted."
+#define MSG_EPOLL_WAIT_EINTR    "The call was interrupted by a signal handler."
+#define MSG_BUFFER_SIZE_MAXIMUM "The size of the buffer is maximum."
 
 // Constants
 #define    TRUE  1

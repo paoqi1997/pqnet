@@ -12,6 +12,10 @@ namespace pqnet
 class Buffer
 {
 public:
+    // interval: (-∞, -1)
+    enum EvCode {
+        BUFFER_SIZE_MAXIMUM = -2
+    };
     Buffer(std::size_t size = 1024);
     bool doubleSize();
     void vacate();

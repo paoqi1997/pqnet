@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 
+#include "../util/defines.h"
 #include "../util/logger.h"
 #include "connection.h"
 #include "socket.h"
@@ -93,6 +94,8 @@ void TcpConnection::handleRead()
         }
     } else if (n == 0) {
         this->handleClose();
+    } else if (n == Buffer::BUFFER_SIZE_MAXIMUM) {
+        WARN(MSG_BUFFER_SIZE_MAXIMUM);
     } else {
         ERROR(std::strerror(errno));
     }

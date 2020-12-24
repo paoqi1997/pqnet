@@ -20,7 +20,6 @@ bool Buffer::doubleSize()
         buf.resize(2 * capacity);
         return true;
     } else {
-        DEBUG("the size of the buffer is maximum.");
         return false;
     }
 }
@@ -120,14 +119,18 @@ ssize_t Buffer::readFrom(int fd)
 {
     this->vacate();
     if (!isWritable()) {
-        this->doubleSize();
+        if (!doubleSize()) {
+            return BUFFER_SIZE_MAXIMUM;
+        }
     }
 
     ssize_t num = read(fd, this->beginWrite(), writableBytes());
     if (num > 0) {
         writerIndex += num;
         if (!isWritable()) {
-            if (doubleSize()) {
+            if (!doubleSize()) {
+                return BUFFER_SIZE_MAXIMUM;
+            } else {
                 ssize_t n = readFrom(fd);
                 if (n > 0) {
                     num += n;
