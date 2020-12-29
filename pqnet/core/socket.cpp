@@ -22,12 +22,12 @@ int pqnet::shutdownWrite(int sockfd)
 
 int pqnet::getSocketError(int sockfd)
 {
-    int opt;
-    socklen_t optlen = sizeof(opt);
-    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &opt, &optlen) == -1) {
+    int optval;
+    socklen_t optlen = sizeof(optval);
+    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen) == -1) {
         return errno;
     }
-    return opt;
+    return optval;
 }
 
 int pqnet::isNonBlock(int sockfd)
@@ -46,42 +46,42 @@ int pqnet::isNonBlock(int sockfd)
 
 int pqnet::isReuseAddr(int sockfd)
 {
-    int opt;
-    socklen_t optlen = sizeof(opt);
-    if (getsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, &optlen) == -1) {
+    int optval;
+    socklen_t optlen = sizeof(optval);
+    if (getsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, &optlen) == -1) {
         return UNKNOWN;
     }
-    return opt;
+    return optval;
 }
 
 int pqnet::isReusePort(int sockfd)
 {
-    int opt;
-    socklen_t optlen = sizeof(opt);
-    if (getsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &opt, &optlen) == -1) {
+    int optval;
+    socklen_t optlen = sizeof(optval);
+    if (getsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, &optlen) == -1) {
         return UNKNOWN;
     }
-    return opt;
+    return optval;
 }
 
 int pqnet::isNoDelay(int sockfd)
 {
-    int opt;
-    socklen_t optlen = sizeof(opt);
-    if (getsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &opt, &optlen) == -1) {
+    int optval;
+    socklen_t optlen = sizeof(optval);
+    if (getsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &optval, &optlen) == -1) {
         return UNKNOWN;
     }
-    return opt;
+    return optval;
 }
 
 int pqnet::isKeepAlive(int sockfd)
 {
-    int opt;
-    socklen_t optlen = sizeof(opt);
-    if (getsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &opt, &optlen) == -1) {
+    int optval;
+    socklen_t optlen = sizeof(optval);
+    if (getsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &optval, &optlen) == -1) {
         return UNKNOWN;
     }
-    return opt;
+    return optval;
 }
 
 bool pqnet::setNonBlock(int sockfd, bool flag)
@@ -105,8 +105,8 @@ bool pqnet::setNonBlock(int sockfd, bool flag)
 
 bool pqnet::setReuseAddr(int sockfd, bool flag)
 {
-    int opt = flag;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+    int optval = flag;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1) {
         return false;
     }
     return true;
@@ -114,8 +114,8 @@ bool pqnet::setReuseAddr(int sockfd, bool flag)
 
 bool pqnet::setReusePort(int sockfd, bool flag)
 {
-    int opt = flag;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+    int optval = flag;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) == -1) {
         return false;
     }
     return true;
@@ -123,8 +123,8 @@ bool pqnet::setReusePort(int sockfd, bool flag)
 
 bool pqnet::setNoDelay(int sockfd, bool flag)
 {
-    int opt = flag;
-    if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt)) == -1) {
+    int optval = flag;
+    if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(optval)) == -1) {
         return false;
     }
     return true;
@@ -132,8 +132,8 @@ bool pqnet::setNoDelay(int sockfd, bool flag)
 
 bool pqnet::setKeepAlive(int sockfd, bool flag)
 {
-    int opt = flag;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) == -1) {
+    int optval = flag;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval)) == -1) {
         return false;
     }
     return true;
