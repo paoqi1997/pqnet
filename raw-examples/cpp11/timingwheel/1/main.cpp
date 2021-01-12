@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 
 void printCurrTime() {
-#ifdef WIN32
+#ifdef _WIN32
     std::system("echo %date% %time%");
 #else
     std::system("date +\"%F %T\"");

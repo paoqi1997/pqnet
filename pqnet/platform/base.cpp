@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <sys/stat.h> // for mkdir()
@@ -28,7 +28,7 @@ const char* pqnet::getErrorMsg(int errCode)
     switch (errCode) {
     case 0:
         return "ok.";
-#ifdef WIN32
+#ifdef _WIN32
     case ERROR_ALREADY_EXISTS:
         return "The specified directory already exists.";
     case ERROR_PATH_NOT_FOUND:
@@ -41,7 +41,7 @@ const char* pqnet::getErrorMsg(int errCode)
 
 std::size_t pqnet::getNumberOfProcessors()
 {
-#ifdef WIN32
+#ifdef _WIN32
     SYSTEM_INFO sysinfo;
     GetSystemInfo(&sysinfo);
     return sysinfo.dwNumberOfProcessors;
@@ -70,7 +70,7 @@ std::size_t pqnet::getNumberOfProcessors()
 
 int pqnet::makeDir(const std::string& dirname)
 {
-#ifdef WIN32
+#ifdef _WIN32
     wchar_t wbuf[BUFSIZE];
     std::mbstowcs(wbuf, dirname.c_str(), dirname.length() + 1);
     if (!CreateDirectoryW(wbuf, nullptr)) {
