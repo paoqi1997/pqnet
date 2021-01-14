@@ -32,4 +32,4 @@ install(DIRECTORY ${DIRS}
 install(TARGETS pqnet_static pqnet DESTINATION lib)
 
 # 以下命令用于 uninstall pqnet
-# cat install_manifest.txt|sudo xargs rm
+# sudo xargs rm < install_manifest.txt
