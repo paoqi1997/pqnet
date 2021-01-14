@@ -4,9 +4,9 @@ CXXFLAGS = -g -Wall -std=c++11
 INSTALL_INC_DIR = /usr/local/include/pqnet
 INSTALL_LIB_DIR = /usr/local/lib
 
-CORE_DIR = core
-PLAT_DIR = platform
-UTIL_DIR = util
+CORE_DIR = pqnet/core
+PLAT_DIR = pqnet/platform
+UTIL_DIR = pqnet/util
 
 CORE_SRCS = ${shell find ${CORE_DIR} -path ${CORE_DIR}/tests -prune -o -name '*.cpp' -print}
 CORE_OBJS = ${CORE_SRCS:.cpp=.o}
@@ -49,7 +49,7 @@ install:
 	mkdir -p ${INSTALL_INC_DIR}/core/http
 	mkdir -p ${INSTALL_INC_DIR}/platform
 	mkdir -p ${INSTALL_INC_DIR}/util
-	cp pqnet.h ${INSTALL_INC_DIR}
+	cp pqnet/pqnet.h ${INSTALL_INC_DIR}
 	cp ${CORE_DIR}/*.h ${INSTALL_INC_DIR}/core
 	cp ${CORE_DIR}/http/*.h ${INSTALL_INC_DIR}/core/http
 	cp ${PLAT_DIR}/*.h ${INSTALL_INC_DIR}/platform

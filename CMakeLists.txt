@@ -4,9 +4,9 @@ project(pqnet)
 set(CXX_FLAGS "-g -Wall -std=c++11")
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${CXX_FLAGS})
 
-aux_source_directory(./core CORE_SRCS)
-aux_source_directory(./platform PLAT_SRCS)
-aux_source_directory(./util UTIL_SRCS)
+aux_source_directory(pqnet/core CORE_SRCS)
+aux_source_directory(pqnet/platform PLAT_SRCS)
+aux_source_directory(pqnet/util UTIL_SRCS)
 
 set(SRCS ${CORE_SRCS} ${PLAT_SRCS} ${UTIL_SRCS})
 
@@ -18,10 +18,10 @@ set_target_properties(pqnet_static PROPERTIES OUTPUT_NAME "pqnet")
 # 为动态库设置版本号
 set_target_properties(pqnet PROPERTIES VERSION 0.1.0 SOVERSION 0)
 
-set(DIRS ./core ./platform ./util)
+set(DIRS pqnet/core pqnet/platform pqnet/util)
 
 # 安装pqnet.h
-install(FILES pqnet.h DESTINATION include/pqnet)
+install(FILES pqnet/pqnet.h DESTINATION include/pqnet)
 # 安装其他头文件
 install(DIRECTORY ${DIRS}
     DESTINATION include/pqnet
@@ -30,3 +30,6 @@ install(DIRECTORY ${DIRS}
 )
 # 安装静态库及动态库
 install(TARGETS pqnet_static pqnet DESTINATION lib)
+
+# 以下命令用于 uninstall pqnet
+# cat install_manifest.txt|sudo xargs rm
