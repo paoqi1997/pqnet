@@ -20,7 +20,9 @@ set_target_properties(pqnet PROPERTIES VERSION 0.1.0 SOVERSION 0)
 
 set(DIRS ./core ./platform ./util)
 
-# 安装头文件
+# 安装pqnet.h
+install(FILES pqnet.h DESTINATION include/pqnet)
+# 安装其他头文件
 install(DIRECTORY ${DIRS}
     DESTINATION include/pqnet
     FILES_MATCHING PATTERN "*.h"

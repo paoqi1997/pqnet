@@ -49,6 +49,7 @@ install:
 	mkdir -p ${INSTALL_INC_DIR}/core/http
 	mkdir -p ${INSTALL_INC_DIR}/platform
 	mkdir -p ${INSTALL_INC_DIR}/util
+	cp pqnet.h ${INSTALL_INC_DIR}
 	cp ${CORE_DIR}/*.h ${INSTALL_INC_DIR}/core
 	cp ${CORE_DIR}/http/*.h ${INSTALL_INC_DIR}/core/http
 	cp ${PLAT_DIR}/*.h ${INSTALL_INC_DIR}/platform
