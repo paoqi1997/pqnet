@@ -9,7 +9,7 @@ jobs:
 
       - name: install
         run: |
-          cd ${GITHUB_WORKSPACE}/pqnet && make
+          make
           sudo make install
 
       - name: after_install
