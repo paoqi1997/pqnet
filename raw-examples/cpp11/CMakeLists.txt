@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.4)
-project (cpp11test)
+project (cpp11tests)
 
 set (CHRONO_TEST_SRCS chrono_test.cpp)
 set (FUTURE_TEST_SRCS future_test.cpp)
