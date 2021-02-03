@@ -24,14 +24,15 @@ void printCurrTime() {
 int main()
 {
     int count = 0;
-    const int evs = 8;
     // Epfd
-    int epfd = epoll_create(evs);
+    int epfd = epoll_create1(EPOLL_CLOEXEC);
     if (epfd == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+
     // TimerQueue
     TimerQueue tq;
+
     // Register timerfd to epfd
     struct epoll_event poi;
     poi.data.fd = tq.getFd();
@@ -39,6 +40,7 @@ int main()
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, tq.getFd(), &poi) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+
     // Add Timer
     TimerId myID;
     auto cb = [&](void *arg){
@@ -48,13 +50,19 @@ int main()
             tq.delTimer(myID);
         }
     };
+
     printCurrTime();
     std::cout << "Start Timing!" << std::endl;
+
     myID = tq.addTimer(cb, const_cast<char*>("Ticker!"), 3000, 1000);
+
     // Others
     std::signal(SIGINT, sighandler);
+
     bool running = true;
+    const int evs = 8;
     struct epoll_event evpool[evs];
+
     while (running) {
         int cnt = epoll_wait(epfd, evpool, evs, -1);
         if (cnt == -1) {
@@ -69,8 +77,10 @@ int main()
             }
         }
     }
+
     if (close(epfd) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+
     return 0;
 }

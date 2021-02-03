@@ -30,9 +30,8 @@ void handle(int fd) {
 
 int main()
 {
-    const int evs = 8;
     // Epfd & Timerfd
-    int epfd = epoll_create(evs);
+    int epfd = epoll_create1(EPOLL_CLOEXEC);
     if (epfd == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
@@ -40,6 +39,7 @@ int main()
     if (tmfd == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+
     // Register timerfd to epfd
     struct epoll_event poi;
     poi.data.fd = tmfd;
@@ -47,9 +47,11 @@ int main()
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, tmfd, &poi) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+
     // Add Timer
     printCurrTime();
     std::cout << "Start Timing!" << std::endl;
+
     struct itimerspec its;
     its.it_value.tv_sec = 3;
     its.it_value.tv_nsec = 0;
@@ -58,10 +60,14 @@ int main()
     if (timerfd_settime(tmfd, 0, &its, nullptr) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+
     // Others
     std::signal(SIGINT, sighandler);
+
     bool running = true;
+    const int evs = 8;
     struct epoll_event evpool[evs];
+
     while (running) {
         int cnt = epoll_wait(epfd, evpool, evs, -1);
         if (cnt == -1) {
@@ -86,11 +92,13 @@ int main()
             }
         }
     }
+
     if (close(epfd) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
     if (close(tmfd) == -1) {
         std::cout << std::strerror(errno) << std::endl;
     }
+
     return 0;
 }

@@ -15,7 +15,7 @@ EventLoop::EventLoop(int eventPoolSize)
     : loopFlag(false), evTrigger(new Trigger()),
       tmqueue(new TimerQueue()), evpool(eventPoolSize)
 {
-    epfd = epoll_create(eventPoolSize);
+    epfd = epoll_create1(EPOLL_CLOEXEC);
     if (epfd == -1) {
         ERROR(std::strerror(errno));
     }
