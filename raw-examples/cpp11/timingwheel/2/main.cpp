@@ -20,22 +20,28 @@ int main()
 {
     int count = 0;
     std::size_t tick = 20; // 50Hz
+
     TimerManager tm;
     TimerId myID;
+
     auto cb = [&](void *arg){
         printCurrTime();
-        std::cout << static_cast<char*>(arg) << std::endl;
+        cout << static_cast<char*>(arg) << endl;
         if (++count == 10) {
             tm.delTimer(myID);
         }
     };
+
     printCurrTime();
-    std::cout << "Start Timing!" << std::endl;
+    cout << "Start Timing!" << endl;
+
     tm.addTimer("Timer", cb, const_cast<char*>("Timer!"), 6000);
     myID = tm.addTimer("Ticker", cb, const_cast<char*>("Ticker!"), 3000, 1000);
+
     for (;;) {
         std::this_thread::sleep_for(std::chrono::milliseconds(tick));
         tm.handle();
     }
+
     return 0;
 }
