@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-message UserInfo {
+message PlayerInfo {
     int32 uid = 1;
     string name = 2;
     int32 level = 3;

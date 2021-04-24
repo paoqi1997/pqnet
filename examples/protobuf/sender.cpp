@@ -6,7 +6,8 @@
 #include <pqnet/util/logger.h>
 #include <pqnet/util/signal.h>
 
-#include "user.pb.h"
+#include "package.h"
+#include "player.pb.h"
 
 using std::cout;
 using std::endl;
@@ -16,7 +17,7 @@ class Sender
 {
 public:
     Sender(const char *servername, std::uint16_t port)
-        : cli(servername, port) {}
+        : cli(servername, port), package(PROTOCOL_NO) {}
     void start() {
         cli.setConnectCallBack(
             std::bind(&Sender::onConnect, this, _1)
@@ -35,25 +36,26 @@ public:
     void onConnect(const pqnet::TcpConnPtr& conn) {
         INFO("ConnFd: %d, Func: Sender::%s", conn->getFd(), __func__);
 
-        UserInfo userinfo;
+        conn->getEventLoop()->runEvery([conn, this](void*){
+            std::uint32_t uid = RandomUID();
+            std::string name = RandomName();
+            std::uint32_t level = RandomLevel();
 
-        userinfo.set_uid(185763);
-        userinfo.set_name("paoqi");
-        userinfo.set_level(23);
+            playerinfo.set_uid(uid);
+            playerinfo.set_name(name);
+            playerinfo.set_level(level);
 
-        std::string s;
-        userinfo.SerializeToString(&s);
+            playerinfo.SerializeToString(&data);
 
-        std::int32_t datalen = s.length();
+            package.packString(data);
 
-        char sendBuf[32];
+            conn->send(package.p(), package.length());
 
-        std::memcpy(sendBuf, &datalen, sizeof(datalen));
-        std::strcpy(sendBuf + sizeof(std::int32_t), s.c_str());
+            package.clearData();
 
-        conn->send(sendBuf, sizeof(datalen) + s.length());
-
-        std::printf("Send the userinfo to the receiver.\n");
+            std::printf("send { uid=%d, name=%s(%zu), level=%d }\n",
+                uid, name.c_str(), name.length(), level);
+        }, nullptr, 0, 1000);
     }
     void onClose(const pqnet::TcpConnPtr& conn) {
         INFO("ConnFd: %d, Func: Sender::%s", conn->getFd(), __func__);
@@ -64,6 +66,9 @@ public:
     }
 private:
     pqnet::TcpClient cli;
+    std::string data;
+    Package package;
+    PlayerInfo playerinfo;
 };
 
 int main()

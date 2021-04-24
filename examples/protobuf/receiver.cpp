@@ -6,7 +6,8 @@
 #include <pqnet/util/logger.h>
 #include <pqnet/util/signal.h>
 
-#include "user.pb.h"
+#include "package.h"
+#include "player.pb.h"
 
 using std::cout;
 using std::endl;
@@ -40,15 +41,18 @@ public:
     void onMsgArrived(const pqnet::TcpConnPtr& conn) {
         INFO("ConnFd: %d, Func: Receiver::%s", conn->getFd(), __func__);
 
-        std::int32_t datalen = conn->getInputBuffer()->getInt32();
+        std::int32_t protocolNo = conn->getInputBuffer()->getInt32();
+        if (protocolNo == PROTOCOL_NO) {
+            std::int32_t datalen = conn->getInputBuffer()->getInt32();
 
-        std::string data = conn->getInputBuffer()->get(datalen);
+            std::string data = conn->getInputBuffer()->get(datalen);
 
-        UserInfo userinfo;
-        userinfo.ParseFromString(data);
+            PlayerInfo info;
+            info.ParseFromString(data);
 
-        std::printf("RecvDataLen: %d, uid: %d, name: %s, level: %d\n",
-            datalen, userinfo.uid(), userinfo.name().c_str(), userinfo.level());
+            std::printf("recv { uid=%d, name=%s(%zu), level=%d }\n",
+                info.uid(), info.name().c_str(), info.name().length(), info.level());
+        }
     }
 private:
     pqnet::TcpServer serv;
