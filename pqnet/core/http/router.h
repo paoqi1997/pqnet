@@ -23,9 +23,13 @@ public:
     void addHandler(const std::string& uri, const httpHandler& hd) {
         routingTable[uri] = hd;
     }
+    void addStatusCodeHandler(std::size_t statusCode, const httpHandler& hd) {
+        scTable[statusCode] = hd;
+    }
     void serve(const HttpRequest& req, HttpResponse& resp);
 private:
     std::map<std::string, httpHandler> routingTable;
+    std::map<std::size_t, httpHandler> scTable;
 };
 
 } // namespace http

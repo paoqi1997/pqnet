@@ -23,7 +23,7 @@ class HttpServer
 public:
     HttpServer(std::uint16_t port) : reqcnt(0), serv(port)
     {
-        router.addHandler("/", [](const HttpRequest& req, HttpResponse& resp){
+        router.addHandler("/", [](const HttpRequest& req, HttpResponse& resp) {
             std::string body;
             body.append(
                 "<!DOCTYPE html>\n"
@@ -64,17 +64,23 @@ public:
     }
     void onRequest(const pqnet::TcpConnPtr& conn) {
         INFO("ConnFd: %d, Func: HttpServer::%s", conn->getFd(), __func__);
+
         std::string req = conn->getInputBuffer()->get(BUFFERSIZE);
+
         // Request
         pqnet::http::HttpRequest oHttpReq(req);
         std::printf("RequestCnt: %lu\n", ++reqcnt);
+
         // Response
         pqnet::http::HttpResponse oHttpResp;
+
         // Router
         router.serve(oHttpReq, oHttpResp);
+
         // Reply to Browser/Client
         std::string resp = oHttpResp.getResponse();
         conn->send(resp.c_str(), resp.length());
+
         // Close the Connection
         conn->shutdown();
     }

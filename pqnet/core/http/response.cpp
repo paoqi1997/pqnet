@@ -20,6 +20,11 @@ HttpResponse::HttpResponse(std::size_t statusCode) : version(HTTP_VERSION_1_1)
     statusInfo = getStatusInfo(statusCode);
 }
 
+void HttpResponse::resetStatusCode(std::size_t statusCode)
+{
+    statusInfo = getStatusInfo(statusCode);
+}
+
 void HttpResponse::appendToBody(const std::string& sBody)
 {
     body.append(sBody);
