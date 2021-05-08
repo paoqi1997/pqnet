@@ -17,10 +17,13 @@ int main()
     std::uint16_t _h16val = pqnet::n2h16(n16val);
     std::uint32_t _h32val = pqnet::n2h32(n32val);
 
-    if (pqnet::Endian() == IS_LITTLE_ENDIAN) {
+    int endian = pqnet::Endian();
+    if (endian == L_ENDIAN) {
         cout << "little-endian" << endl;
-    } else {
+    } else if (endian == B_ENDIAN) {
         cout << "big-endian" << endl;
+    } else {
+        cout << "unknown" << endl;
     }
 
     cout << h16val << ' ' << n16val << ' ' << _h16val << endl;

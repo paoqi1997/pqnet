@@ -13,9 +13,11 @@ int pqnet::Endian()
 
     char c = static_cast<char>(un.n);
     if (c == 'L') {
-        return IS_LITTLE_ENDIAN;
+        return L_ENDIAN;
+    } else if (c == 'B') {
+        return B_ENDIAN;
     } else {
-        return IS_BIG_ENDIAN;
+        return U_ENDIAN;
     }
 }
 
