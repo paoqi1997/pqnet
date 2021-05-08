@@ -3,7 +3,6 @@
 
 #include <unistd.h>
 
-#include "../util/logger.h"
 #include "buffer.h"
 
 using namespace pqnet;

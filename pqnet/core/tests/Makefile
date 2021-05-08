@@ -12,7 +12,7 @@ BINS = buffer_test endian_test ipaddr_test timerqueue_test
 
 build_all: ${BINS}
 
-buffer_test: buffer_test.o ${CORE_DIR}/buffer.o ${PLAT_DIR}/base.o ${UTIL_DIR}/logger.o ${UTIL_DIR}/timestamp.o
+buffer_test: buffer_test.o ${CORE_DIR}/buffer.o
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 endian_test: endian_test.o ${CORE_DIR}/endian.o
