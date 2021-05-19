@@ -10,6 +10,10 @@ class RingBuffer
 public:
     RingBuffer() : full(false), rIdx(0), wIdx(0) { std::memset(buf, 0, sizeof(buf)); }
 
+    std::size_t rIndex() const { return rIdx; }
+    std::size_t wIndex() const { return wIdx; }
+
+    bool isFull() const { return full; }
     bool isReadable() const { return readableBytes() > 0; }
     bool isWritable() const { return writableBytes() > 0; }
     bool isReadable(std::size_t len) const { return readableBytes() >= len; }
