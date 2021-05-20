@@ -20,19 +20,19 @@ public:
     bool isWritable(std::size_t len) const { return writableBytes() >= len; }
 
     std::size_t readableBytes() const {
-        if (wIdx > rIdx) {
+        if (rIdx < wIdx) {
             return wIdx - rIdx;
-        } else if (wIdx < rIdx) {
+        } else if (rIdx > wIdx) {
             return (SIZE - rIdx) + wIdx;
         } else {
             return full ? SIZE : 0;
         }
     }
     std::size_t writableBytes() const {
-        if (wIdx > rIdx) {
-            return (SIZE - wIdx) + rIdx;
-        } else if (wIdx < rIdx) {
+        if (wIdx < rIdx) {
             return rIdx - wIdx;
+        } else if (wIdx > rIdx) {
+            return (SIZE - wIdx) + rIdx;
         } else {
             return full ? 0 : SIZE;
         }
@@ -45,24 +45,14 @@ public:
             return result;
         }
 
-        if (wIdx > rIdx) {
+        if (rIdx < wIdx) {
             result.assign(buf + rIdx, buf + rIdx + len);
             rIdx += len;
-        } else if (wIdx < rIdx) {
-            std::size_t len1 = SIZE - rIdx;
-
-            if (len <= len1) {
-                result.assign(buf + rIdx, buf + rIdx + len);
-                rIdx += len;
-            } else {
-                std::size_t len2 = len - len1;
-
-                result.append(buf + rIdx, buf + rIdx + len1);
-                result.append(buf, buf + len2);
-
-                rIdx = len2;
-            }
         } else {
+            if (rIdx == wIdx) {
+                full = false;
+            }
+
             std::size_t len1 = SIZE - rIdx;
 
             if (len <= len1) {
@@ -76,8 +66,6 @@ public:
 
                 rIdx = len2;
             }
-
-            full = false;
         }
 
         return result;
@@ -93,23 +81,7 @@ public:
             return false;
         }
 
-        std::size_t wBytes = writableBytes();
-
-        if (wIdx > rIdx) {
-            std::size_t len1 = SIZE - wIdx;
-
-            if (len <= len1) {
-                std::strncpy(buf + wIdx, data, len);
-                wIdx += len;
-            } else {
-                std::size_t len2 = len - len1;
-
-                std::strncpy(buf + wIdx, data, len1);
-                std::strncpy(buf, data + len1, len2);
-
-                wIdx = len2;
-            }
-        } else if (wIdx < rIdx) {
+        if (wIdx < rIdx) {
             std::strncpy(buf + wIdx, data, len);
             wIdx += len;
         } else {
@@ -128,7 +100,7 @@ public:
             }
         }
 
-        if (wIdx == rIdx) {
+        if (rIdx == wIdx) {
             full = true;
         }
 
@@ -149,24 +121,14 @@ private:
             return result;
         }
 
-        if (wIdx > rIdx) {
+        if (rIdx < wIdx) {
             std::memcpy(&result, buf + rIdx, len);
             rIdx += len;
-        } else if (wIdx < rIdx) {
-            std::size_t len1 = SIZE - rIdx;
-
-            if (len <= len1) {
-                std::memcpy(&result, buf + rIdx, len);
-                rIdx += len;
-            } else {
-                std::size_t len2 = len - len1;
-
-                std::memcpy(&result, buf + rIdx, len1);
-                std::memcpy(&result + len1, buf, len2);
-
-                rIdx = len2;
-            }
         } else {
+            if (rIdx == wIdx) {
+                full = false;
+            }
+
             std::size_t len1 = SIZE - rIdx;
 
             if (len <= len1) {
@@ -180,8 +142,6 @@ private:
 
                 rIdx = len2;
             }
-
-            full = false;
         }
 
         return result;
@@ -195,23 +155,7 @@ private:
             return false;
         }
 
-        if (wIdx > rIdx) {
-            std::size_t len1 = SIZE - wIdx;
-
-            if (len <= len1) {
-                std::memcpy(buf + wIdx, &x, len);
-                wIdx += len;
-            } else {
-                std::size_t len2 = len - len1;
-
-                auto s = reinterpret_cast<const char*>(&x);
-
-                std::memcpy(buf + wIdx, s, len1);
-                std::memcpy(buf, s + len1, len2);
-
-                wIdx = len2;
-            }
-        } else if (wIdx < rIdx) {
+        if (wIdx < rIdx) {
             std::memcpy(buf + wIdx, &x, len);
             wIdx += len;
         } else {
@@ -232,7 +176,7 @@ private:
             }
         }
 
-        if (wIdx == rIdx) {
+        if (rIdx == wIdx) {
             full = true;
         }
 
