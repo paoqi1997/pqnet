@@ -1,0 +1,2 @@
+# help: https://git-scm.com/docs/gitattributes
+*.sh text eol=lf
