@@ -21,7 +21,7 @@ int main()
     }
 
     union semun sem_arg;
-    unsigned short vals[2] = {0, 1};
+    unsigned short vals[2] = {1, 0};
     sem_arg.array = vals;
 
     // SETVAL: 设置成员 semnum 的 semval 值，该值由 arg.val 指定
@@ -33,14 +33,14 @@ int main()
 
     struct Msg *msg = static_cast<struct Msg*>(shmp);
     for (std::size_t i = 0; i <= 10; ++i) {
-        if (sem_p2(semid) == -1) {
+        if (sem_p1(semid) == -1) {
             error("sem_p2");
             return 1;
         }
         msg->num = i;
         std::sprintf(msg->buf, "shm: %zu", i);
         std::printf("[sendmsg] %s\n", msg->buf);
-        if (sem_v1(semid) == -1) {
+        if (sem_v2(semid) == -1) {
             error("sem_v1");
             return 1;
         }

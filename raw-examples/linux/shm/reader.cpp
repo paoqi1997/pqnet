@@ -22,12 +22,12 @@ int main()
 
     struct Msg *msg = static_cast<struct Msg*>(shmp);
     while (msg->num < 10) {
-        if (sem_p1(semid) == -1) {
+        if (sem_p2(semid) == -1) {
             error("sem_p1");
             return 1;
         }
         std::printf("[recvmsg] %s\n", msg->buf);
-        if (sem_v2(semid) == -1) {
+        if (sem_v1(semid) == -1) {
             error("sem_v2");
             return 1;
         }
