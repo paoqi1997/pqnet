@@ -8,12 +8,12 @@
                 "/Zi",
                 "/EHsc",
                 "/nologo",
-                "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "/Fe${workspaceFolder}\\output\\main.exe",
                 // https://code.visualstudio.com/docs/cpp/config-msvc#_modifying-tasksjson
-                "${workspaceFolder}/*.cpp"
+                "${workspaceFolder}/raw-examples/cpp11/ringbuffer/*.cpp"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}\\output"
             },
             "problemMatcher": [
                 "$msCompile"
