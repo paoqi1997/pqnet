@@ -31,8 +31,5 @@
 *.out
 *.app
 
-# By-products
-.vscode
-
 # Output directories
 build
