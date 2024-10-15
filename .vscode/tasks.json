@@ -23,6 +23,24 @@
                 "isDefault": true
             },
             "detail": "调试器生成的任务。"
+        },
+        {
+            "type": "shell",
+            "label": "CMake generate",
+            "command": "cmake -S ${workspaceFolder}/raw-examples/cpp11/ringbuffer -B ${workspaceFolder}/build",
+        },
+        {
+            "type": "shell",
+            "label": "CMake build",
+            "command": "cmake --build ${workspaceFolder}/build",
+        },
+        {
+            "label": "CMake run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "CMake generate",
+                "CMake build"
+            ]
         }
     ],
     "version": "2.0.0",
