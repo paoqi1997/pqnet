@@ -34,3 +34,4 @@
 # Output directories
 build
 output
+.xmake

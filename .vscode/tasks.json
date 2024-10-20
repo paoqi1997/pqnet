@@ -27,12 +27,12 @@
         {
             "type": "shell",
             "label": "CMake generate",
-            "command": "cmake -S ${workspaceFolder}/raw-examples/cpp11/ringbuffer -B ${workspaceFolder}/build",
+            "command": "cmake -S ${workspaceFolder}/raw-examples/cpp11/ringbuffer -B ${workspaceFolder}/build"
         },
         {
             "type": "shell",
             "label": "CMake build",
-            "command": "cmake --build ${workspaceFolder}/build",
+            "command": "cmake --build ${workspaceFolder}/build"
         },
         {
             "label": "CMake run",
@@ -40,6 +40,30 @@
             "dependsOn": [
                 "CMake generate",
                 "CMake build"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "xmake config",
+            "command": "xmake f -m debug -o ${workspaceFolder}/xbuild",
+            "options": {
+                "cwd": "${workspaceFolder}/raw-examples/cpp11/lockFreeQueue/mpmc"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "xmake build",
+            "command": "xmake",
+            "options": {
+                "cwd": "${workspaceFolder}/raw-examples/cpp11/lockFreeQueue/mpmc"
+            }
+        },
+        {
+            "label": "xmake run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "xmake config",
+                "xmake build"
             ]
         }
     ],
