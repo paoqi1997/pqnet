@@ -27,7 +27,7 @@
         {
             "type": "shell",
             "label": "CMake generate",
-            "command": "cmake -S ${workspaceFolder}/raw-examples/cpp11/ringbuffer -B ${workspaceFolder}/build"
+            "command": "cmake -S ${workspaceFolder}/raw-examples/cpp11/lockFreeQueue/spsc -B ${workspaceFolder}/build"
         },
         {
             "type": "shell",
